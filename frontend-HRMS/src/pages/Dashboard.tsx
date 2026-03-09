@@ -1,5 +1,6 @@
-import { SidebarProvider, SidebarTrigger } from "../components/ui/sidebar"
+import { SidebarContent, SidebarFooter, SidebarProvider, SidebarTrigger } from "../components/ui/sidebar"
 import { AppSidebar } from "../components/app-sidebar"
+import { Card, CardContent, CardDescription, CardAction, CardFooter, CardHeader, CardTitle } from "../components/ui/card"
 
 const Dashboard = () => {
 
@@ -7,8 +8,54 @@ const Dashboard = () => {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarTrigger />
-    <h1>Dashboard</h1>
+      <main>
+        <SidebarTrigger />
+        <h1>Dashboard</h1>
+        <SidebarContent>
+          <SidebarFooter>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 p-3">
+              <Card className="max-w-md">
+                <CardHeader>
+                  <CardTitle>Total Users</CardTitle>
+                  <CardDescription>$100</CardDescription>
+                  <CardAction className="border rounded-sm px-2 ">$100</CardAction>
+                </CardHeader>
+                <CardContent>Trending up this month</CardContent>
+                <CardFooter>visitors for the last 6 months</CardFooter>
+              </Card>
+              <Card className="max-w-md">
+                <CardHeader>
+                  <CardTitle>Total Users</CardTitle>
+                  <CardDescription>$100</CardDescription>
+                  <CardAction className="border rounded-sm px-2 ">$100</CardAction>
+                </CardHeader>
+                <CardContent>Trending up this month</CardContent>
+                <CardFooter>visitors for the last 6 months</CardFooter>
+              </Card>
+              <Card className="max-w-md">
+                <CardHeader>
+                  <CardTitle>Total Users</CardTitle>
+                  <CardDescription>$100</CardDescription>
+                  <CardAction className="border rounded-sm px-2 ">$100</CardAction>
+                </CardHeader>
+                <CardContent>Trending up this month</CardContent>
+                <CardFooter>visitors for the last 6 months</CardFooter>
+              </Card>
+              <Card className="max-w-md">
+                <CardHeader>
+                  <CardTitle>Total Users</CardTitle>
+                  <CardDescription>$100</CardDescription>
+                  <CardAction className="border rounded-sm px-2 ">$100</CardAction>
+                </CardHeader>
+                <CardContent>Trending up this month</CardContent>
+                <CardFooter>visitors for the last 6 months</CardFooter>
+              </Card>
+
+            </div>
+          </SidebarFooter>
+        </SidebarContent>
+      </main>
+
     </SidebarProvider>
   )
 }
