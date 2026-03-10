@@ -5,11 +5,11 @@ import Signup from "./pages/Auth/singup"
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 import Profile from "./pages/profile"
 import Dashboard from "./pages/Dashboard"
-
+import { Toaster } from "sonner"
 function App() {
   return (
     <Router>
-     
+       <Toaster position="top-right" />
         <Routes>
           {/* <Route path="/" element={<Signup />} /> */}
           <Route path="/" element={<Signin />} />
@@ -17,7 +17,7 @@ function App() {
           <Route path="/profile" element={<Profile/>}/>
           <Route path="/dashboard" element={<Dashboard/>} />
         </Routes>
-     
+   
     </Router>
   )
 }

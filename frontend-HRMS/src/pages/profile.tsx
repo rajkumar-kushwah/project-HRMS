@@ -54,6 +54,7 @@ function Profile() {
                             <CardTitle>Profile</CardTitle>
                         </CardHeader>
                         <CardContent className='grid grid-cols-1 items-center gap-4'>
+
                             <Avatar>
                                 <AvatarImage src={user.avatar} alt="avatar" />
                                 <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
@@ -61,7 +62,7 @@ function Profile() {
 
                             {user && (
                                 <div>
-                                    <p className='font-medium'>Name:</p>
+                                    <p className='text-sm text-muted-foreground'>Name:</p>
                                     <Input type='text' defaultValue={user.name} />
                                     <p className='text-sm text-muted-foreground'>Email:</p>
                                     <Input type='email' defaultValue={user.email} />

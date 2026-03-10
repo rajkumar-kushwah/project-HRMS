@@ -1,6 +1,7 @@
 import express from "express";
 import { prisma } from "../config/db.ts";
 import bcrypt from "bcrypt";
+import { userInfo } from "node:os";
 
 
 const authController = express.Router();
@@ -13,12 +14,11 @@ export const signup = authController.post('/signup', async (req, res) => {
     try {
         const users = await prisma.user.findUnique({
             where: {
-                name: name,
                 email: email
             }
         })
         if (users) {
-           return res.status(400).json({ message: 'User already exists' });
+            return res.status(400).json({ message: 'User already exists' });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -54,7 +54,7 @@ export const login = authController.post('/login', async (req, res) => {
             return res.status(401).json({ message: 'Invalid password ' });
         }
 
-      
+
 
         // Store the user ID in the session
 
@@ -80,14 +80,14 @@ export const login = authController.post('/login', async (req, res) => {
 
 export const logout = authController.post('/logout', async (req, res) => {
     try {
-       req.session.destroy((err) => {
-        if(err){
-            return res.status(500).json({ message: 'Logout failed' });
-        }
+        req.session.destroy((err) => {
+            if (err) {
+                return res.status(500).json({ message: 'Logout failed' });
+            }
 
-        res.clearCookie('connect.sid');
-        return res.status(200).json({ message: 'Logout successful' });
-       });
+            res.clearCookie('connect.sid');
+            return res.status(200).json({ message: 'Logout successful' });
+        });
 
     } catch (error) {
         console.error(error);
@@ -112,3 +112,18 @@ export const deleteUser = authController.delete('/users/:id', async (req, res) =
 })
 
 
+export const UpdateUser = authController.put('/users/:id', async (req, res) => {
+    try {
+        const id = Number(req.params.id);
+        const { name, email, password } = req.body;
+        const UpdateUser = await prisma.user.update({
+            where: { id },
+            data: { name, email, password },
+        })
+        res.status(200).json({ message: 'User updated successfully', user: UpdateUser });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+
+})  

@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/sidebar"
 import { api } from "../services/api.service"
 import { useNavigate } from "react-router-dom"
+import { toast } from "sonner"
 
 export function NavUser({
   user,
@@ -49,7 +50,7 @@ export function NavUser({
       await api.post("/logout");
 
       localStorage.removeItem("token");
-      alert("Logout successful");
+      toast.success("Logout successful");
       navigate("/");
     } catch (error) {
       console.error(error);
@@ -58,10 +59,10 @@ export function NavUser({
 
   const getInitials = (name: string) => {
     const names = name.trim().split(" ");
-    if (names.length > 1){
-      return names[0][0]+ names[1][0];
+    if (names.length > 1) {
+      return names[0][0] + names[1][0];
     }
-      return names[0][0];
+    return names[0][0];
   }
 
   return (
@@ -125,9 +126,9 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOut />
-            <div onClick={handleLogout}>Log out</div>  
+              Log out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

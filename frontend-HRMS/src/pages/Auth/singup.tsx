@@ -112,6 +112,8 @@ import { Input } from "@/components/ui/input";
 import { api } from "../../services/api.service";
 import { useNavigate } from "react-router-dom";
 import { Field, FieldLabel } from "@/components/ui/field"
+import { toast } from "sonner";
+
 const Signup = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -125,7 +127,7 @@ const Signup = () => {
     try {
       const res = await api.post("/signup", { name, email, password });
 
-      alert(res.data.message || "Signup successful");
+      toast.promise(res.data.message || "Signup successful");
 
       setName("");
       setEmail("");
@@ -134,9 +136,10 @@ const Signup = () => {
       navigate("/");
     } catch (error: any) {
       if (error.response) {
-        alert(error.response.data.message);
+        toast.error(error.response.data.message);
       } else {
         console.error(error);
+        toast.error("Something went wrong");
       }
     }
   };

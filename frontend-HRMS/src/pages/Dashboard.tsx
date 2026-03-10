@@ -13,41 +13,41 @@ const Dashboard = () => {
         <h1>Dashboard</h1>
         <SidebarContent>
           <SidebarFooter>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 p-3">
-              <Card className="max-w-md">
+            <div className="grid grid-cols-1  md:grid-cols-2 lg:grid-cols-4 gap-3 p-3">
+              <Card className="max-w-md ">
                 <CardHeader>
                   <CardTitle>Total Users</CardTitle>
-                  <CardDescription>$100</CardDescription>
-                  <CardAction className="border rounded-sm px-2 ">$100</CardAction>
+                  <CardDescription>10</CardDescription>
+                  <CardAction className="border rounded-sm px-2 ">$10</CardAction>
                 </CardHeader>
-                <CardContent>Trending up this month</CardContent>
+                <CardContent>Total users count</CardContent>
                 <CardFooter>visitors for the last 6 months</CardFooter>
               </Card>
               <Card className="max-w-md">
                 <CardHeader>
                   <CardTitle>Total Users</CardTitle>
-                  <CardDescription>$100</CardDescription>
-                  <CardAction className="border rounded-sm px-2 ">$100</CardAction>
+                  <CardDescription>10</CardDescription>
+                  <CardAction className="border rounded-sm px-2 ">$10</CardAction>
                 </CardHeader>
-                <CardContent>Trending up this month</CardContent>
+                <CardContent>Total users count</CardContent>
                 <CardFooter>visitors for the last 6 months</CardFooter>
               </Card>
               <Card className="max-w-md">
                 <CardHeader>
                   <CardTitle>Total Users</CardTitle>
-                  <CardDescription>$100</CardDescription>
-                  <CardAction className="border rounded-sm px-2 ">$100</CardAction>
+                  <CardDescription>10</CardDescription>
+                  <CardAction className="border rounded-sm px-2 ">$10</CardAction>
                 </CardHeader>
-                <CardContent>Trending up this month</CardContent>
+                <CardContent>Total users count</CardContent>
                 <CardFooter>visitors for the last 6 months</CardFooter>
               </Card>
               <Card className="max-w-md">
                 <CardHeader>
                   <CardTitle>Total Users</CardTitle>
-                  <CardDescription>$100</CardDescription>
-                  <CardAction className="border rounded-sm px-2 ">$100</CardAction>
+                  <CardDescription>10</CardDescription>
+                  <CardAction className="border rounded-sm px-2 ">$10</CardAction>
                 </CardHeader>
-                <CardContent>Trending up this month</CardContent>
+                <CardContent>Total users count</CardContent>
                 <CardFooter>visitors for the last 6 months</CardFooter>
               </Card>
 

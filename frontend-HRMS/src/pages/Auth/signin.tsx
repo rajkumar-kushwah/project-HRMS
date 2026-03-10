@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { login } from "../../services/auth.controller";
 import { useNavigate } from "react-router-dom";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
+import { toast } from "sonner";
 
 
 const Signin = () => {
@@ -22,17 +23,17 @@ const Signin = () => {
             if (res.data.token) {
                 localStorage.setItem("token", res.data.token);
             }
-            alert(res.data.message || "Signin successful");
+            toast.success(res.data.message || "Signin successful");
 
             setEmail("");
             setPassword("");
             navigator("/dashboard");
         } catch (error: any) {
             if (error.response) {
-                alert(error.response.data.message);
+                toast.error(error.response.data.message);
             } else {
                 console.error(error, "error");
-                alert("Something went wrong");
+                toast.error("Something went wrong");
             }
         }
     };
