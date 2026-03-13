@@ -1,61 +1,64 @@
-import { SidebarContent, SidebarFooter, SidebarProvider, SidebarTrigger } from "../components/ui/sidebar"
+import { SidebarProvider, SidebarTrigger } from "../components/ui/sidebar"
 import { AppSidebar } from "../components/app-sidebar"
-import { Card, CardContent, CardDescription, CardAction, CardFooter, CardHeader, CardTitle } from "../components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card"
 
 const Dashboard = () => {
-
-
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main>
+
+      <main className="flex-1 p-6">
         <SidebarTrigger />
-        <h1>Dashboard</h1>
-        <SidebarContent>
-          <SidebarFooter>
-            <div className="grid grid-cols-1  md:grid-cols-2 lg:grid-cols-4 gap-3 p-3">
-              <Card className="max-w-md ">
-                <CardHeader>
-                  <CardTitle>Total Users</CardTitle>
-                  <CardDescription>10</CardDescription>
-                  <CardAction className="border rounded-sm px-2 ">$10</CardAction>
-                </CardHeader>
-                <CardContent>Total users count</CardContent>
-                <CardFooter>visitors for the last 6 months</CardFooter>
-              </Card>
-              <Card className="max-w-md">
-                <CardHeader>
-                  <CardTitle>Total Users</CardTitle>
-                  <CardDescription>10</CardDescription>
-                  <CardAction className="border rounded-sm px-2 ">$10</CardAction>
-                </CardHeader>
-                <CardContent>Total users count</CardContent>
-                <CardFooter>visitors for the last 6 months</CardFooter>
-              </Card>
-              <Card className="max-w-md">
-                <CardHeader>
-                  <CardTitle>Total Users</CardTitle>
-                  <CardDescription>10</CardDescription>
-                  <CardAction className="border rounded-sm px-2 ">$10</CardAction>
-                </CardHeader>
-                <CardContent>Total users count</CardContent>
-                <CardFooter>visitors for the last 6 months</CardFooter>
-              </Card>
-              <Card className="max-w-md">
-                <CardHeader>
-                  <CardTitle>Total Users</CardTitle>
-                  <CardDescription>10</CardDescription>
-                  <CardAction className="border rounded-sm px-2 ">$10</CardAction>
-                </CardHeader>
-                <CardContent>Total users count</CardContent>
-                <CardFooter>visitors for the last 6 months</CardFooter>
-              </Card>
 
-            </div>
-          </SidebarFooter>
-        </SidebarContent>
+        <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Total Employees</CardTitle>
+              <CardDescription>120</CardDescription>
+            </CardHeader>
+            <CardContent>Active employees in company</CardContent>
+            <CardFooter>Updated today</CardFooter>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Present Today</CardTitle>
+              <CardDescription>95</CardDescription>
+            </CardHeader>
+            <CardContent>Employees present today</CardContent>
+            <CardFooter>Attendance report</CardFooter>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Pending Leaves</CardTitle>
+              <CardDescription>8</CardDescription>
+            </CardHeader>
+            <CardContent>Leave requests waiting approval</CardContent>
+            <CardFooter>HR review needed</CardFooter>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Monthly Payroll</CardTitle>
+              <CardDescription>₹8,50,000</CardDescription>
+            </CardHeader>
+            <CardContent>Total salary this month</CardContent>
+            <CardFooter>Payroll summary</CardFooter>
+          </Card>
+
+        </div>
       </main>
-
     </SidebarProvider>
   )
 }

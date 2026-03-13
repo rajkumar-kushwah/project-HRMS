@@ -113,25 +113,30 @@ import { api } from "../../services/api.service";
 import { useNavigate } from "react-router-dom";
 import { Field, FieldLabel } from "@/components/ui/field"
 import { toast } from "sonner";
+import { Spinner } from "@/components/ui/spinner";
 
 const Signup = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+
 
   const navigate = useNavigate();
 
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    setLoading(true);
     try {
       const res = await api.post("/signup", { name, email, password });
 
-      toast.promise(res.data.message || "Signup successful");
+      toast.success(res.data.message || "Signup successful");
 
       setName("");
       setEmail("");
       setPassword("");
+
 
       navigate("/");
     } catch (error: any) {
@@ -141,8 +146,12 @@ const Signup = () => {
         console.error(error);
         toast.error("Something went wrong");
       }
+    } finally {
+      setLoading(false);
     }
   };
+
+  
 
   return (
     <div className="flex justify-center items-center min-h-screen">
@@ -197,9 +206,10 @@ const Signup = () => {
             </div>
           </Field>
           <Button type="submit" className="w-full mt-4">
+            {/* click krne pr true ho jaye  */}
+            {loading && <Spinner />}
             Signup
           </Button>
-
 
           <p className="text-center text-sm">
             Already have an account?{" "}

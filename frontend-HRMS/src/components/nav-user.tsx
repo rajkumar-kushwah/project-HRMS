@@ -49,11 +49,11 @@ export function NavUser({
     try {
       await api.post("/logout");
 
-      localStorage.removeItem("token");
       toast.success("Logout successful");
       navigate("/");
     } catch (error) {
       console.error(error);
+      toast.error("logout failed");
     }
   };
 

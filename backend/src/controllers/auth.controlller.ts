@@ -1,7 +1,6 @@
 import express from "express";
 import { prisma } from "../config/db.ts";
 import bcrypt from "bcrypt";
-import { userInfo } from "node:os";
 
 
 const authController = express.Router();
@@ -38,11 +37,11 @@ export const signup = authController.post('/signup', async (req, res) => {
 
 // login controller 
 
-export const login = authController.post('/login', async (req, res) => {
+export const signin = authController.post('/signin', async (req, res) => {
     const { email, password } = req.body;
     try {
         const user = await prisma.user.findUnique({
-            where: { email }
+            where: { email },
         });
 
         if (!user) {
@@ -54,6 +53,11 @@ export const login = authController.post('/login', async (req, res) => {
             return res.status(401).json({ message: 'Invalid password ' });
         }
 
+        // update last login
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { lastLogin: new Date() }
+        });
 
 
         // Store the user ID in the session
@@ -80,6 +84,11 @@ export const login = authController.post('/login', async (req, res) => {
 
 export const logout = authController.post('/logout', async (req, res) => {
     try {
+
+        if (!(req.session as any).userId) {
+            return res.status(401).json({ message: "Not authorized" });
+        }
+
         req.session.destroy((err) => {
             if (err) {
                 return res.status(500).json({ message: 'Logout failed' });
@@ -126,4 +135,5 @@ export const UpdateUser = authController.put('/users/:id', async (req, res) => {
         res.status(500).json({ message: 'Something went wrong' });
     }
 
-})  
+})
+

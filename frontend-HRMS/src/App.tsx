@@ -9,15 +9,15 @@ import { Toaster } from "sonner"
 function App() {
   return (
     <Router>
-       <Toaster position="top-right" />
-        <Routes>
-          {/* <Route path="/" element={<Signup />} /> */}
-          <Route path="/" element={<Signin />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/profile" element={<Profile/>}/>
-          <Route path="/dashboard" element={<Dashboard/>} />
-        </Routes>
-   
+      <Toaster position="top-right" />
+      <Routes>
+        {/* <Route path="/" element={<Signup />} /> */}
+        <Route path="/" element={<Signin />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+      </Routes>
+
     </Router>
   )
 }

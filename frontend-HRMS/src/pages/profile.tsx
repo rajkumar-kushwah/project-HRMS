@@ -45,9 +45,9 @@ function Profile() {
         <SidebarProvider>
             <AppSidebar />
 
-            <main>
+            <main className="flex-1 p-6">
                 <SidebarTrigger />
-                <h1>Profile</h1>
+                <h1 className='text-2xl font-bold mb-6'>Profile</h1>
                 <div className='p-6'>
                     <Card className='max-w-md'>
                         <CardHeader>
@@ -61,13 +61,13 @@ function Profile() {
                             </Avatar>
 
                             {user && (
-                                <div>
+                                <div className='flex flex-col gap-2'>
                                     <p className='text-sm text-muted-foreground'>Name:</p>
                                     <Input type='text' defaultValue={user.name} />
                                     <p className='text-sm text-muted-foreground'>Email:</p>
                                     <Input type='email' defaultValue={user.email} />
-                                    <p>Created At: {user.createdAt}</p>
-                                    <p>Last Login: {user.lastLogin}</p>
+                                    <p className='text-sm text-muted-foreground'>Created At: {new Date(user.createdAt).toLocaleString()}</p>
+                                    <p className='text-sm text-muted-foreground'>Last Login: {new Date(user.lastLogin).toLocaleString()}</p>
                                 </div>
                             )}
                         </CardContent>
