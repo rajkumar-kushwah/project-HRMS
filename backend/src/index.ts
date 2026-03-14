@@ -31,11 +31,11 @@ app.use(cors({
 
 app.use(express.json());
 
-app.get('/users', (req, res) => {
-    prisma.user.findMany({ orderBy: { id: 'asc' } }).then((users) => {
-        res.json(users)
-    })
-})
+// app.get('/users', (req, res) => {
+//     prisma.user.findMany({ orderBy: { id: 'asc' } }).then((users) => {
+//         res.json(users)
+//     })
+// })
 
 app.use('/auth', authRouter)
 
