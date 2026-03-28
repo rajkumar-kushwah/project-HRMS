@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { signIn } from "../../services/auth.controller";
+import { signIn } from "../../controllers/auth.controller";
 import { useNavigate } from "react-router-dom";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
 import { toast } from "sonner";
@@ -22,9 +22,7 @@ const Signin = () => {
         setLoading(true);
         try {
             const res = await signIn({ email, password });
-            if (res.data.token) {
-                localStorage.setItem("token", res.data.token);
-            }
+           
             toast.success(res.data.message || "Signin successful");
 
             setEmail("");

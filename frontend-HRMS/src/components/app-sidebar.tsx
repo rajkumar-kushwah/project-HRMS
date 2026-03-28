@@ -8,10 +8,13 @@ import {
   Command,
   Frame,
   GalleryVerticalEnd,
+  Icon,
   Map,
   PieChart,
   Settings2,
   SquareTerminal,
+  UserCheck,
+  Users,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -26,7 +29,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { useEffect, useState } from "react"
-import { getprofile } from "../services/auth.controller"
+import { getprofile } from "@/controllers/profile.controller"
 
 
 // This is sample data.
@@ -55,18 +58,18 @@ const data = {
   ],
   navMain: [
     {
-      title: "Dashboard",
-      url: "/dashboard",
+      title: "Overview",
+      url: "",
       icon: SquareTerminal,
       isActive: true,
       items: [
         {
-          title: "Profile",
-          url: "/profile",
+          title: "Dashboard",
+          url: "/dashboard",
         },
         {
-          title: "Starred",
-          url: "#",
+          title: "Profile",
+          url: "/profile",
         },
         {
           title: "Settings",
@@ -75,69 +78,70 @@ const data = {
       ],
     },
     {
-      title: "Models",
+      title: "employees Management",
       url: "#",
-      icon: Bot,
-      // items: [
-      //   {
-      //     title: "Genesis",
-      //     url: "#",
-      //   },
-      //   {
-      //     title: "Explorer",
-      //     url: "#",
-      //   },
-      //   {
-      //     title: "Quantum",
-      //     url: "#",
-      //   },
-      // ],
+      icon: Users,
+      items: [
+        {
+          title: "Department",
+          url: "/department",
+        },
+        {
+          title: "Register Employee",
+          url: "/employees",
+          icon: UserCheck,
+        },
+        {
+          title: "Quantum",
+          url: "#",
+        },
+      ],
     },
     {
       title: "Documentation",
       url: "#",
       icon: BookOpen,
-    //   items: [
-    //     {
-    //       title: "Introduction",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Get Started",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Tutorials",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Changelog",
-    //       url: "#",
-    //     },
-    //   ],
-    // },
-    // {
-    //   title: "Settings",
-    //   url: "#",
-    //   icon: Settings2,
-    //   items: [
-    //     {
-    //       title: "Account",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Plans",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Billing",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Limits",
-    //       url: "#",
-    //     },
-    //   ],
+      //   items: [
+      //     {
+      //       title: "Introduction",
+      //       url: "#",
+      //     },
+      //     {
+      //       title: "Get Started",
+      //       url: "#",
+      //     },
+      //     {
+      //       title: "Tutorials",
+      //       url: "#",
+      //     },
+      //     {
+      //       title: "Changelog",
+      //       url: "#",
+      //     },
+      //   ],
+      // },
+      // {
+      //   title: "Settings",
+      //   url: "#",
+      //   icon: Settings2,
+      //   items: [
+      //     {
+      //       title: "Account",
+      //       url: "#",
+      //     },
+      //     {
+      //       title: "Plans",
+      //       url: "#",
+      //     },
+      //     {
+      //       title: "Billing",
+      //       url: "#",
+      //     },
+      //     {
+      //       title: "Limits",
+      //       url: "#",
+      //     },
+      //   ],
     },
   ],
   // projects: [

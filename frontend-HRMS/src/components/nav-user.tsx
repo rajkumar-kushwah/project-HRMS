@@ -5,6 +5,7 @@ import {
   CreditCard,
   LogOut,
   Sparkles,
+  // User,
 } from "lucide-react"
 
 
@@ -31,6 +32,7 @@ import {
 import { api } from "../services/api.service"
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
+import { logout } from "@/controllers/auth.controller"
 
 export function NavUser({
   user,
@@ -47,8 +49,9 @@ export function NavUser({
 
   const handleLogout = async () => {
     try {
-      await api.post("/logout");
-
+      // logout api call ke liye 
+      const res = await logout();
+        console.log(res);
       toast.success("Logout successful");
       navigate("/");
     } catch (error) {
@@ -63,6 +66,23 @@ export function NavUser({
       return names[0][0] + names[1][0];
     }
     return names[0][0];
+  }
+
+  const handleDelete = async () => {
+    // confirm delete krne ke user ko
+    const confirmDelete = window.confirm("Are you sure you want to delete your account?");
+    // ager cancel kiya to yahi stop ho jayega
+    if (!confirmDelete) return
+
+    try {
+      // user delete api call krne ke liye 
+      await api.delete("/users/delete");
+      toast.success("User deleted successfully");
+      navigate("/");
+    } catch (error) {
+      console.error(error);
+      toast.error("Server error");
+    }
   }
 
   return (
@@ -112,9 +132,9 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={handleDelete}>
                 <BadgeCheck />
-                Account
+                Account Deleted
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <CreditCard />

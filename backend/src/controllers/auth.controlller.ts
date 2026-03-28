@@ -1,14 +1,9 @@
-import express from "express";
 import { prisma } from "../config/db.ts";
 import bcrypt from "bcrypt";
 
 
-const authController = express.Router();
-export default authController;
-
 // signup controller
-
-export const signup = authController.post('/signup', async (req, res) => {
+export const signup = async (req: any, res: any) => {
     const { name, email, password } = req.body;
     try {
         const users = await prisma.user.findUnique({
@@ -31,13 +26,12 @@ export const signup = authController.post('/signup', async (req, res) => {
         res.status(201).json({ message: 'User created successfully', user: newUser });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Something went wrong' });
+        res.status(500).json({ message: 'Server error' });
     }
-})
+}
 
-// login controller 
-
-export const signin = authController.post('/signin', async (req, res) => {
+// signin controller 
+export const signin = async (req: any, res: any) => {
     const { email, password } = req.body;
     try {
         const user = await prisma.user.findUnique({
@@ -67,7 +61,6 @@ export const signin = authController.post('/signin', async (req, res) => {
 
         return res.status(200).json({
             message: 'Login successful',
-            // token,
             user: {
                 id: user.id,
                 email: user.email,
@@ -76,20 +69,19 @@ export const signin = authController.post('/signin', async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ message: 'Something went wrong' });
+        return res.status(500).json({ message: 'Server error' });
     }
-});
+};
 
 // logout controller
-
-export const logout = authController.post('/logout', async (req, res) => {
+export const logout = async (req: any, res: any) => {
     try {
 
         if (!(req.session as any).userId) {
             return res.status(401).json({ message: "Not authorized" });
         }
 
-        req.session.destroy((err) => {
+        req.session.destroy((err: any) => {
             if (err) {
                 return res.status(500).json({ message: 'Logout failed' });
             }
@@ -100,28 +92,26 @@ export const logout = authController.post('/logout', async (req, res) => {
 
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ message: 'logout failed' });
+        return res.status(500).json({ message: 'Server error' });
     }
-})
+};
 
-
-export const deleteUser = authController.delete('/users/:id', async (req, res) => {
-    const { id } = req.params;
+// delete user
+export const deleteUser = async (req: any, res: any) => {
     try {
-        const deleteUser = await prisma.user.delete({
-            where: {
-                id: Number(id)
-            }
+        const userId = req.session.userId;
+        const user = await prisma.user.delete({
+            where: { id: userId },
         })
-        res.status(200).json({ message: 'User deleted successfully', user: deleteUser });
+        res.status(200).json({ message: 'User deleted successfully', user: user });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Something went wrong' });
+        console.log(error);
+        res.status(500).json({ message: 'Server error' });
     }
-})
+}
 
-
-export const UpdateUser = authController.put('/users/:id', async (req, res) => {
+// update user
+export const UpdateUser = async (req: any, res: any) => {
     try {
         const id = Number(req.params.id);
         const { name, email, password } = req.body;
@@ -132,8 +122,8 @@ export const UpdateUser = authController.put('/users/:id', async (req, res) => {
         res.status(200).json({ message: 'User updated successfully', user: UpdateUser });
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: 'Something went wrong' });
+        res.status(500).json({ message: 'Server error' });
     }
 
-})
+};
 

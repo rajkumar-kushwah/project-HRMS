@@ -13,6 +13,7 @@ authRouter.post('/signin', signin)
 authRouter.delete('/users/:id', deleteUser)
 authRouter.post('/logout', protect, logout)
 authRouter.get('/profile', protect, getprofile)
+
 authRouter.put('/users/:id', protect, UpdateUser)
 
 export default authRouter

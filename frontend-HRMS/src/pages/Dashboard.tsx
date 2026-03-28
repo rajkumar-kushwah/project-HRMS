@@ -21,7 +21,7 @@ const Dashboard = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 
-          <Card>
+          <Card className="hover:scale-105 duration-300 ease-in-out">
             <CardHeader>
               <CardTitle>Total Employees</CardTitle>
               <CardDescription>120</CardDescription>
@@ -30,7 +30,7 @@ const Dashboard = () => {
             <CardFooter>Updated today</CardFooter>
           </Card>
 
-          <Card>
+          <Card className="hover:scale-105 duration-300 ease-in-out">
             <CardHeader>
               <CardTitle>Present Today</CardTitle>
               <CardDescription>95</CardDescription>
@@ -39,7 +39,7 @@ const Dashboard = () => {
             <CardFooter>Attendance report</CardFooter>
           </Card>
 
-          <Card>
+          <Card className="hover:scale-105 duration-300 ease-in-out">
             <CardHeader>
               <CardTitle>Pending Leaves</CardTitle>
               <CardDescription>8</CardDescription>
@@ -48,7 +48,7 @@ const Dashboard = () => {
             <CardFooter>HR review needed</CardFooter>
           </Card>
 
-          <Card>
+          <Card className="hover:scale-105 duration-300 ease-in-out">
             <CardHeader>
               <CardTitle>Monthly Payroll</CardTitle>
               <CardDescription>₹8,50,000</CardDescription>

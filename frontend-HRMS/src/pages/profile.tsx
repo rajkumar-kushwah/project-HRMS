@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { getprofile } from '../services/auth.controller'
+import { getprofile } from '@/controllers/profile.controller';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/app-sidebar';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -48,14 +48,14 @@ function Profile() {
             <main className="flex-1 p-6">
                 <SidebarTrigger />
                 <h1 className='text-2xl font-bold mb-6'>Profile</h1>
-                <div className='p-6'>
-                    <Card className='max-w-md'>
+                <div className='flex justify-center '>
+                    <Card className='max-w-md w-full'>
                         <CardHeader>
                             <CardTitle>Profile</CardTitle>
                         </CardHeader>
-                        <CardContent className='grid grid-cols-1 items-center gap-4'>
+                        <CardContent className='grid gap-4'>
 
-                            <Avatar>
+                            <Avatar className='mx-auto h-20 w-20'>
                                 <AvatarImage src={user.avatar} alt="avatar" />
                                 <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
                             </Avatar>
@@ -70,6 +70,7 @@ function Profile() {
                                     <p className='text-sm text-muted-foreground'>Last Login: {new Date(user.lastLogin).toLocaleString()}</p>
                                 </div>
                             )}
+
                         </CardContent>
                     </Card>
                 </div>
