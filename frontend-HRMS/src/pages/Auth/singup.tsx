@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { api } from "../../services/api.service";
 import { useNavigate } from "react-router-dom";
 import { Field, FieldLabel } from "@/components/ui/field"
 import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
+import { signUp } from "@/controllers/auth.controller";
 
 const Signup = () => {
   const [name, setName] = useState("");
@@ -22,7 +22,7 @@ const Signup = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await api.post("/signup", { name, email, password });
+      const res = await signUp({ name, email, password });
       toast.success(res.data.message || "Signup successful");
       setName("");
       setEmail("");

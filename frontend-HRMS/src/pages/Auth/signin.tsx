@@ -22,13 +22,14 @@ const Signin = () => {
         setLoading(true);
         try {
             const res = await signIn({ email, password });
-           
+
             toast.success(res.data.message || "Signin successful");
 
             setEmail("");
             setPassword("");
             navigator("/dashboard");
         } catch (error: any) {
+            console.log(error.response);
             if (error.response) {
                 toast.error(error.response?.data?.message || "Signin first");
             } else {

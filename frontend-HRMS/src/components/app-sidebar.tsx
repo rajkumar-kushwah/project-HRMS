@@ -5,13 +5,17 @@ import {
   AudioWaveform,
   BookOpen,
   Bot,
+  Calendar,
+  Clock,
   Command,
   Frame,
   GalleryVerticalEnd,
   Icon,
+  icons,
   Map,
   PieChart,
   Settings2,
+  Shield,
   SquareTerminal,
   UserCheck,
   Users,
@@ -71,10 +75,10 @@ const data = {
           title: "Profile",
           url: "/profile",
         },
-        {
-          title: "Settings",
-          url: "#",
-        },
+        // {
+        //   title: "Settings",
+        //   url: "#",
+        // },
       ],
     },
     {
@@ -92,57 +96,60 @@ const data = {
           icon: UserCheck,
         },
         {
-          title: "Quantum",
-          url: "#",
+          title: "Create HR Role",
+          url: "/role",
+          icon: Shield
         },
       ],
     },
     {
-      title: "Documentation",
+      title: "Attendance",
       url: "#",
-      icon: BookOpen,
-      //   items: [
-      //     {
-      //       title: "Introduction",
-      //       url: "#",
-      //     },
-      //     {
-      //       title: "Get Started",
-      //       url: "#",
-      //     },
-      //     {
-      //       title: "Tutorials",
-      //       url: "#",
-      //     },
-      //     {
-      //       title: "Changelog",
-      //       url: "#",
-      //     },
-      //   ],
-      // },
-      // {
-      //   title: "Settings",
-      //   url: "#",
-      //   icon: Settings2,
-      //   items: [
-      //     {
-      //       title: "Account",
-      //       url: "#",
-      //     },
-      //     {
-      //       title: "Plans",
-      //       url: "#",
-      //     },
-      //     {
-      //       title: "Billing",
-      //       url: "#",
-      //     },
-      //     {
-      //       title: "Limits",
-      //       url: "#",
-      //     },
-      //   ],
+      icon: Users,
+      items: [
+        {
+          title: "check-in/Out",
+          url: "/check-in",
+          icon: Clock
+        },
+        {
+          title: "Mothly Attendance",
+          url: "/monthly-attendance",
+          icon: Calendar,
+        },
+        // {
+        //   title: "Tutorials",
+        //   url: "#",
+        // },
+        // {
+        //   title: "Changelog",
+        //   url: "#",
+        // },
+      ],
     },
+    //   {
+    //     title: "Settings",
+    //     url: "#",
+    //     icon: Settings2,
+    //     items: [
+    //       {
+    //         title: "Account",
+    //         url: "#",
+    //       },
+    //       {
+    //         title: "Plans",
+    //         url: "#",
+    //       },
+    //       {
+    //         title: "Billing",
+    //         url: "#",
+    //       },
+    //       {
+    //         title: "Limits",
+    //         url: "#",
+    //       },
+    //     ],
+    // },
   ],
   // projects: [
   //   {

@@ -13,11 +13,12 @@
       "vite/client"
     ],
     "skipLibCheck": true,
-    "baseUrl": ".",
+    // "baseUrl": ".",
     "paths": {
       "@/*": [
         "./src/*"
-      ]
+      ],
+      
     },
     /* Bundler mode */
     "moduleResolution": "bundler",

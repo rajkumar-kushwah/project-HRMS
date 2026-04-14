@@ -18,9 +18,28 @@ model User {
   name      String?
   email     String    @unique
   password  String
+  roles     Role[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @default(now()) @updatedAt
   lastLogin DateTime?
+}
+
+model Role {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique // "ADMIN", "MANAGER" , "DEVELOPER"
+  description String
+  users       User[]
+  permissions Permission[]
+  createdAt   DateTime     @default(now())
+}
+
+model Permission {
+  id       Int    @id @default(autoincrement())
+  name     String @unique
+  category String?
+  roles    Role[]
+
+  @@unique([name, category]) // ab name duplicate ho sakta hai (VIEW multiple times)  isliye unique constraint lagao
 }
 
 model Department {

@@ -7,11 +7,13 @@ interface user {
     password: string
 }
 
+
+
 // signin user
 export const signIn = (user: user) => api.post("/auth/signin", user);
 
 // signup user
-export const signUp = (user: user) => api.post("/auth/users", user);
+export const signUp = (user: user) => api.post("/auth/signup", user);
 
 // logout user
 export const logout = () => api.post("/auth/logout");
@@ -19,6 +21,6 @@ export const logout = () => api.post("/auth/logout");
 
 
 // delete user
-// export const deleteUser = (id: number) => api.delete(`/users/${id}`);
+export const deleteUser = (id: number) => api.delete(`/auth/users/${id}`);
 
 

@@ -16,11 +16,33 @@ export const signup = async (req: any, res: any) => {
         }
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // 2. check user count   super admin can create user
+        const userCount = await prisma.user.count();
+
+        let role;
+
+        if (userCount === 0) {
+            role = await prisma.role.findFirst({
+                where: { name: "SUPER_ADMIN" }
+            });
+        } else {
+            role = await prisma.role.findFirst({
+                where: { name: "EMPLOYEE" }   // default role
+            });
+        }
+
+        if (!role) {
+            return res.status(404).json({ message: 'Role not found' });
+        }
+
         const newUser = await prisma.user.create({
             data: {
                 name,
                 email,
-                password: hashedPassword
+                password: hashedPassword,
+                roles: {
+                    connect: { id: role.id }
+                }
             }
         });
         res.status(201).json({ message: 'User created successfully', user: newUser });
@@ -36,12 +58,17 @@ export const signin = async (req: any, res: any) => {
     try {
         const user = await prisma.user.findUnique({
             where: { email },
+            include: {
+                roles: true
+            }
         });
 
         if (!user) {
             return res.status(401).json({ message: 'User not found' });
         }
 
+        console.log("USER ROLE:", user.roles);
+        
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(401).json({ message: 'Invalid password ' });

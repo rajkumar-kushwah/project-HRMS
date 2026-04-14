@@ -6,118 +6,387 @@ import * as Select from "@radix-ui/react-select";
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { ChevronDown, Plus } from "lucide-react";
+import { Upload, LucideFileDiff, UserPlus, LucideX, } from "lucide-react";
+import { toast } from 'sonner';
+import { getDepartments } from '@/controllers/department.controller';
+import { getRoles } from '@/controllers/roleApi.controller';
+
+const initialFormData = {
+  FirstName: "",
+  LastName: "",
+  Email: "",
+  Phone: "",
+
+
+  // Professional details
+  employeeId: "",
+  joiningDate: "",
+  dateOfBirth: "",
+  department: "",
+  Role: "",
+  designation: "",
+
+
+  // Address
+  address: "",
+  city: "",
+  state: "",
+  pincode: "",
+}
 
 function EmployeeRegister() {
-  const [open, setOpen] = React.useState(false);
-  const [bloodGroup, setBloodGroup] = React.useState("");
+  // const [open, setOpen] = React.useState(false);
+  // const [bloodGroup, setBloodGroup] = React.useState("");
+  const [formData, setFormData] = React.useState({ ...initialFormData })
+  const [ActiveTab, setActiveTab] = React.useState("tab1");
+  const [departments, setDepartments] = React.useState([]);
+  const [roles, setRoles] = React.useState([]);
+
+  // department get 
+
+  React.useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const res = await getDepartments(); // API call
+        // setDepartment(res.data);
+        const data = res.data;
+        setDepartments(data.departments || data);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    fetchDepartments();
+  }, []);
+
+
+  React.useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const res = await getRoles(); // API call
+        // setDepartment(res.data);
+        setRoles(res.data.data);
+        console.log(res.data);
+      } catch (err) {
+        console.error(err);
+        setRoles([]);
+      }
+    }
+
+    fetchRoles();
+  }, []);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      console.log("Form Data:", formData);
+      setFormData({ ...initialFormData })
+      toast.success("Form submitted successfully");
+      // localstrore arrow formate 
+      const data = JSON.parse(localStorage.getItem("employees") || "[]");
+      localStorage.setItem("employees", JSON.stringify([...data, formData]));
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+
+  //   const oldData = JSON.parse(localStorage.getItem("employees") || "[]");
+
+  //   const newEmployee = {
+  //     ...formData,
+  //     id: Date.now(),
+  //   };
+
+  //   const updatedData = [...oldData, newEmployee];
+
+  //   localStorage.setItem("employees", JSON.stringify(updatedData));
+  // };
+
+  const handleNextTab1 = () => {
+    if (!formData.FirstName || !formData.LastName) {
+      toast.error("First Name and Last name are required");
+      return;
+    }
+    setActiveTab("tab2");
+  }
+
+  const handleNextTab2 = () => {
+    if (!formData.employeeId || !formData.department) {
+      toast.error("Employee ID and Department are required");
+      return;
+    }
+    setActiveTab("tab3");
+  }
+
 
   return (
     <SidebarProvider>
       <AppSidebar />
 
-      <main className='flex-1 p-6'>
-        <div className='flex items-center justify-between mb-6'>
+      {/* Main */}
+      <main className='flex-1 p-3'>
+        {/* Sidebar Trigger */}
+        <div className=' sticky top-0 z-50 bg-white flex items-center gap-2 mb-4'>
           <SidebarTrigger />
-          <h1 className="text-2xl font-light mb-6 "> Employee Register</h1>
-
         </div>
+        {/* Header */}
+        <div className="mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-white rounded-2xl shadow p-4 gap-3">
+
+            {/* LEFT SIDE */}
+            <div className="flex items-center gap-3">
+              <Button variant="outline">
+                <UserPlus />
+              </Button>
+
+              <div>
+                <h1 className="text-2xl font-light">Employee Registration</h1>
+                <p className="text-xs text-gray-500">Add new employee to the system</p>
+              </div>
+            </div>
+
+            {/* RIGHT SIDE */}
+            <div>
+              <Button variant="outline" className="cursor-pointer">
+                <Upload className="" />
+                Bulk Upload
+              </Button>
+            </div>
+
+          </div>
+        </div>
+
         {/* Tabs Container */}
-        <div className="bg-white rounded-2xl shadow p-4 ">
-          <Tabs.Root defaultValue="tab1" className="w-full">
-            <Tabs.List className="flex w-fit max-w-full mx-auto  overflow-x-auto no-scrollbar bg-gray-100 rounded-xl p-1 gap-2 " aria-label='manage your account'>
-              <Tabs.Trigger value="tab1" className=' cursor-pointer px-4 py-1 rounded-lg text-xs transition  data-[state=active]:bg-gray-200 '>Personal Details</Tabs.Trigger>
-              <Tabs.Trigger value="tab2" className=' cursor-pointer px-4 py-1 rounded-lg text-xs transition  data-[state=active]:bg-gray-200 '>Professional Details</Tabs.Trigger>
-              <Tabs.Trigger value="tab3" className=' cursor-pointer px-4 py-1 rounded-lg text-xs transition  data-[state=active]:bg-gray-200 '>Contect & Address</Tabs.Trigger>
-            </Tabs.List>
+        <div className="bg-white rounded shadow p-3 ">
+          {/* Tabs */}
+          <form onSubmit={handleSubmit}>
+            <Tabs.Root defaultValue="tab1" className="" value={ActiveTab} onValueChange={setActiveTab}>
+              {/* Tab List */}
+              <Tabs.List className="flex w-fit max-w-full mx-auto  overflow-x-auto no-scrollbar bg-gray-100 rounded-xl p-1 gap-2 " aria-label='manage your account'>
+                <Tabs.Trigger value="tab1" className=' cursor-pointer px-4 py-1 rounded-lg text-xs transition  data-[state=active]:bg-gray-200 '>Personal Details</Tabs.Trigger>
+                <Tabs.Trigger value="tab2" className=' cursor-pointer px-4 py-1 rounded-lg text-xs transition  data-[state=active]:bg-gray-200 '>Professional Details</Tabs.Trigger>
+                <Tabs.Trigger value="tab3" className=' cursor-pointer px-4 py-1 rounded-lg text-xs transition  data-[state=active]:bg-gray-200 '>Contect & Address</Tabs.Trigger>
+              </Tabs.List>
 
-            {/* Tab 1 */}
-            <Tabs.Content value="tab1" className="mt-2">
-              <form className="space-y-5 p-6">
-
+              {/* Tab 1 content */}
+              <Tabs.Content value="tab1" className="mt-2">
                 {/* Row 1 */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label className="mb-1 block">First Name*</Label>
-                    <Input type="text" placeholder="First Name" />
+                <div className='space-y-5 p-6'>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label className="mb-1 block">First Name*</Label>
+                      <Input type="text" name='FirstName' onChange={handleChange} value={formData.FirstName} placeholder="First Name" />
+                    </div>
+
+                    <div>
+                      <Label className="mb-1 block">Last Name*</Label>
+                      <Input type="text" name='LastName' onChange={handleChange} value={formData.LastName} placeholder="Last Name" />
+                    </div>
                   </div>
 
-                  <div>
-                    <Label className="mb-1 block">Last Name*</Label>
-                    <Input type="text" placeholder="Last Name" />
+                  {/* Row 2 */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label className="mb-1 block">Email Address*</Label>
+                      <Input type="email" name='Email' onChange={handleChange} value={formData.Email} placeholder="Email" />
+                    </div>
+
+                    <div>
+                      <Label className="mb-1 block">Phone Number*</Label>
+                      <Input type="tel" name='Phone' onChange={handleChange} value={formData.Phone} placeholder="+91 XXXXXXXXXX" />
+                    </div>
+                  </div>
+
+                  {/* Row 3 */}
+
+
+                  {/* Buttons */}
+                  <div className="flex justify-end gap-3 pt-4">
+                    <Button type="reset" variant="outline" className=' cursor-pointer'>
+                      <LucideX className="w-4 h-4" />
+                      Cancel
+                    </Button>
+                    <Button type="button" variant="outline" className=' cursor-pointer' onClick={handleNextTab1}>
+                      <LucideFileDiff className="w-4 h-4" />
+                      Register Employee
+                    </Button>
                   </div>
                 </div>
+              </Tabs.Content>
 
-                {/* Row 2 */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label className="mb-1 block">Email Address*</Label>
-                    <Input type="email" placeholder="Email" />
+
+              {/* Tab 2 content */}
+              <Tabs.Content value="tab2" className="mt-2">
+                <div className=' space-y-5 p-6'>
+                  <div className='grid grid-cols-1 md:grid-cols-2 gap-2'>
+                    <div>
+                      <Label className='mb-1 block'>Employee ID*</Label>
+                      <Input type="text" name='employeeId' onChange={handleChange} value={formData.employeeId} placeholder="EMP001" />
+                    </div>
+
+                    <div>
+                      <Label className='mb-1 block'>Joining Date*</Label>
+                      <Input type="date" name="joiningDate" onChange={handleChange} value={formData.joiningDate} placeholder="Joining Date" />
+                    </div>
                   </div>
 
-                  <div>
-                    <Label className="mb-1 block">Phone Number*</Label>
-                    <Input type="tel" placeholder="+91 XXXXXXXXXX" />
-                  </div>
-                </div>
 
-                {/* Row 3 */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* selsect blood group */}
-                  <div className="space-y-1">
-                    <Label className="mb-1 block">Blood Group</Label>
 
-                    <Select.Root open={open} onOpenChange={setOpen} value={bloodGroup} onValueChange={setBloodGroup}>
-                      <Select.Trigger
-                        className="w-full flex items-center justify-between rounded-lg border px-3 py-2 text-sm bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-black"
+                  <div className=' grid grid-cols-1 md:grid-cols-2 gap-2'>
+                    <div>
+                      <Label className='mb-1 block'>Department*</Label>
+                      {/* <Input type="text" name='department' onChange={handleChange} value={formData.department} placeholder="Department" /> */}
+                      {/* <select
+                        name="department"
+                        value={formData.department}
+                        onChange={handleChange}
+                        className="w-full border rounded-lg p-2"
                       >
-                        <Select.Value placeholder="Select Blood Group" />
-                        {/*  Ye dropdown icon hai */}
-                        <ChevronDown className={`w-4 h-4 opacity-50 ${open && "rotate-180"}`} />
-                      </Select.Trigger>
+                        <option value="">Select Department</option>
 
-                      {/* Ye blood group hai */}
-                      <Select.Content position="popper" className="bg-white rounded-lg shadow-md border p-1 " >
-                        <Select.Group>
-                          <Select.Item value="A+" className="px-3 py-2 rounded-md hover:bg-gray-100"><Select.ItemText>A+</Select.ItemText></Select.Item>
-                          <Select.Item value="A-" className="px-3 py-2 rounded-md hover:bg-gray-100"><Select.ItemText>A-</Select.ItemText></Select.Item>
-                          <Select.Item value="B+" className="px-3 py-2 rounded-md hover:bg-gray-100"><Select.ItemText>B+</Select.ItemText></Select.Item>
-                          <Select.Item value="B-" className="px-3 py-2 rounded-md hover:bg-gray-100"><Select.ItemText>B-</Select.ItemText></Select.Item>
-                          <Select.Item value="O+" className="px-3 py-2 rounded-md hover:bg-gray-100"><Select.ItemText>O+</Select.ItemText></Select.Item>
-                          <Select.Item value="O-" className="px-3 py-2 rounded-md hover:bg-gray-100"><Select.ItemText>O-</Select.ItemText></Select.Item>
-                          <Select.Item value="AB+" className="px-3 py-2 rounded-md hover:bg-gray-100"><Select.ItemText>AB+</Select.ItemText></Select.Item>
-                          <Select.Item value="AB-" className="px-3 py-2 rounded-md hover:bg-gray-100"><Select.ItemText>AB-</Select.ItemText></Select.Item>
-                        </Select.Group>
-                      </Select.Content>
+                        {departments.map((dept: any) => (
+                          <option key={dept.id} value={dept.id}>
+                            {dept.name}
+                          </option>
+                        ))}
+                      </select> */}
+                      <Select.Root value={formData.department}
+                        onValueChange={(value) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            department: value,
+                          }))
+                        } >
+                        <Select.Trigger className="w-full border rounded-lg p-2 text-sm">
+                          <Select.Value placeholder="Select Department" />
+                          {/*  Ye dropdown icon hai */}
 
-                    </Select.Root>
+                        </Select.Trigger>
+                        <Select.Content position='popper' className=" w-(--radix-select-trigger-width) bg-white rounded-lg shadow border  data-[state=open]: animate-in   data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
+                          <Select.Group>
+                            {departments.map((dept: any) => (
+                              <Select.Item className="px-2 py-1 text-xs cursor-pointer hover:bg-gray-100  "
+
+                                key={dept.id} value={String(dept.name)}>
+                                <Select.ItemText>{dept.name}</Select.ItemText>
+                              </Select.Item>
+                            ))}
+                          </Select.Group>
+                        </Select.Content>
+                      </Select.Root>
+
+                    </div>
+
+
+                    <div>
+                      <Label className='mb-1 block'>Designation*</Label>
+                      <Input type="text" name='designation' onChange={handleChange} value={formData.designation} placeholder="Designation" />
+                    </div>
                   </div>
-                  <div>
-                    <Label className='mb-1 block'>Emergency Contact</Label>
-                    <Input type="tel" placeholder="+91 XXXXXXXXXX" />
+
+
+                  {/* Role */}
+                  <div className='grid grid-cols-1 md:grid-cols-2 gap-2 '>
+                    <div>
+                      <Label className='mb-1 block'>Role*</Label>
+                      <Select.Root value={formData.Role}
+                        onValueChange={(value) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            Role: value,
+                          }))
+                        } >
+
+                        <Select.Trigger className="w-full border rounded-lg p-2 text-sm">
+                          <Select.Value placeholder="Select Role" />
+
+                        </Select.Trigger>
+                        <Select.Content position='popper' className=" w-(--radix-select-trigger-width) bg-white rounded-lg shadow border  data-[state=open]: animate-in   data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
+                          <Select.Group>
+                            {roles.map((role: any) => (
+                              <Select.Item className="px-2 py-1 text-xs cursor-pointer hover:bg-gray-100  "
+
+                                key={role.id} value={String(role.name)}>
+                                <Select.ItemText>{role.name}</Select.ItemText>
+                              </Select.Item>
+                            ))}
+                          </Select.Group>
+                        </Select.Content>
+                      </Select.Root>
+                    </div>
+                  </div>
+
+
+
+                  {/* btn */}
+                  <div className='flex justify-end gap-3 pt-4'>
+                    <Button type='reset' className=' cursor-pointer' variant="outline">
+                      <LucideX className="w-4 h-4" />
+                      Cancel</Button>
+                    <Button type="button" variant="outline" className=' cursor-pointer' onClick={handleNextTab2}>
+                      <LucideFileDiff className="w-4 h-4" />
+                      Next preview
+                    </Button>
+                  </div>
+                </div>
+              </Tabs.Content>
+
+
+              {/* Tab 3 content */}
+              <Tabs.Content value="tab3" className="mt-2">
+                <div className=' space-y-5 p-6'>
+                  <div className='gird grid-cols-1 md:grid-cols-2 gap-2'>
+                    <div>
+                      <Label className='mb-1 block' >Address*</Label>
+                      <Input type="text" name='address' onChange={handleChange} value={formData.address} placeholder="Address" />
+                    </div>
+                  </div>
+                  <div className='grid grid-cols-1 md:grid-cols-2 gap-2'>
+                    <div>
+                      <Label className='mb-1 block' >City *</Label>
+                      <Input type="text" name='city' onChange={handleChange} value={formData.city} placeholder="City" />
+                    </div>
+                    <div>
+                      <Label className='mb-1 block' >State *</Label>
+                      <Input type="text" name='state' onChange={handleChange} value={formData.state} placeholder="State" />
+                    </div>
+                  </div>
+                  <div className='grid grid-cols-1 md:grid-cols-2 gap-2'>
+                    <div>
+                      <Label className='mb-1 block' >PinCode *</Label>
+                      <Input type="number" name='pincode' onChange={handleChange} value={formData.pincode} placeholder="PinCode" />
+                    </div>
+                  </div>
+                  <div className='flex justify-end gap-3 pt-4'>
+                    <Button type='reset' variant="outline" className=' cursor-pointer'>
+                      <LucideX className="w-4 h-4" />
+                      Cancel
+                    </Button>
+                    <Button type='submit' variant="outline" className=' cursor-pointer'>
+                      <LucideFileDiff className="w-4 h-4" />
+                      Register Employee
+                    </Button>
                   </div>
                 </div>
 
-                {/* Buttons */}
-                <div className="flex justify-end gap-3 pt-4">
-                  <Button type="reset" variant="outline" className=' cursor-pointer'>
-                    Cancel
-                  </Button>
+              </Tabs.Content>
 
-                  <Button type="submit" variant="outline" className=' cursor-pointer'>
-                    <Plus className="w-4 h-4" />
-                    Register Employee
-                  </Button>
-                </div>
-
-              </form>
-
-            </Tabs.Content>
-            {/* Tab 2 */}
-            <Tabs.Content value="tab2" className="mt-2">Tab 2 Content</Tabs.Content>
-            {/* Tab 3 */}
-            <Tabs.Content value="tab3" className="mt-2">Tab 3 Content</Tabs.Content>
-          </Tabs.Root>
+            </Tabs.Root>
+          </form>
         </div>
       </main>
     </SidebarProvider>

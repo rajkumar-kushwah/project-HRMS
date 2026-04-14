@@ -29,7 +29,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { api } from "../services/api.service"
+import {deleteUser} from "../controllers/auth.controller"
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 import { logout } from "@/controllers/auth.controller"
@@ -76,7 +76,8 @@ export function NavUser({
 
     try {
       // user delete api call krne ke liye 
-      await api.delete("/users/delete");
+      const res = await deleteUser((user as any).id);
+      console.log(res.data.response);
       toast.success("User deleted successfully");
       navigate("/");
     } catch (error) {
