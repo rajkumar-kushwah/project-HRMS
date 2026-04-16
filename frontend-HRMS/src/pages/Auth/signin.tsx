@@ -22,12 +22,13 @@ const Signin = () => {
         setLoading(true);
         try {
             const res = await signIn({ email, password });
+            const role = res.data.role?.name;
 
             toast.success(res.data.message || "Signin successful");
 
             setEmail("");
             setPassword("");
-            navigator("/dashboard");
+            navigator("/dashboard", {state: {role: role}});
         } catch (error: any) {
             console.log(error.response);
             if (error.response) {

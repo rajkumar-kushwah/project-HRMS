@@ -22,6 +22,8 @@ model User {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @default(now()) @updatedAt
   lastLogin DateTime?
+
+  employee Employee?
 }
 
 model Role {
@@ -31,15 +33,17 @@ model Role {
   users       User[]
   permissions Permission[]
   createdAt   DateTime     @default(now())
+  employees   Employee[]
 }
 
 model Permission {
-  id       Int    @id @default(autoincrement())
-  name     String @unique
-  category String?
-  roles    Role[]
+  id     Int    @id @default(autoincrement())
+  name   String @unique
+  module String
+  action String
+  roles  Role[]
 
-  @@unique([name, category]) // ab name duplicate ho sakta hai (VIEW multiple times)  isliye unique constraint lagao
+  @@unique([name, module, action]) // ab name duplicate ho sakta hai (VIEW multiple times)  isliye unique constraint lagao
 }
 
 model Department {
@@ -47,4 +51,40 @@ model Department {
   name      String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
+
+  employees Employee[]
+}
+
+model Employee {
+  id Int @id @default(autoincrement())
+
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id])
+
+  // personal info
+  firstName   String
+  lastName    String
+  phone       String?
+  dateOfBirth DateTime?
+
+  // profetional info
+  employeeCode String   @unique
+  joiningDate  DateTime
+  designation  String
+
+  departmentId Int
+  department   Department @relation(fields: [departmentId], references: [id])
+
+  roleId  Int
+  role    Role    @relation(fields: [roleId], references: [id])
+  // Address
+  address String?
+  city    String?
+  state   String?
+  pincode String?
+
+  // status
+  isActive Boolean @default(true)
+
+  createAt DateTime @default(now())
 }

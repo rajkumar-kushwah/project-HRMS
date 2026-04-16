@@ -14,6 +14,15 @@ export const permissionCategories = [
         ],
     },
     {
+        module: "ROLE",
+        permissions: [
+            "VIEW",
+            "CREATE",
+            "EDIT",
+            "DELETE"
+        ]
+    },
+    {
         module: "MONTHLY_ATTENDANCE",
         permissions: [
             "VIEW",

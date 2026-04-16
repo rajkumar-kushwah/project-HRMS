@@ -24,7 +24,8 @@ interface Role {
     permissions: {
         id: number;
         name: string;
-        category: string;
+        module: string;
+        action: string;
     }[];
 }
 
@@ -145,7 +146,7 @@ function CreateHRRole() {
 
 
     const groupedPermissions = permissionsList.reduce((acc, perm) => {
-        const module = perm.category; // ATTENDANCE
+        const module = perm.module; // ATTENDANCE
 
         if (!acc[module]) {
             acc[module] = [];
@@ -185,7 +186,7 @@ function CreateHRRole() {
                         <div>
                             <Dialog open={open} onOpenChange={setOpen}>
                                 <DialogTrigger asChild>
-                                    <Button variant="outline" className=' cursor-pointer'><UserCog className='w-2 h-2' /> Create Role</Button>
+                                 {permissionsList?.some(p => p.name === "CREATE_ROLE") && (   <Button variant="outline" className=' cursor-pointer'><UserCog className='w-2 h-2' /> Create Role</Button>)} 
                                 </DialogTrigger>
                                 <DialogContent className=''>
                                     <DialogHeader>
@@ -225,18 +226,18 @@ function CreateHRRole() {
                                         </div> */}
 
                                         <div className='grid grid-cols-2'>
-                                            {Object.keys(groupedPermissions).map((category) => (
-                                                <div key={category} className="mb-2">
+                                            {Object.keys(groupedPermissions).map((module) => (
+                                                <div key={module} className="mb-2">
                                                     <h3 className="font-bold text-xs">
-                                                        {category}
+                                                        {module}
                                                     </h3>
                                                     <div className="pl-4">
-                                                        {groupedPermissions[category].map((perm: any) => (
+                                                        {groupedPermissions[module].map((perm: any) => (
                                                             <Label key={perm.id} className="flex gap-2">
                                                                 <input type="checkbox" checked={selectPermissions.includes(perm.id)}
                                                                     onChange={() => handleSelectPermission(perm.id)}
                                                                     className='' />
-                                                                <span className='text-xs'>{perm.name}</span>
+                                                                <span className='text-xs'>{perm.action}</span>
                                                             </Label>
                                                         ))}
                                                     </div>
@@ -251,6 +252,7 @@ function CreateHRRole() {
                         </div>
                     </div>
                 </div>
+
                 <div className='mb-6 '>
                     <div className='grid grid-cols-1 p-3  border rounded-lg w-full overflow-x-auto'>
                         <h2 className="text-lg font-semibold mb-2">Roles List</h2>
@@ -287,7 +289,7 @@ function CreateHRRole() {
                                                 </Button>)}
                                         </TableCell>
 
-                                        {/* dialog open button for permission table groups */}
+                                        {/* dialog open button for permission view table groups */}
                                         <Dialog open={tablepemissions} onOpenChange={setTablePermissions}>
                                             <DialogContent className='space-y-6 w-96'>
 
@@ -297,18 +299,18 @@ function CreateHRRole() {
                                                         List of assigned permissions
                                                     </DialogDescription>
                                                 </DialogHeader>
-
-                                                {Object.entries(groupedPermissions).map(([category, permission]: any) => (
-                                                    <div key={category}>
-                                                        <h3 className='font-semibold'>{category}</h3>
-                                                        {permission.map((p: any) => (
-                                                            <p key={p.id} className='text-sm ml-2'>
-                                                                {p.name}
-                                                            </p>
-                                                        ))}
-                                                    </div>
-                                                ))}
-
+                                                <div className='grid grid-cols-2'>
+                                                    {Object.entries(groupedPermissions).map(([module, permission]: any) => (
+                                                        <div key={module}>
+                                                            <h3 className='font-semibold text-sm '>{module}</h3>
+                                                            {permission.map((p: any) => (
+                                                                <p key={p.id} className='text-xs '>
+                                                                    {p.action}
+                                                                </p>
+                                                            ))}
+                                                        </div>
+                                                    ))}
+                                                </div>
                                             </DialogContent>
                                         </Dialog>
 
@@ -376,35 +378,35 @@ function CreateHRRole() {
                                                                     {/* Assign Permissions updated checkbox and name */}
                                                                     <div>
                                                                         <h1 className="font-bold">Assign Permissions Updated</h1>
+                                                                        <div className='grid grid-cols-2'>
+                                                                            {Object.entries(groupedPermissions).map(([module, perms]: any) => (
+                                                                                <div key={module} className="mb-3">
 
-                                                                        {Object.entries(groupedPermissions).map(([category, perms]: any) => (
-                                                                            <div key={category} className="mb-3">
+                                                                                    <h2 className="font-bold text-xs">{module}</h2>
 
-                                                                                <h2 className="font-bold text-xs">{category}</h2>
+                                                                                    <div className=" gap-2">
 
-                                                                                <div className="grid grid-cols-2 gap-2">
+                                                                                        {perms.map((perm: any) => (
+                                                                                            <Label key={perm.id} className="flex gap-2">
 
-                                                                                    {perms.map((perm: any) => (
-                                                                                        <Label key={perm.id} className="flex items-center gap-2">
+                                                                                                <Input
+                                                                                                    type="checkbox"
+                                                                                                    checked={selectPermissions.includes(perm.id)}
 
-                                                                                            <Input
-                                                                                                type="checkbox"
-                                                                                                checked={selectPermissions.includes(perm.id)}
+                                                                                                    onChange={() => handleSelectPermission(perm.id)}
+                                                                                                    className="w-4 h-4 mt-1"
+                                                                                                />
 
-                                                                                                onChange={() => handleSelectPermission(perm.id)}
-                                                                                                className="w-4 h-4 mt-1"
-                                                                                            />
+                                                                                                <span className='text-xs'>{perm.action}</span>
 
-                                                                                            <span className='text-xs'>{perm.name}</span>
+                                                                                            </Label>
+                                                                                        ))}
 
-                                                                                        </Label>
-                                                                                    ))}
+                                                                                    </div>
 
                                                                                 </div>
-
-                                                                            </div>
-                                                                        ))}
-
+                                                                            ))}
+                                                                        </div>
                                                                     </div>
 
                                                                 </form>

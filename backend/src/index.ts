@@ -8,6 +8,7 @@ import { sessionMiddlewere } from "./config/session.ts";
 import departmentRouter from "./routes/department.route.ts";
 import permissionRouter from "./routes/permission.route.ts";
 import roleRouter from "./routes/Role.route.ts";
+import employeeRouter from "./routes/employee.route.ts";
 
 dotenv.config();
 const app = express();
@@ -27,6 +28,7 @@ app.use('/auth', authRouter)
 app.use('/department', departmentRouter)
 app.use('/permission', permissionRouter)
 app.use('/role', roleRouter)
+app.use('/employee', employeeRouter)
 
 async function start() {
     await prisma.$connect();

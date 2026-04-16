@@ -15,6 +15,7 @@ function Profile() {
         avatar: "",
         createdAt: "",
         lastLogin: "",
+        role: "",
 
     });
 
@@ -24,7 +25,12 @@ function Profile() {
         const getProfile = async () => {
             try {
                 const res = await getprofile();
-                setUser(res.data);
+                // setUser(res.data);
+
+                setUser({
+                    ...res.data,
+                    role: res.data.role?.name || ""
+                });
                 console.log(res.data);
             } catch (error) {
                 console.log(error);
@@ -64,7 +70,9 @@ function Profile() {
 
                             {user && (
                                 <div className='flex flex-col gap-2'>
+                                    <p className='text-sm text-muted-foreground'>{user.role}</p>
                                     <p className='text-sm text-muted-foreground'>Name:</p>
+
                                     <Input type='text' defaultValue={user.name} />
                                     <p className='text-sm text-muted-foreground'>Email:</p>
                                     <Input type='email' defaultValue={user.email} />

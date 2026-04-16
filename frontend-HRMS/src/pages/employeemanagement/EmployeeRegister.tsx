@@ -10,20 +10,21 @@ import { Upload, LucideFileDiff, UserPlus, LucideX, } from "lucide-react";
 import { toast } from 'sonner';
 import { getDepartments } from '@/controllers/department.controller';
 import { getRoles } from '@/controllers/roleApi.controller';
+import { createEmployee } from '@/controllers/employee.controller';
 
 const initialFormData = {
-  FirstName: "",
-  LastName: "",
-  Email: "",
-  Phone: "",
+  firstName: "",
+  lastName: "",
+  email: "",
+  phone: "",
 
 
   // Professional details
-  employeeId: "",
+  employeeCode: "",
   joiningDate: "",
   dateOfBirth: "",
-  department: "",
-  Role: "",
+  roleId: 0,        
+  departmentId: 0,
   designation: "",
 
 
@@ -65,7 +66,8 @@ function EmployeeRegister() {
       try {
         const res = await getRoles(); // API call
         // setDepartment(res.data);
-        setRoles(res.data.data);
+        console.log("ROLES:", roles);
+        setRoles(res.data.data || res.data.roles || res.data || []);
         console.log(res.data);
       } catch (err) {
         console.error(err);
@@ -87,15 +89,18 @@ function EmployeeRegister() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       console.log("Form Data:", formData);
+
+      const res = await createEmployee(formData);
+      console.log(res.data);
+      
       setFormData({ ...initialFormData })
       toast.success("Form submitted successfully");
-      // localstrore arrow formate 
-      const data = JSON.parse(localStorage.getItem("employees") || "[]");
-      localStorage.setItem("employees", JSON.stringify([...data, formData]));
+
+
     } catch (error) {
       console.log(error);
     }
@@ -117,7 +122,7 @@ function EmployeeRegister() {
   // };
 
   const handleNextTab1 = () => {
-    if (!formData.FirstName || !formData.LastName) {
+    if (!formData.firstName || !formData.lastName) {
       toast.error("First Name and Last name are required");
       return;
     }
@@ -125,7 +130,7 @@ function EmployeeRegister() {
   }
 
   const handleNextTab2 = () => {
-    if (!formData.employeeId || !formData.department) {
+    if (!formData.employeeCode || !formData.departmentId) {
       toast.error("Employee ID and Department are required");
       return;
     }
@@ -189,12 +194,12 @@ function EmployeeRegister() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <Label className="mb-1 block">First Name*</Label>
-                      <Input type="text" name='FirstName' onChange={handleChange} value={formData.FirstName} placeholder="First Name" />
+                      <Input type="text" name='firstName' onChange={handleChange} value={formData.firstName} placeholder="First Name" />
                     </div>
 
                     <div>
                       <Label className="mb-1 block">Last Name*</Label>
-                      <Input type="text" name='LastName' onChange={handleChange} value={formData.LastName} placeholder="Last Name" />
+                      <Input type="text" name='lastName' onChange={handleChange} value={formData.lastName} placeholder="Last Name" />
                     </div>
                   </div>
 
@@ -202,14 +207,20 @@ function EmployeeRegister() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <Label className="mb-1 block">Email Address*</Label>
-                      <Input type="email" name='Email' onChange={handleChange} value={formData.Email} placeholder="Email" />
+                      <Input type="email" name='email' onChange={handleChange} value={formData.email} placeholder="email" />
                     </div>
 
                     <div>
                       <Label className="mb-1 block">Phone Number*</Label>
-                      <Input type="tel" name='Phone' onChange={handleChange} value={formData.Phone} placeholder="+91 XXXXXXXXXX" />
+                      <Input type="tel" name='phone' onChange={handleChange} value={formData.phone} placeholder="+91 XXXXXXXXXX" />
                     </div>
                   </div>
+
+                    <div>
+                      <Label className="mb-1 block">DateOfBirth*</Label>
+                      <Input type="date" name='dateOfBirth' onChange={handleChange} value={formData.dateOfBirth} placeholder="YYYY-MM-DD" />
+                    </div>
+                 
 
                   {/* Row 3 */}
 
@@ -235,7 +246,7 @@ function EmployeeRegister() {
                   <div className='grid grid-cols-1 md:grid-cols-2 gap-2'>
                     <div>
                       <Label className='mb-1 block'>Employee ID*</Label>
-                      <Input type="text" name='employeeId' onChange={handleChange} value={formData.employeeId} placeholder="EMP001" />
+                      <Input type="text" name='employeeCode' onChange={handleChange} value={formData.employeeCode} placeholder="EMP001" />
                     </div>
 
                     <div>
@@ -264,11 +275,11 @@ function EmployeeRegister() {
                           </option>
                         ))}
                       </select> */}
-                      <Select.Root value={formData.department}
+                      <Select.Root value={formData.departmentId ? String(formData.departmentId) : ""}
                         onValueChange={(value) =>
                           setFormData((prev) => ({
                             ...prev,
-                            department: value,
+                            departmentId: Number(value),
                           }))
                         } >
                         <Select.Trigger className="w-full border rounded-lg p-2 text-sm">
@@ -281,7 +292,7 @@ function EmployeeRegister() {
                             {departments.map((dept: any) => (
                               <Select.Item className="px-2 py-1 text-xs cursor-pointer hover:bg-gray-100  "
 
-                                key={dept.id} value={String(dept.name)}>
+                                key={dept.id} value={String(dept.id)}>
                                 <Select.ItemText>{dept.name}</Select.ItemText>
                               </Select.Item>
                             ))}
@@ -303,11 +314,11 @@ function EmployeeRegister() {
                   <div className='grid grid-cols-1 md:grid-cols-2 gap-2 '>
                     <div>
                       <Label className='mb-1 block'>Role*</Label>
-                      <Select.Root value={formData.Role}
+                      <Select.Root value={formData.roleId ? String(formData.roleId) : ""}
                         onValueChange={(value) =>
                           setFormData((prev) => ({
                             ...prev,
-                            Role: value,
+                            roleId: Number(value),
                           }))
                         } >
 
@@ -320,7 +331,7 @@ function EmployeeRegister() {
                             {roles.map((role: any) => (
                               <Select.Item className="px-2 py-1 text-xs cursor-pointer hover:bg-gray-100  "
 
-                                key={role.id} value={String(role.name)}>
+                                key={role.id} value={String(role.id)}>
                                 <Select.ItemText>{role.name}</Select.ItemText>
                               </Select.Item>
                             ))}
