@@ -146,6 +146,7 @@ const Dashboard = () => {
 
       console.log("ROLE:", role);
       console.log("PROFILE FULL:", res.data);
+      
       setRoles(
         Array.isArray(roleRes.data)
           ? roleRes.data
@@ -186,18 +187,19 @@ const Dashboard = () => {
     }
   }
 
+  
   const handleEdit = (emp: Employee) => {
     setSelectedEmployee(emp);
     setFormData({
       firstName: emp.firstName,
       lastName: emp.lastName,
-      email: emp.user.email,
+      email: emp.user?.email,
       phone: emp.phone,
       employeeCode: emp.employeeCode,
       joiningDate: emp.joiningDate,
       dateOfBirth: emp.dateOfBirth,
-      roleId: emp.user.roles[0].id,
-      departmentId: emp.department.id,
+      roleId: emp.user?.roles?.[0]?.id || 0,
+      departmentId: emp.department?.id || 0,
       designation: emp.designation,
       address: emp.address,
       city: emp.city,
@@ -388,7 +390,7 @@ const Dashboard = () => {
                   <TableCell>{emp.designation}</TableCell>
                   <TableCell> {emp.user?.roles?.length > 0
                     ? emp.user.roles[0].name
-                    : "N/A"}</TableCell>
+                    : "No Role"}</TableCell>
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild className="p-2 ">

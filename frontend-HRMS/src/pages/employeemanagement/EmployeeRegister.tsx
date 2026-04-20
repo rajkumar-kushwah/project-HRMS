@@ -98,7 +98,7 @@ function EmployeeRegister() {
       console.log(res.data);
       
       setFormData({ ...initialFormData })
-      toast.success("Form submitted successfully");
+      toast.success(`Employee created successfully: ${res.data.employeeCode}`);
 
 
     } catch (error) {
@@ -106,20 +106,6 @@ function EmployeeRegister() {
     }
   }
 
-  // const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-
-  //   const oldData = JSON.parse(localStorage.getItem("employees") || "[]");
-
-  //   const newEmployee = {
-  //     ...formData,
-  //     id: Date.now(),
-  //   };
-
-  //   const updatedData = [...oldData, newEmployee];
-
-  //   localStorage.setItem("employees", JSON.stringify(updatedData));
-  // };
 
   const handleNextTab1 = () => {
     if (!formData.firstName || !formData.lastName) {
@@ -130,7 +116,7 @@ function EmployeeRegister() {
   }
 
   const handleNextTab2 = () => {
-    if (!formData.employeeCode || !formData.departmentId) {
+    if (!formData.departmentId) {
       toast.error("Employee ID and Department are required");
       return;
     }
@@ -246,7 +232,7 @@ function EmployeeRegister() {
                   <div className='grid grid-cols-1 md:grid-cols-2 gap-2'>
                     <div>
                       <Label className='mb-1 block'>Employee ID*</Label>
-                      <Input type="text" name='employeeCode' onChange={handleChange} value={formData.employeeCode} placeholder="EMP001" />
+                      <Input type="text" name='employeeCode' onChange={handleChange} value="auto generate" readOnly  placeholder="EM001" />
                     </div>
 
                     <div>

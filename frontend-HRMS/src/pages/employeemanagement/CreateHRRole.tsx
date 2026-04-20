@@ -14,7 +14,7 @@ import { toast } from 'sonner'
 
 import { getRoles, createRole, updateRole, deleteRole } from '@/controllers/roleApi.controller'
 import { getPermissions } from '@/controllers/permissionApi.controller'
-
+// import { useAuth } from '@/pages/context/AuthContext'
 
 
 interface Role {
@@ -30,7 +30,7 @@ interface Role {
 }
 
 function CreateHRRole() {
-
+// const { user } = useAuth();
     const [tablepemissions, setTablePermissions] = React.useState(false);
     const [open, setOpen] = React.useState(false)
     const [editOpen, setEditOpen] = React.useState(false)
@@ -160,7 +160,8 @@ function CreateHRRole() {
     // console.log("permissionsList:", permissionsList);
     // console.log("groupedPermissions:", groupedPermissions);
     // console.log("selectPermissions:", selectPermissions);
-
+console.log(permissionsList);
+// console.log("USER:", user);
 
     return (
         <SidebarProvider>
@@ -357,7 +358,7 @@ function CreateHRRole() {
                                                                     </DialogDescription>
 
                                                                 </DialogHeader>
-                                                                <form onSubmit={handleUpdate} className='flex flex-col gap-4 '>
+                                                                <form  onSubmit={handleUpdate} className='flex flex-col gap-4 '>
                                                                     <div className='grid grid-cols-1 gap-2 '>
                                                                         <div>
                                                                             {/* <Label>Role Name</Label> */}

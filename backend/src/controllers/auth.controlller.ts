@@ -58,6 +58,10 @@ export const signup = async (req: any, res: any) => {
 export const signin = async (req: any, res: any) => {
     const { email, password } = req.body;
     try {
+        if (!email || !password) {
+            return res.status(400).json({ message: "Email and password required" });
+        }
+        
         const user = await prisma.user.findUnique({
             where: { email },
             include: {
@@ -73,11 +77,12 @@ export const signin = async (req: any, res: any) => {
             return res.status(401).json({ message: 'User not found' });
         }
 
+
         // console.log("user", JSON.stringify(user.roles, null, 2));
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(401).json({ message: 'Invalid password' });
+            return res.status(401).json({ message: 'Invalid credentials' });
         }
 
         // update last login
@@ -86,18 +91,20 @@ export const signin = async (req: any, res: any) => {
             data: { lastLogin: new Date() }
         });
 
-
+        console.log(JSON.stringify(user.roles, null, 2));
         // Store the user ID in the session
+
 
         (req.session as any).userId = user.id;
 
-        (req.session as any).permissions = user.roles.flatMap((role: any) =>
-            role.permissions.map((p: any) => p.name)
-        );
 
-        (req.session as any).roles = user.roles.map((role: any) => role.name.trim().toUpperCase());
-        
-        const permission = user.roles.flatMap((role: any) => role.permissions.map((p: any) => p.name));
+        const permission = [
+            ...new Set(
+                user.roles.flatMap((role: any) =>
+                    role.permissions.map((p: any) => p.name)
+                )
+            )
+        ];
 
         return res.status(200).json({
             message: 'Login successful',

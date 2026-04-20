@@ -1,9 +1,73 @@
 
 import type { Request, Response, NextFunction } from "express";
+import { prisma } from "../config/db.ts";
 
-export const protect = (req: Request, res: Response, next: NextFunction) => {
-  if (!(req.session as any).userId){
-    return res.status(401).json({ message: "Not authorized" });
+// export const protect = async (req: any, res: Response, next: NextFunction) => {
+//   try {
+//     const userId = req.session.userId;
+
+//     if (!userId) {
+//       return res.status(401).json({ message: "Not authorized" });
+//     }
+
+//     const user = await prisma.user.findUnique({
+//       where: { id: req.session.userId },
+//       include: {
+//         roles: {
+//           include: {
+//             permissions: true
+//           }
+//         }
+//       }
+//     });
+
+//     if (!user) {
+//       return res.status(401).json({ message: "User not found" });
+//     }
+
+//     req.user = user;
+
+//     next();
+//   } catch (error) {
+//     return res.status(500).json({ message: "Auth error" });
+//   }
+// };
+
+
+//  if (!(req.session as any).userId){
+//     return res.status(401).json({ message: "Not authorized" });
+//   }
+//   next();
+
+
+
+export const protect = async (req: any, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.session.userId;
+
+    if (!userId) {
+      return res.status(401).json({ message: "Not authorized" });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        roles: {
+          include: {
+            permissions: true
+          }
+        }
+      }
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: "Invalid session" });
+    }
+
+    req.user = user;
+
+    next();
+  } catch (error) {
+    return res.status(500).json({ message: "Auth error" });
   }
-  next();
-}
+};

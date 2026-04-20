@@ -14,14 +14,16 @@ dotenv.config();
 const app = express();
 const port = 5000;
 
-app.use(sessionMiddlewere)
+
 app.use(cors({
     origin: 'http://localhost:5173',
     credentials: true,
 }));
 
-
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));  // parse application/x-www-form-urlencoded
+
+app.use(sessionMiddlewere)
 
 
 app.use('/auth', authRouter)

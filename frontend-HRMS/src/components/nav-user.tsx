@@ -60,13 +60,14 @@ export function NavUser({
     }
   };
 
-  const getInitials = (name: string) => {
-    const names = name.trim().split(" ");
-    if (names.length > 1) {
-      return names[0][0] + names[1][0];
-    }
-    return names[0][0];
-  }
+ const getInitials = (name: string = "") => {
+    const names = name.trim().split(" ").filter(Boolean);
+
+    const first = names[0]?.[0] || "";
+    const last = names[1]?.[0] || "";
+
+    return first + last;
+};
 
   const handleDelete = async () => {
     // confirm delete krne ke user ko

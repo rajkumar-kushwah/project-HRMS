@@ -9,7 +9,7 @@ export const permissionCategories = [
         permissions: [
             "VIEW",
             "CHECKIN",
-            "EDIT",
+            "UPDATE",
             "DELETE",
         ],
     },
@@ -18,7 +18,7 @@ export const permissionCategories = [
         permissions: [
             "VIEW",
             "CREATE",
-            "EDIT",
+            "UPDATE",
             "DELETE"
         ]
     },
@@ -36,7 +36,7 @@ export const permissionCategories = [
         permissions: [
             "VIEW",
             "CREATE",
-            "EDIT",
+            "UPDATE",
             "DELETE",
         ],
     },

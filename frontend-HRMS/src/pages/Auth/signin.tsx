@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
 import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
+import { useAuth } from "@/pages/context/AuthContext";
 
 
 const Signin = () => {
@@ -14,6 +15,7 @@ const Signin = () => {
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const navigator = useNavigate();
+    const { setUser } = useAuth();
 
 
 
@@ -22,17 +24,17 @@ const Signin = () => {
         setLoading(true);
         try {
             const res = await signIn({ email, password });
-            const role = res.data.role?.name;
-
+            // const role = res.data.role?.name;
+            setUser(res.data.user);
             toast.success(res.data.message || "Signin successful");
 
             setEmail("");
             setPassword("");
-            navigator("/dashboard", {state: {role: role}});
+            navigator("/dashboard");  //{state: {role: role}}
         } catch (error: any) {
             console.log(error.response);
             if (error.response) {
-                toast.error(error.response?.data?.message || "Signin first");
+                toast.error(error.response?.data?.message || "Signup first");
             } else {
                 console.error(error);
                 toast.error("Something went wrong");

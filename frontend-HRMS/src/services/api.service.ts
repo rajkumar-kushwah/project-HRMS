@@ -13,8 +13,10 @@ export const api = axios.create({
 api.interceptors.response.use(
     (response) => response,
     error => {
-        if (error.response.status === 401) {
-            window.location.href = "/"
+        const isLoginPage = window.location.pathname === "/";
+
+        if (error.response?.status === 401 && !isLoginPage) {
+            window.location.href = "/";
         }
         return Promise.reject(error)
     }

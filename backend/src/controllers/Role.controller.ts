@@ -15,7 +15,7 @@ export const createRole = async (req: Request, res: Response) => {
 
         const role = await prisma.role.create({
             data: {
-                name,
+                name: name.trim().toUpperCase(),
                 description,
                 permissions: {
                     connect: permissions.map((id: number) => ({
@@ -45,7 +45,25 @@ export const createRole = async (req: Request, res: Response) => {
 
 export const getRole = async (req: Request, res: Response) => {
     try {
+
+        const user = (req as any).user;
+
+
+        const isEmployee = user.roles?.some(
+            (r: any) => r.name.trim().toUpperCase() === "EMPLOYEE"
+        );
+        console.log("USER:", user);
+        console.log("Session User ID:", user.id);
         const roles = await prisma.role.findMany({
+            where: isEmployee
+                ? {
+                    users: {
+                        some: {
+                            id: user.id
+                        }
+                    }
+                }
+                : {},
             include: {
                 permissions: true
             }

@@ -39,10 +39,11 @@ export const createEmployee = async (req: Request, res: Response) => {
         //  transaction start
         const result = await prisma.$transaction(async (tx) => {
 
+
             //  Create User
             const user = await tx.user.create({
                 data: {
-                    name: `${firstName} ${lastName}`,
+                    name: `${firstName}${lastName}`,
                     email,
                     password: hashedPassword,
                     roles: {
@@ -51,6 +52,23 @@ export const createEmployee = async (req: Request, res: Response) => {
                 }
             });
 
+
+            // employee code validation 
+            const lastEmployee = await tx.employee.findFirst({
+                orderBy: {
+                    employeeCode: "desc"
+                }
+            })
+
+            let nextCode = "EM001";
+
+            if (lastEmployee?.employeeCode) {
+                const lastNumber = parseInt(lastEmployee.employeeCode.replace("EM", ""));
+                const nextNumber = lastNumber + 1;
+
+                nextCode = `EM${nextNumber.toString().padStart(3, "0")}`;
+            }
+
             //  Create Employee
             const employee = await tx.employee.create({
                 data: {
@@ -58,7 +76,7 @@ export const createEmployee = async (req: Request, res: Response) => {
                     lastName,
                     phone,
                     designation,
-                    employeeCode,
+                    employeeCode: nextCode,
                     ...(joiningDate && { joiningDate: new Date(joiningDate) }),
                     ...(dateOfBirth && { dateOfBirth: new Date(dateOfBirth) }),
                     address,
@@ -75,6 +93,7 @@ export const createEmployee = async (req: Request, res: Response) => {
 
         return res.status(201).json({
             message: "Employee created successfully",
+            employeeCode: result.employee.employeeCode,
             tempPassword: defaultPassword,
             data: result
         });
@@ -95,7 +114,15 @@ export const createEmployee = async (req: Request, res: Response) => {
 
 export const getEmployees = async (req: Request, res: Response) => {
     try {
+
+        const user = (req as any).user;
+
+        const isEmployee = user.roles?.some((r: any) => r.name === "EMPLOYEE");
+
         const employees = await prisma.employee.findMany({
+            where: isEmployee
+                ? { userId: user.id }
+                : {},
             include: {
                 user: {
                     include: {
@@ -160,11 +187,11 @@ export const updateEmployee = async (req: Request, res: Response) => {
                 data: {
                     ...(firstName && lastName) && { name: `${firstName ?? emp.firstName} ${lastName ?? emp.lastName}` },
                     ...(email && { email }),
-                    ...roleId && {
+                    ...(roleId && {
                         roles: {
                             set: [{ id: Number(roleId) }]
                         }
-                    }
+                    })
 
                 }
             })
