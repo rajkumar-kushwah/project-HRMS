@@ -71,10 +71,12 @@ const data = {
         {
           title: "Dashboard",
           url: "/dashboard",
+          roles: ["SUPER_ADMIN", "HR", "EMPLOYEE"],
         },
         {
           title: "Profile",
           url: "/profile",
+          roles: ["SUPER_ADMIN", "HR", "EMPLOYEE"],
         },
         // {
         //   title: "Settings",
@@ -90,17 +92,19 @@ const data = {
         {
           title: "Department",
           url: "/department",
+          roles: ["SUPER_ADMIN", "HR"],
         },
         {
           title: "Register Employee",
           url: "/employees",
           icon: UserCheck,
+          roles: ["SUPER_ADMIN", "HR"],
         },
         {
           title: "Create HR Role",
           url: "/role",
           icon: Shield,
-          permission: "create-role"
+          roles: ["SUPER_ADMIN", "HR"],
         },
       ],
     },
@@ -112,12 +116,14 @@ const data = {
         {
           title: "check-in/Out",
           url: "/check-in",
-          icon: Clock
+          icon: Clock,
+          roles: ["SUPER_ADMIN", "HR", "EMPLOYEE"],
         },
         {
           title: "Mothly Attendance",
           url: "/monthly-attendance",
           icon: Calendar,
+          roles: ["SUPER_ADMIN", "HR", "EMPLOYEE"],
         },
         // {
         //   title: "Tutorials",
@@ -197,7 +203,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={data.navMain} user={user} />
         {/* <NavProjects projects={data.projects} /> */}
       </SidebarContent>
       <SidebarFooter>

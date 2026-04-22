@@ -397,6 +397,17 @@ const Dashboard = () => {
               </div>
             </CardHeader>
           </Card>
+          <Card onClick={() => navigate("/check-in")} className="cursor-pointer hover:shadow-md transition p-2">
+            <CardHeader className="flex items-center p-2"  >
+              <div className="border shadow rounded-md w-10 h-10 flex items-center justify-center">
+                <Calendar className="h-4 w-4" />
+              </div>
+              <div>
+                <CardTitle>check-in/out</CardTitle>
+                <CardDescription className="text-xs">check-in/out</CardDescription>
+              </div>
+            </CardHeader>
+          </Card>
         </div>
 
         <div className="grid grid-cols-1 p-3 border rounded-lg w-full overflow-x-auto mt-5">

@@ -15,10 +15,12 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
+import { hasRole } from "../utils/auth"
 
 
 export function NavMain({
   items,
+  user,
 }: {
   items: {
     title: string
@@ -29,14 +31,28 @@ export function NavMain({
       title: string
       url: string
       icon?: LucideIcon
+      roles?: string[]
     }[]
   }[]
+  user: any
 }) {
+
+  const filteredMenu = items
+    .map((item) => ({
+      ...item,
+      items: item.items?.filter((sub) =>
+        hasRole(user, sub.roles ?? [] )
+      ),
+    }))
+    .filter((item) => item.items?.length);
+    console.log("USER:", user);
+console.log("MENU:", items);
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Admin</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) => (
+        {filteredMenu.map((item) => (
           <Collapsible
             key={item.title}
             asChild

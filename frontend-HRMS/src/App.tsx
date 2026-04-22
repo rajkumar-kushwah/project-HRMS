@@ -13,6 +13,7 @@ import CheckIn from "./pages/Attendance/Check-in/CheckIn"
 import MonthlyAttendance from "./pages/Attendance/MonthlyAttendance"
 import ProtectedRoute from "./pages/context/ProtectedRoute"
 import Unauthorized from "./pages/Unauthorized/Unauthorized"
+import RoleRoute from "./pages/context/Role-basedRoute"
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
 
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
+        <Route element={<RoleRoute roles={["SUPER_ADMIN", "HR", "EMPLOYEE"]} />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/employees" element={<Employee />} />
@@ -34,7 +36,7 @@ function App() {
           <Route path="/check-in" element={<CheckIn />} />
           <Route path="/monthly-attendance" element={<MonthlyAttendance />} />
         </Route>
-        
+        </Route>
       </Routes>
 
     </Router>

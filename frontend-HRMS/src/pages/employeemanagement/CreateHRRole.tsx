@@ -292,7 +292,7 @@ console.log(permissionsList);
 
                                         {/* dialog open button for permission view table groups */}
                                         <Dialog open={tablepemissions} onOpenChange={setTablePermissions}>
-                                            <DialogContent className='space-y-6 w-96'>
+                                            <DialogContent className=' max-w-2xl max-h-[80vh] overflow-y-auto'>
 
                                                 <DialogHeader>
                                                     <DialogTitle>Permissions</DialogTitle>
@@ -349,7 +349,7 @@ console.log(permissionsList);
                                                                     }}
                                                                 >Edit</DropdownMenuItem>
                                                             </DialogTrigger>
-                                                            <DialogContent className=''>
+                                                            <DialogContent  className="max-w-2xl max-h-[80vh] overflow-y-auto">
                                                                 <DialogHeader>
 
                                                                     <DialogTitle>Edit HR Role</DialogTitle>
