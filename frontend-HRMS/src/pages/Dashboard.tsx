@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import React, { useState, useEffect } from "react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { getEmployees, deleteEmployee, updateEmployee } from "@/controllers/employee.controller"
+import { getEmployees, deleteEmployee, updateEmployee, filterEmployee } from "@/controllers/employee.controller"
 import { toast } from "sonner"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
@@ -24,6 +24,7 @@ import { getDepartments } from "@/controllers/department.controller"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectItemText, SelectTrigger, SelectValue } from "@radix-ui/react-select"
 // import { useLocation } from "react-router-dom";
 import { getprofile } from "@/controllers/profile.controller"
+import MonthlyAttendance from "./Attendance/MonthlyAttendance"
 interface Employee {
   dateOfBirth: string
   id: number;
@@ -80,8 +81,8 @@ const Dashboard = () => {
   const [open, setOpen] = useState(false);
   const [viewOpen, setViewOpen] = useState(false);
   const [ViewEmployee, setViewEmployee] = useState<Employee | null>(null);
-  const [roles, setRoles] = useState<Employee[]>([]);
-  const [departments, setDepartments] = useState<Employee[]>([]);
+  const [roles, setRoles] = useState<any[]>([]);
+  const [departments, setDepartments] = useState<any[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const [formData, setFormData] = React.useState<EmployeeForm>({
@@ -102,6 +103,7 @@ const Dashboard = () => {
   })
 
   const [role, setRole] = useState<string>('');
+  const [searchItem, setSearchItem] = useState('');
 
 
   const dashboardContent = {
@@ -120,33 +122,64 @@ const Dashboard = () => {
   };
 
 
-  // const location = useLocation();
-  // const role = location.state?.role;
-
   const { title, desc } =
     dashboardContent[role as keyof typeof dashboardContent] ?? {
       title: "Dashboard",
       desc: "Welcome to HRMS",
     }
 
+  // filter employee 
+
+  const handleApplyFilter = async () => {
+    try {
+      if (!searchItem.trim()) return;
+      if (searchItem) {
+        const res = filterEmployee(searchItem);
+        res.then(res => setEmployees(res.data.data || res.data || []));
+      } else {
+        const res = await getEmployees();
+        setEmployees(res.data.data || res.data || []);
+        console.log("EMP:", res.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  // clear filter
+
+  const handleClearFilter = async () => {
+    try {
+      setSearchItem("");
+      const res = await getEmployees(); // api call data bapas
+      setEmployees(res.data.data || res.data || []);
+      console.log("EMP:", res.data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+
 
   //  get employee teble data
 
   useEffect(() => {
     const fetchData = async () => {
-      getEmployees().then(res => setEmployees(res.data));
+      // getEmployees().then(res => setEmployees(res.data));
+      const emp = await getEmployees();
+      setEmployees(emp.data.data || emp.data || []);
+      console.log("EMP:", emp.data);
       const roleRes = await getRoles();
       const departmentRes = await getDepartments();
+
+      // dashbaord header user role and signin user status header this change user role
       const res = await getprofile();
       // setRole(res.data.role?.name || '');
-      setRole({
-        ...res.data,
-        role: res.data.role?.name || ""
-      });
+      setRole(res.data.role?.name || '');
 
       console.log("ROLE:", role);
       console.log("PROFILE FULL:", res.data);
-      
+
       setRoles(
         Array.isArray(roleRes.data)
           ? roleRes.data
@@ -187,7 +220,7 @@ const Dashboard = () => {
     }
   }
 
-  
+
   const handleEdit = (emp: Employee) => {
     setSelectedEmployee(emp);
     setFormData({
@@ -232,6 +265,8 @@ const Dashboard = () => {
     }
   }
 
+  filterEmployee(searchItem);
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -275,11 +310,11 @@ const Dashboard = () => {
               <div className="border shadow rounded-md w-10 h-10 flex items-center justify-center"  >
                 <Users className="h-6 w-6 " />
               </div>
-              <CardTitle>120</CardTitle>
+              <CardTitle>{employees?.length > 0 ? employees.length : 0}</CardTitle>
               <CardDescription>Total Employees</CardDescription>
             </CardHeader>
             {/* <CardContent>Active employees in company</CardContent> */}
-            <CardFooter>+12 this month</CardFooter>
+            <CardFooter className="text-xs">+12 this month</CardFooter>
           </Card>
 
           <Card className="hover:scale-105 duration-300 ease-in-out">
@@ -287,11 +322,11 @@ const Dashboard = () => {
               <div className="border shadow rounded-md w-10 h-10 flex items-center justify-center"  >
                 <Clock className="h-6 w-6 " />
               </div>
-              <CardTitle>40</CardTitle>
-              <CardDescription>Acitve Today</CardDescription>
+              <CardTitle>{MonthlyAttendance.length}</CardTitle>
+              <CardDescription>Monthly Attendance</CardDescription>
             </CardHeader>
             {/* <CardContent>Employees present today</CardContent> */}
-            <CardFooter>Attendance report</CardFooter>
+            <CardFooter className="text-xs"> +12 this month </CardFooter>
           </Card>
 
           <Card className="hover:scale-105 duration-300 ease-in-out">
@@ -299,11 +334,11 @@ const Dashboard = () => {
               <div className="border shadow rounded-md w-10 h-10 flex items-center justify-center"  >
                 <Building2 className="h-6 w-6 " />
               </div>
-              <CardTitle>8</CardTitle>
+              <CardTitle>{departments.length}</CardTitle>
               <CardDescription>Department</CardDescription>
             </CardHeader>
             {/* <CardContent>Leave requests waiting approval</CardContent> */}
-            <CardFooter>All Acitve</CardFooter>
+            <CardFooter className="text-xs"> +12 this month </CardFooter>
           </Card>
 
           <Card className="hover:scale-105 duration-300 ease-in-out">
@@ -311,11 +346,11 @@ const Dashboard = () => {
               <div className="border shadow rounded-md w-10 h-10 flex items-center justify-center"  >
                 <Shield className="h-6 w-6 " />
               </div>
-              <CardTitle>{"5"}</CardTitle>
-              <CardDescription>{"HR Mangers"}</CardDescription>
+              <CardTitle>{roles.length}</CardTitle>
+              <CardDescription>Roles</CardDescription>
             </CardHeader>
             {/* <CardContent>{"HR Managers"}</CardContent> */}
-            <CardFooter>3 Active now</CardFooter>
+            <CardFooter className="text-xs">Roles assigned</CardFooter>
           </Card>
 
 
@@ -365,6 +400,33 @@ const Dashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 p-3 border rounded-lg w-full overflow-x-auto mt-5">
+          {/* filter table data  */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center">
+              <input
+                type="text"
+                placeholder="Search by name..."
+                className="border rounded-md px-2 py-1 mr-2"
+                value={searchItem}
+                onChange={(e) => setSearchItem(e.target.value)}
+              />
+
+              <div>
+                <Button variant="outline" onClick={handleApplyFilter} className="text-xs px-6 py-1 cursor-pointer"> Apply </Button>
+              </div>
+              <div>
+                <Button
+                  variant="ghost"
+                  onClick={handleClearFilter}
+                  className="text-xs px-4 py-1 cursor-pointer"
+                >
+                  Clear
+                </Button>
+              </div>
+            </div>
+          </div>
+
+
           <Table>
             <TableHeader>
               <TableRow className="bg-gray-100 ">
@@ -378,7 +440,7 @@ const Dashboard = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {employees.map((emp, index) => (
+              {Array.isArray(employees) && employees.map((emp, index) => (
                 <TableRow key={index}>
                   <TableCell>{emp.employeeCode}</TableCell>
                   <TableCell>{emp.firstName} {emp.lastName} <span className="flex flex-col text-xs ">Joined: {new Date(emp.joiningDate).toLocaleDateString()}</span> </TableCell>
@@ -412,7 +474,15 @@ const Dashboard = () => {
                     </DropdownMenu>
                   </TableCell>
                 </TableRow>
-              ))}
+              ))
+                || (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-6 text-gray-500">
+                      No Employees Found
+                    </TableCell>
+                  </TableRow>
+                )
+              }
             </TableBody>
           </Table>
 
@@ -541,12 +611,16 @@ const Dashboard = () => {
                       <Label />Pincode
                       <Input placeholder="pincode" name="pincode" value={formData.pincode} onChange={handleChange} /></div>
                     <div>
-
-                      <Button variant="outline" className="w-full cursor-pointer" onClick={() =>
-                        selectedEmployee && handleUpdate(selectedEmployee.id)
-                      }>Update Employee</Button></div>
+                      
+                    </div>
+                   
                   </form>
                 </div>
+                 <div className="flex">
+                        <Button variant="outline" className="w-full cursor-pointer" onClick={() =>
+                          selectedEmployee && handleUpdate(selectedEmployee.id)
+                        }>Update Employee</Button>
+                      </div>
               </DialogContent>
             </Dialog>
           </div>

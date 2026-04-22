@@ -61,7 +61,7 @@ export const signin = async (req: any, res: any) => {
         if (!email || !password) {
             return res.status(400).json({ message: "Email and password required" });
         }
-        
+
         const user = await prisma.user.findUnique({
             where: { email },
             include: {
@@ -97,7 +97,8 @@ export const signin = async (req: any, res: any) => {
 
         (req.session as any).userId = user.id;
 
-
+        console.log("SESSION:", req.session);
+        console.log("USERID:", (req as any).session?.userId);
         const permission = [
             ...new Set(
                 user.roles.flatMap((role: any) =>

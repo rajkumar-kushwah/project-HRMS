@@ -291,3 +291,40 @@ export const deleteEmployee = async (req: Request, res: Response) => {
         return res.status(500).json({ message: "Server error" });
     }
 }
+
+// filter employee controller
+
+export const filterEmployee = async (req: Request, res: Response) => {
+    try{
+        const { search, role, departmentId } = req.query;
+        const employees = await prisma.employee.findMany({
+            where: {
+                ...(search && {
+                    OR: [
+                        { firstName: { contains: String(search), mode: 'insensitive' } },
+                        { lastName: { contains: String(search), mode: 'insensitive' } },
+                        { designation: { contains: String(search), mode: 'insensitive' } },
+                        { employeeCode: { contains: String(search), mode: 'insensitive' } },
+                        {user: { email: { contains: String(search), mode: 'insensitive' } }},
+                    ]
+                }),
+                ...(role && { roleId: Number(role) }),
+                ...(departmentId && { departmentId: Number(departmentId) }),
+            },
+            include: {
+                user: true,
+                department: true
+            },
+            orderBy: {
+                createdAt: 'desc'
+            }
+        })
+        return res.status(200).json({
+            message: "Employee filtered successfully",
+            data: employees
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Server error" });
+    }
+}

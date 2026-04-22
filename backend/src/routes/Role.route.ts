@@ -5,12 +5,12 @@ import { checkPermissions } from "../middleware/role.middleware.ts";
 
 // role.routes.ts
 const router = express.Router();
-router.post('/', protect, checkPermissions("CREATE.ROLE"), createRole);
+router.post('/', protect, checkPermissions("ROLE.CREATE"), createRole);
 
-router.get('/', protect, checkPermissions("VIEW.ROLE"), getRole);
+router.get('/', protect, checkPermissions("ROLE.VIEW"), getRole);
 
-router.put('/:id', protect, checkPermissions("UPDATE.ROLE"), updateRole);
+router.put('/:id', protect, checkPermissions("ROLE.UPDATE"), updateRole);
 
-router.delete('/:id', protect, checkPermissions("DELETE.ROLE"), deleteRole);
+router.delete('/:id', protect, checkPermissions("ROLE.DELETE"), deleteRole);
 
 export default router;

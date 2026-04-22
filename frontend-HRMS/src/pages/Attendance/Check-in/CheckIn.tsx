@@ -5,6 +5,11 @@ import { Clock, MapPin, LogIn, Award, Users, AlarmClockIcon, LineChart, CircleCh
 import React from 'react'
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { TableHead, TableHeader, TableRow, TableBody, TableCell, Table } from '@/components/ui/table'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { getAttendance, checkIn,checkOut } from '@/controllers/checkIn.controller'
+
+
 
 const CheckIn = () => {
 
@@ -41,8 +46,9 @@ const CheckIn = () => {
   const [checkInTime, setCheckInTime] = React.useState<Date | null>(null);
   const [duration, setDuration] = React.useState("0:00:00");
 
-  const handleCheckIn = () => {
+  const handleCheckIn = async () => {
     if (!checkedIn) {
+      await checkIn();
       const now = new Date();
       setCheckedIn(true);
       setCheckInTime(now);
@@ -53,11 +59,13 @@ const CheckIn = () => {
         checkIn: now.toLocaleTimeString(),
         CheckOut: "",
         totalHours: "",
+        overtime: "0:00:00",
         status: "Present",
       };
       setAttendanceData([...attendanceData, newEntry]);
 
     } else {
+      await checkOut();
       const now = new Date();
 
       setCheckedIn(false);
@@ -82,6 +90,45 @@ const CheckIn = () => {
       setDuration("0:00:00");
     }
   }
+
+  
+
+  // sort of data teble renge minimum to maximum 1 to 5 
+  // const visivleData = attendanceData.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+
+
+const fetchAttendance = async () => {
+  try {
+    const res = await getAttendance();
+    setAttendanceData(res.data.data);
+  } catch (err) {
+    console.error("Fetch error:", err);
+  }
+};
+
+const formatDate = (date: string) => {
+  return new Date(date).toLocaleDateString("en-IN", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+  });
+};
+const formatTime = (date: string) => {
+  return new Date(date).toLocaleTimeString("en-IN", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
+
+  const visivleData = React.useMemo(() => {
+    return attendanceData.slice(-5);
+  }, [attendanceData]);
+
+  React.useEffect(() => {
+  fetchAttendance();
+}, []);
 
   //  check in checkout status late early
 
@@ -120,6 +167,14 @@ const CheckIn = () => {
     return () => clearInterval(interval);
   }, [checkedIn, checkInTime]);
 
+  // overtime
+
+  // const calculateOvertime = (totalHours: string) => {
+  //   const [hours, minutes] = totalHours.split(":").map(Number);
+  //   const totalMinutes = hours * 60 + minutes;
+  //   const overtime = totalMinutes > 480 ? totalMinutes - 480 : 0;
+  //   return `${Math.floor(overtime / 60)}:${overtime % 60}`;
+  // }
 
   // data ko usable formate me convert krne ke liye attedanaceData ko map krne ke liye card ko map krne ke liye
 
@@ -342,12 +397,64 @@ const CheckIn = () => {
 
           <h1>Recent Attendance History</h1>
           <div>
-            <Button variant="outline" className='text-xs cursor-pointer'>
+            {/* <Button variant="outline" className='text-xs cursor-pointer'>
               View All
-            </Button>
+            </Button> */}
+
+            {/* view all table dialog */}
+            <div >
+
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className='text-xs cursor-pointer'>View All</Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-96 max-h-[80vh] overflow-y-auto  ">
+                  <DialogHeader>
+                    <DialogTitle>Attendance History</DialogTitle>
+                    <DialogDescription>Full attendance history</DialogDescription>
+                  </DialogHeader>
+                  <div className='bg-white p-6 grid grid-cols-1 rounded border w-full overflow-x-auto'>
+
+                    {/* filter input and button */}
+                    <div className='flex items-center gap-2'>
+                      <Input placeholder='Filter by name or date' />
+                      <Button variant="outline" className='text-xs cursor-pointer'>Filter</Button>
+                    </div>
+
+                    {/* table goes here */}
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className='text-xs'>Date</TableHead>
+                          <TableHead className='text-xs'>Check In</TableHead>
+                          <TableHead className='text-xs'>Check Out</TableHead>
+                          <TableHead className='text-xs'>Total Hours</TableHead>
+                          <TableHead className='text-xs'>Over Time</TableHead>
+                          <TableHead className='text-xs'>Status</TableHead>
+                        </TableRow>
+                      </TableHeader>
+
+                      <TableBody>
+                        {attendanceData.map((item) => (
+                          <TableRow key={item.id}>
+                            <TableCell>{formatDate(item.date)}</TableCell>
+                            <TableCell>{formatTime(item.checkIn)}</TableCell>
+                            <TableCell>{formatTime(item.checkOut)}</TableCell>
+                            <TableCell>{item.totalHours}</TableCell>
+                            <TableCell>{item.overtime}</TableCell>
+                            <TableCell>{item.status}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
 
           </div>
         </div>
+
         {/* teble goes here */}
         <div className='bg-white p-6 grid grid-cols-1 rounded border w-full overflow-x-auto'>
           {/* table goes here */}
@@ -359,26 +466,28 @@ const CheckIn = () => {
                 <TableHead className="">Check In</TableHead>
                 <TableHead className="">Check Out</TableHead>
                 <TableHead className="">Total Hours</TableHead>
+                <TableHead className="">Over Time</TableHead>
                 <TableHead className="">Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {attendanceData.map((item) => (
+              {visivleData.map((item) => (
                 <TableRow key={item.id}>
-                  <TableCell className="font-medium">{item.date}</TableCell>
+                  <TableCell className="font-medium">{formatDate(item.date)}</TableCell>
                   <TableCell >
                     <div className='flex justify-center items-center gap-1'>
                       <LogIn className="w-3 h-3 text-green-500 " />
-                      {item.checkIn}
+                      {formatTime(item.checkIn)}
                     </div>
                   </TableCell>
                   <TableCell >
                     <div className='flex justify-center items-center gap-1'>
                       <LogIn className="w-3 h-3 text-red-500 " />
-                      {item.checkOut}
+                      {formatTime(item.checkOut)}
                     </div>
                   </TableCell>
                   <TableCell>{item.totalHours}</TableCell>
+                  <TableCell>{item.overtime}</TableCell>
                   <TableCell>
                     <span className={`px-2 py-0 rounded-lg text-xs border ${getStatus}`}>{getStatus(item.checkIn)}</span>
 

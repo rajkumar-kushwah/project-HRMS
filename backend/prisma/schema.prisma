@@ -23,7 +23,8 @@ model User {
   updatedAt DateTime  @default(now()) @updatedAt
   lastLogin DateTime?
 
-  employee Employee?
+  employee   Employee?
+  attendance Attendance[]
 }
 
 model Role {
@@ -86,4 +87,24 @@ model Employee {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Attendance {
+  id     Int  @id @default(autoincrement())
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  date     DateTime // ek din ka record
+  checkIn  DateTime?
+  checkOut DateTime?
+
+  totalHours Float? // hours in decimal (8.5 etc)
+  overtime   Float? // >8 hrs
+
+  status String // present /late /Early
+
+  createAt  DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, date])  // ek user ka ek din me ek record
 }

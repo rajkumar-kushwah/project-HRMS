@@ -38,6 +38,17 @@ export const permissionCategories = [
             "CREATE",
             "UPDATE",
             "DELETE",
+            "FILTER",
         ],
     },
+    {
+        module: "CHECKIN",
+        permissions: [
+            "VIEW",
+            "CHECKIN",
+            "CHECKOUT",
+            "UPDATE",
+            "DELETE",
+        ],
+    }
 ];

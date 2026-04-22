@@ -38,3 +38,7 @@ export const updateEmployee = (id: number, data: Employee) => api.put(`/employee
 // delete employee
 
 export const deleteEmployee = (id: number) => api.delete(`/employee/${id}`);
+
+// filter employee
+
+export const filterEmployee = (searchTerm: string) => api.get(`/employee/filter?search=${searchTerm}`);
