@@ -91,9 +91,20 @@ export const signin = async (req: any, res: any) => {
             data: { lastLogin: new Date() }
         });
 
-        console.log(JSON.stringify(user.roles, null, 2));
+        // console.log(JSON.stringify(user.roles, null, 2));
         // Store the user ID in the session
 
+        console.log("LOGIN START");
+
+        console.log("EMAIL:", email);
+
+        console.log("USER FOUND:", user);
+
+        console.log("ROLES RAW:", user?.roles);
+
+        console.log("ROLES JSON:", JSON.stringify(user?.roles, null, 2));
+
+        console.log("LOGIN END");
 
         (req.session as any).userId = user.id;
 

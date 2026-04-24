@@ -175,7 +175,7 @@ const Dashboard = () => {
       // dashbaord header user role and signin user status header this change user role
       const res = await getprofile();
       // setRole(res.data.role?.name || '');
-      setRole(res.data.role?.name || '');
+      setRole(res.data.role?.name || res.data.roles?.[0]);
 
       console.log("ROLE:", role);
       console.log("PROFILE FULL:", res.data);

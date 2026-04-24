@@ -16,6 +16,7 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
 import { hasRole } from "../utils/auth"
+import React from "react"
 
 
 export function NavMain({
@@ -37,14 +38,16 @@ export function NavMain({
   user: any
 }) {
 
-  const filteredMenu = items
+  const filteredMenu = React.useMemo(() => {
+  return items
     .map((item) => ({
       ...item,
       items: item.items?.filter((sub) =>
         hasRole(user, sub.roles ?? [] )
       ),
     }))
-    .filter((item) => item.items?.length);
+    .filter((item) => item.items?.length)
+  },[items, user]);
     console.log("USER:", user);
 console.log("MENU:", items);
 

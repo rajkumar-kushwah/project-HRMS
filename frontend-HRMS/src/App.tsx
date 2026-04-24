@@ -20,23 +20,23 @@ function App() {
     <Router>
       <Toaster position="top-right" />
       <Routes>
-        <Route path="/unauthorized" element={<Unauthorized />} />
         {/* <Route path="/" element={<Signup />} /> */}
         <Route path="/" element={<Signin />} />
         <Route path="/signup" element={<Signup />} />
 
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
-        <Route element={<RoleRoute roles={["SUPER_ADMIN", "HR", "EMPLOYEE"]} />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/employees" element={<Employee />} />
-          <Route path="/department" element={<Department />} />
-          <Route path="/role" element={<RoleHR />} />
-          <Route path="/check-in" element={<CheckIn />} />
-          <Route path="/monthly-attendance" element={<MonthlyAttendance />} />
+          <Route element={<RoleRoute roles={["SUPER_ADMIN", "HR", "EMPLOYEE"]} />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/employees" element={<Employee />} />
+            <Route path="/department" element={<Department />} />
+            <Route path="/role" element={<RoleHR />} />
+            <Route path="/check-in" element={<CheckIn />} />
+            <Route path="/monthly-attendance" element={<MonthlyAttendance />} />
+          </Route>
         </Route>
-        </Route>
+        <Route path="/unauthorized" element={<Unauthorized />} />
       </Routes>
 
     </Router>

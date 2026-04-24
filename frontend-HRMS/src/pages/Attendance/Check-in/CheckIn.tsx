@@ -7,7 +7,7 @@ import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader,
 import { TableHead, TableHeader, TableRow, TableBody, TableCell, Table } from '@/components/ui/table'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { getAttendance, checkIn,checkOut } from '@/controllers/checkIn.controller'
+import { getAttendance, checkIn, checkOut } from '@/controllers/checkIn.controller'
 
 
 
@@ -48,21 +48,22 @@ const CheckIn = () => {
 
   const handleCheckIn = async () => {
     if (!checkedIn) {
-      await checkIn();
+      const res = await checkIn();
+      console.log("API DATA:", res.data.data);
       const now = new Date();
       setCheckedIn(true);
-      setCheckInTime(now);
+      setCheckInTime(now); 
 
-      const newEntry = {
-        id: Date.now(),
-        date: now.toLocaleDateString(),
-        checkIn: now.toLocaleTimeString(),
-        CheckOut: "",
-        totalHours: "",
-        overtime: "0:00:00",
-        status: "Present",
-      };
-      setAttendanceData([...attendanceData, newEntry]);
+      // const newEntry = {
+      //   id: Date.now(),
+      //   date: now.toLocaleDateString(),
+      //   checkIn: now.toLocaleTimeString(),
+      //   checkOut: "",
+      //   totalHours: "",
+      //   overtime: "0:00:00",
+      //   status: "Present",
+      // };
+      setAttendanceData(prev => [res.data.data, ...prev]);
 
     } else {
       await checkOut();
@@ -74,7 +75,8 @@ const CheckIn = () => {
         const lastEntry = updated[updated.length - 1];
 
         if (lastEntry && !lastEntry.checkOut) {
-          lastEntry.checkOut = new Date().toLocaleTimeString();
+          lastEntry.checkOut = now.toISOString();
+
           const diff = (now.getTime() - checkInTime!.getTime()) / 1000;
 
           const hours = Math.floor(diff / 3600);
@@ -82,8 +84,9 @@ const CheckIn = () => {
 
           lastEntry.totalHours = `${hours}h ${minutes}m`;
         }
+
         return updated;
-      })
+      });
 
       setCheckInTime(null);
       // setCheckedIn(false);
@@ -91,35 +94,36 @@ const CheckIn = () => {
     }
   }
 
-  
+
 
   // sort of data teble renge minimum to maximum 1 to 5 
   // const visivleData = attendanceData.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
 
 
-const fetchAttendance = async () => {
-  try {
-    const res = await getAttendance();
-    setAttendanceData(res.data.data);
-  } catch (err) {
-    console.error("Fetch error:", err);
-  }
-};
+  const fetchAttendance = async () => {
+    try {
+      const res = await getAttendance();
+      setAttendanceData(res.data.data);
 
-const formatDate = (date: string) => {
-  return new Date(date).toLocaleDateString("en-IN", {
-    year: "numeric",
-    month: "short",
-    day: "2-digit",
-  });
-};
-const formatTime = (date: string) => {
-  return new Date(date).toLocaleTimeString("en-IN", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
+    } catch (err) {
+      console.error("Fetch error:", err);
+    }
+  };
+
+  const formatDate = (date: string) => {
+    return new Date(date).toLocaleDateString("en-IN", {
+      year: "numeric",
+      month: "short",
+      day: "2-digit",
+    });
+  };
+  const formatTime = (date: string) => {
+    return new Date(date).toLocaleTimeString("en-IN", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
 
   const visivleData = React.useMemo(() => {
@@ -127,26 +131,22 @@ const formatTime = (date: string) => {
   }, [attendanceData]);
 
   React.useEffect(() => {
-  fetchAttendance();
-}, []);
+    fetchAttendance();
+  }, []);
 
   //  check in checkout status late early
 
   const getStatus = (checkInTime: string) => {
-    const OfficeTime = new Date();
-    OfficeTime.setHours(9, 30, 0);
+    if (!checkInTime) return "-";
 
-    const [time, modifier] = checkInTime.split(" ");
-    let [hours, minutes] = time.split(":").map(Number);
+    const d = new Date(checkInTime);
+    if (isNaN(d.getTime())) return "-";
 
-    if (modifier === "PM" && hours !== 12) hours += 12;
-    if (modifier === "AM" && hours === 12) hours = 0;
+    const office = new Date();
+    office.setHours(9, 30, 0);
 
-    const checkInDate = new Date();
-    checkInDate.setHours(hours, minutes, 0);
-
-    return checkInDate > OfficeTime ? "Late" : "Early";
-  }
+    return d > office ? "Late" : "On Time";
+  };
 
   React.useEffect(() => {
     let interval: any;
@@ -181,14 +181,18 @@ const formatTime = (date: string) => {
   const totalDays = attendanceData.length;
 
   const totalHours = attendanceData.reduce((acc, item) => {
-    if (!item.totalHours) return acc;
+    if (!item?.totalHours) return acc;
 
-    const [h, m] = item.totalHours.split(" ");
-    const hours = parseInt(h);
-    const minutes = parseInt(m);
+    const cleaned = String(item.totalHours)
+      .replace("h", "")
+      .replace("m", "")
+      .trim();
 
-    return acc + hours + minutes / 60;
+    const [h = 0, m = 0] = cleaned.split(" ").map(Number);
+
+    return acc + h + m / 60;
   }, 0);
+
 
   const AvgHours = totalDays < 0
     ? (totalHours / totalHours).toFixed(1)
@@ -425,6 +429,7 @@ const formatTime = (date: string) => {
                     <Table>
                       <TableHeader>
                         <TableRow>
+                          <TableHead className='text-xs'>Name</TableHead>
                           <TableHead className='text-xs'>Date</TableHead>
                           <TableHead className='text-xs'>Check In</TableHead>
                           <TableHead className='text-xs'>Check Out</TableHead>
@@ -437,6 +442,7 @@ const formatTime = (date: string) => {
                       <TableBody>
                         {attendanceData.map((item) => (
                           <TableRow key={item.id}>
+                            <TableCell>{item.user?.name}</TableCell>
                             <TableCell>{formatDate(item.date)}</TableCell>
                             <TableCell>{formatTime(item.checkIn)}</TableCell>
                             <TableCell>{formatTime(item.checkOut)}</TableCell>
@@ -462,6 +468,7 @@ const formatTime = (date: string) => {
           <Table >
             <TableHeader>
               <TableRow>
+                <TableCell className="">Name</TableCell>
                 <TableHead className="" >Date</TableHead>
                 <TableHead className="">Check In</TableHead>
                 <TableHead className="">Check Out</TableHead>
@@ -473,6 +480,7 @@ const formatTime = (date: string) => {
             <TableBody>
               {visivleData.map((item) => (
                 <TableRow key={item.id}>
+                  <TableCell className="font-medium">{item.user?.name}</TableCell>
                   <TableCell className="font-medium">{formatDate(item.date)}</TableCell>
                   <TableCell >
                     <div className='flex justify-center items-center gap-1'>

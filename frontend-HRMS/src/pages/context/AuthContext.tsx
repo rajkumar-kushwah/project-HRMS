@@ -11,10 +11,10 @@ export const AuthProvider = ({ children }: any) => {
     try {
       const res = await getprofile();
       setUser(res.data);
+      setAuthenticated(true);
     } catch (err) {
       setUser(null);
-    } finally {
-      setAuthenticated(true);
+      setAuthenticated(false);
     }
   };
 

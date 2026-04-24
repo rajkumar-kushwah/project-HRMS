@@ -59,8 +59,8 @@ export const getprofile = async (req: any, res: any) => {
     }
 
     // clean response
-    
-    const firstRole = user.roles?.[0];
+
+
 
     return res.json({
       id: user.id,
@@ -68,13 +68,7 @@ export const getprofile = async (req: any, res: any) => {
       email: user.email,
       createdAt: user.createdAt,
       lastLogin: user.lastLogin,
-
-      role: firstRole
-        ? {
-          id: firstRole.id,
-          name: firstRole.name,
-        }
-        : null,
+      roles: user.roles.map((r) => r.name),
     });
   } catch (error) {
     console.error("GET PROFILE ERROR:", error);

@@ -49,7 +49,17 @@ export const checkIn = async (req: Request, res: Response) => {
                 checkIn: now,
                 status,
             },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true
+                    },
+                },
+            },
         });
+        console.log("WITH USER:", attendance);
 
         res.status(200).json({
             message: "Check in successful",
@@ -105,6 +115,15 @@ export const checkOut = async (req: Request, res: Response) => {
                 totalHours,
                 overtime,
             },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+
+                    }
+                }
+            }
         });
 
         res.status(200).json({
@@ -119,30 +138,94 @@ export const checkOut = async (req: Request, res: Response) => {
 };
 
 // get attendance
+// export const getAttendance = async (req: Request, res: Response) => {
+//   try {
+//     const userId = (req as any).session?.userId;
+
+//     console.log("SESSION:", req.session);
+//     console.log("USERID:", userId);
+
+//     if (!userId) {
+//       return res.status(401).json({ message: "Unauthorized" });
+//     }
+
+//     const data = await prisma.attendance.findMany({
+//       where: { userId },
+//       orderBy: { date: "desc" } 
+//     });
+
+//     return res.status(200).json({
+//       message: "Attendance fetched successfully",
+//       data
+//     });
+
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ message: "Server error" });
+//   }
+// };
+
 export const getAttendance = async (req: Request, res: Response) => {
   try {
-    const userId = (req as any).session?.userId;
-
-    console.log("SESSION:", req.session);
-    console.log("USERID:", userId);
+    const session: any = req.session;
+    const userId = session?.userId;
 
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const data = await prisma.attendance.findMany({
-      where: { userId },
-      orderBy: { date: "desc" }
+    // USER WITH ROLE FETCH
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        roles: {
+          select: { name: true }
+        }
+      }
     });
+
+    const role = user?.roles?.[0]?.name;
+
+    let data;
+
+    //  SUPER ADMIN → ALL DATA
+    if (role === "SUPER_ADMIN") {
+      data = await prisma.attendance.findMany({
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+        orderBy: { date: "desc" },
+      });
+    } 
+    //  NORMAL USER → OWN DATA
+    else {
+      data = await prisma.attendance.findMany({
+        where: { userId },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+        orderBy: { date: "desc" },
+      });
+    }
 
     return res.status(200).json({
       message: "Attendance fetched successfully",
-      data
+      data,
     });
 
   } catch (error) {
-    console.error(error);
+    console.error("GET ATTENDANCE ERROR:", error);
     return res.status(500).json({ message: "Server error" });
   }
 };
-
