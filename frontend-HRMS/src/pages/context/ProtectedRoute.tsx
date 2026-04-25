@@ -4,11 +4,7 @@ import { useAuth } from "@/pages/context/AuthContext";
 const ProtectedRoute = () => {
     const { user, authenticated } = useAuth();
 
-    if(!authenticated) {
-        return null
-    }
-   
-    if (!user) {
+    if (!authenticated || !user) {
         return <Navigate to="/" replace />;
     }
 

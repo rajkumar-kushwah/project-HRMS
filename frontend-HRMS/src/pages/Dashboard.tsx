@@ -165,31 +165,51 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      // getEmployees().then(res => setEmployees(res.data));
-      const emp = await getEmployees();
-      setEmployees(emp.data.data || emp.data || []);
-      console.log("EMP:", emp.data);
-      const roleRes = await getRoles();
-      const departmentRes = await getDepartments();
+      try {
+        // dashbaord header user role and signin user status header this change user role
 
-      // dashbaord header user role and signin user status header this change user role
-      const res = await getprofile();
-      // setRole(res.data.role?.name || '');
-      setRole(res.data.role?.name || res.data.roles?.[0]);
+        const res = await getprofile();
 
-      console.log("ROLE:", role);
-      console.log("PROFILE FULL:", res.data);
+        if (!res?.data) {
+          navigate('/signin');
+          return;
+        }
 
-      setRoles(
-        Array.isArray(roleRes.data)
-          ? roleRes.data
-          : roleRes.data.data || []
-      );
+        setRole(res.data.role?.name || res.data.roles?.[0]);
 
-      setDepartments(departmentRes.data.departments);
-      console.log("roles:", roleRes.data);
-      console.log("departments:", departmentRes.data);
 
+        console.log("ROLE:", role);
+        console.log("PROFILE FULL:", res.data);
+
+        //   Baaki data load karne ke liye
+        const [emp, roleRes, departmentRes] = await Promise.all([
+          getEmployees(),
+          getRoles(),
+          getDepartments(),
+        ]);
+
+        setEmployees(emp.data.data || emp.data || []);
+
+        setRoles(
+          Array.isArray(roleRes.data)
+            ? roleRes.data
+            : roleRes.data.data || []
+        );
+
+        setDepartments(departmentRes.data.departments);
+        console.log("roles:", roleRes.data);
+        console.log("departments:", departmentRes.data); 
+
+      } catch (error: any) {
+        console.error("Dashboard error:", error);
+
+        // Unauthorized error handling
+        if (error.response?.status === 401) {
+          navigate('/signin');
+        } else {
+          toast.error("Something went wrong");
+        };
+      };
     };
 
     fetchData();
@@ -622,16 +642,16 @@ const Dashboard = () => {
                       <Label />Pincode
                       <Input placeholder="pincode" name="pincode" value={formData.pincode} onChange={handleChange} /></div>
                     <div>
-                      
+
                     </div>
-                   
+
                   </form>
                 </div>
-                 <div className="flex">
-                        <Button variant="outline" className="w-full cursor-pointer" onClick={() =>
-                          selectedEmployee && handleUpdate(selectedEmployee.id)
-                        }>Update Employee</Button>
-                      </div>
+                <div className="flex">
+                  <Button variant="outline" className="w-full cursor-pointer" onClick={() =>
+                    selectedEmployee && handleUpdate(selectedEmployee.id)
+                  }>Update Employee</Button>
+                </div>
               </DialogContent>
             </Dialog>
           </div>

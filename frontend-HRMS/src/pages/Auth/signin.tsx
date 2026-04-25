@@ -15,7 +15,7 @@ const Signin = () => {
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const navigator = useNavigate();
-    const { setUser } = useAuth();
+    const { setUser, setAuthenticated } = useAuth();
 
 
 
@@ -25,7 +25,12 @@ const Signin = () => {
         try {
             const res = await signIn({ email, password });
             // const role = res.data.role?.name;
+            if (!res.data || !res.data.user){
+                toast.error(res.data.message || "Signin first");
+            }
+            
             setUser(res.data.user);
+            setAuthenticated(true);
             toast.success(res.data.message || "Signin successful");
 
             setEmail("");

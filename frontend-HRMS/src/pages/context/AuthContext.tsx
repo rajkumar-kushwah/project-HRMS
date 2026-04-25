@@ -2,10 +2,10 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { getprofile } from "@/controllers/profile.controller";
 
 const AuthContext = createContext<any>(null);
-
+type authSate  = boolean | null;
 export const AuthProvider = ({ children }: any) => {
   const [user, setUser] = useState<any>(null);
-  const [authenticated, setAuthenticated] = useState(false);
+  const [authenticated, setAuthenticated] = useState<authSate>(null);
 
   const fetchUser = async () => {
     try {
@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }: any) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, setUser, authenticated, fetchUser }}>
+    <AuthContext.Provider value={{ user, setUser, authenticated, setAuthenticated, fetchUser }}>
       {children}
     </AuthContext.Provider>
   );
