@@ -13,6 +13,7 @@ export const AuthProvider = ({ children }: any) => {
       setUser(res.data);
       setAuthenticated(true);
     } catch (err) {
+      
       setUser(null);
       setAuthenticated(false);
     }

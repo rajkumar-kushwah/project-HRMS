@@ -25,6 +25,8 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectItemText, SelectT
 // import { useLocation } from "react-router-dom";
 import { getprofile } from "@/controllers/profile.controller"
 import MonthlyAttendance from "./Attendance/MonthlyAttendance"
+import { useAuth } from "@/pages/context/AuthContext";
+
 interface Employee {
   dateOfBirth: string
   id: number;
@@ -77,6 +79,7 @@ interface EmployeeForm {
 const Dashboard = () => {
 
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [open, setOpen] = useState(false);
   const [viewOpen, setViewOpen] = useState(false);
@@ -163,62 +166,93 @@ const Dashboard = () => {
 
   //  get employee teble data
 
+  // useEffect(() => {
+  //   const fetchData = async () => {
+
+  //       // dashbaord header user role and signin user status header this change user role
+
+  //       const res = await getprofile();
+
+  //       // setUser(res.data);
+
+  //       setRole(res.data.role?.name || res.data.roles?.[0]);
+
+
+  //       console.log("ROLE:", role);
+  //       console.log("PROFILE FULL:", res.data);
+
+  //       //   Baaki data load karne ke liye
+
+  //       const emp = await getEmployees();
+  //       console.log("EMP RESPONSE:", emp.data);
+  //       const roleRes = await getRoles();
+  //       const departmentRes = await getDepartments();
+
+  //       setEmployees(emp.data.data || emp.data || []);
+
+  //       setRoles(
+  //         Array.isArray(roleRes.data)
+  //           ? roleRes.data
+  //           : roleRes.data.data || []
+  //       );
+
+  //       setDepartments(departmentRes.data.departments);
+  //       console.log("roles:", roleRes.data);
+  //       console.log("departments:", departmentRes.data); 
+
+  //     } 
+
+  //   fetchData();
+
+  //   window.addEventListener("employee-created", fetchData);
+
+  //   return () => {
+  //     window.removeEventListener("employee-created", fetchData);
+  //   };
+  // }, []);
+
   useEffect(() => {
     const fetchData = async () => {
+
       try {
-        // dashbaord header user role and signin user status header this change user role
-
         const res = await getprofile();
-
-        if (!res?.data) {
-          navigate('/signin');
-          return;
-        }
-
         setRole(res.data.role?.name || res.data.roles?.[0]);
 
-
-        console.log("ROLE:", role);
         console.log("PROFILE FULL:", res.data);
+      } catch (err) {
+        console.log("PROFILE ERROR:", err);
+      }
 
-        //   Baaki data load karne ke liye
-        const [emp, roleRes, departmentRes] = await Promise.all([
-          getEmployees(),
-          getRoles(),
-          getDepartments(),
-        ]);
-
+      try {
+        const emp = await getEmployees();
+        console.log("EMP RESPONSE:", emp.data);
         setEmployees(emp.data.data || emp.data || []);
+      } catch (err) {
+        console.log("EMP ERROR:", err);
+      }
 
-        setRoles(
-          Array.isArray(roleRes.data)
-            ? roleRes.data
-            : roleRes.data.data || []
-        );
+      if (user?.roles?.[0] === "SUPER_ADMIN") {
+        try {
+          const roleRes = await getRoles();
+          setRoles(
+            Array.isArray(roleRes.data)
+              ? roleRes.data
+              : roleRes.data.data || []
+          );
+        } catch (err) {
+          console.log(err);
+        }
+      }
 
-        setDepartments(departmentRes.data.departments);
-        console.log("roles:", roleRes.data);
-        console.log("departments:", departmentRes.data); 
-
-      } catch (error: any) {
-        console.error("Dashboard error:", error);
-
-        // Unauthorized error handling
-        if (error.response?.status === 401) {
-          navigate('/signin');
-        } else {
-          toast.error("Something went wrong");
-        };
-      };
+      try {
+        const deptRes = await getDepartments();
+        setDepartments(deptRes.data.departments);
+      } catch (err) {
+        console.log("DEPT ERROR:", err);
+      }
     };
 
     fetchData();
-
-    window.addEventListener("employee-created", fetchData);
-
-    return () => {
-      window.removeEventListener("employee-created", fetchData);
-    };
   }, []);
 
   // view employee data 
