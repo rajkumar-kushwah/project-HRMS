@@ -163,53 +163,7 @@ const Dashboard = () => {
   }
 
 
-
   //  get employee teble data
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-
-  //       // dashbaord header user role and signin user status header this change user role
-
-  //       const res = await getprofile();
-
-  //       // setUser(res.data);
-
-  //       setRole(res.data.role?.name || res.data.roles?.[0]);
-
-
-  //       console.log("ROLE:", role);
-  //       console.log("PROFILE FULL:", res.data);
-
-  //       //   Baaki data load karne ke liye
-
-  //       const emp = await getEmployees();
-  //       console.log("EMP RESPONSE:", emp.data);
-  //       const roleRes = await getRoles();
-  //       const departmentRes = await getDepartments();
-
-  //       setEmployees(emp.data.data || emp.data || []);
-
-  //       setRoles(
-  //         Array.isArray(roleRes.data)
-  //           ? roleRes.data
-  //           : roleRes.data.data || []
-  //       );
-
-  //       setDepartments(departmentRes.data.departments);
-  //       console.log("roles:", roleRes.data);
-  //       console.log("departments:", departmentRes.data); 
-
-  //     } 
-
-  //   fetchData();
-
-  //   window.addEventListener("employee-created", fetchData);
-
-  //   return () => {
-  //     window.removeEventListener("employee-created", fetchData);
-  //   };
-  // }, []);
 
   useEffect(() => {
     const fetchData = async () => {

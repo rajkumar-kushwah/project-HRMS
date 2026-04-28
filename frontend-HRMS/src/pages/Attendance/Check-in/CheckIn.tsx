@@ -13,32 +13,7 @@ import { getAttendance, checkIn, checkOut } from '@/controllers/checkIn.controll
 
 const CheckIn = () => {
 
-  // const TebleData = [
-  //   {
-  //     id: 1,
-  //     date: "2023-04-01",
-  //     checkIn: "10:30 AM",
-  //     checkOut: "6:00 PM",
-  //     totalHours: "1:00 hours",
-  //     status: "Present"
-  //   },
-  //   {
-  //     id: 2,
-  //     date: "2023-03-01",
-  //     checkIn: "9:00 AM",
-  //     checkOut: "6:00 PM",
-  //     totalHours: "1:00 hours",
-  //     status: "Present"
-  //   },
-  //   {
-  //     id: 3,
-  //     date: "2023-02-01",
-  //     checkIn: "9:00 AM",
-  //     checkOut: "6:00 PM",
-  //     totalHours: "1:00 hours",
-  //     status: "Present"
-  //   },
-  // ]
+ 
 
   const [attendanceData, setAttendanceData] = React.useState<any[]>([]);
 
@@ -54,15 +29,7 @@ const CheckIn = () => {
       setCheckedIn(true);
       setCheckInTime(now); 
 
-      // const newEntry = {
-      //   id: Date.now(),
-      //   date: now.toLocaleDateString(),
-      //   checkIn: now.toLocaleTimeString(),
-      //   checkOut: "",
-      //   totalHours: "",
-      //   overtime: "0:00:00",
-      //   status: "Present",
-      // };
+    
       setAttendanceData(prev => [res.data.data, ...prev]);
 
     } else {
@@ -134,7 +101,7 @@ const CheckIn = () => {
     fetchAttendance();
   }, []);
 
-  //  check in checkout status late early
+  //  check in checkout status late early 
 
   const getStatus = (checkInTime: string) => {
     if (!checkInTime) return "-";

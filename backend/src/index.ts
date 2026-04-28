@@ -10,6 +10,7 @@ import permissionRouter from "./routes/permission.route.ts";
 import roleRouter from "./routes/Role.route.ts";
 import employeeRouter from "./routes/employee.route.ts";
 import checkInRouter from "./routes/checkIn.route.ts";
+import monthlyRouter from "./routes/monthly.route.ts";
 
 dotenv.config();
 const app = express();
@@ -33,6 +34,7 @@ app.use('/permission', permissionRouter)
 app.use('/role', roleRouter)
 app.use('/employee', employeeRouter)
 app.use('/checkin', checkInRouter)
+app.use('/monthly-attendance', monthlyRouter)
 
 async function start() {
     await prisma.$connect();
