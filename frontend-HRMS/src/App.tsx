@@ -14,6 +14,7 @@ import MonthlyAttendance from "./pages/Attendance/MonthlyAttendance"
 import ProtectedRoute from "./pages/context/ProtectedRoute"
 import Unauthorized from "./pages/Unauthorized/Unauthorized"
 import RoleRoute from "./pages/context/Role-basedRoute"
+import AttendanceHistory from "./pages/Attendance/Check-in/AttendanceHistory"
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
             <Route path="/role" element={<RoleHR />} />
             <Route path="/check-in" element={<CheckIn />} />
             <Route path="/monthly-attendance" element={<MonthlyAttendance />} />
+            <Route path="/attendance-history" element={<AttendanceHistory />} />
           </Route>
         </Route>
         <Route path="/unauthorized" element={<Unauthorized />} />

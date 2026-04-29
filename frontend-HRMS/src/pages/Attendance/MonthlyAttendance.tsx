@@ -14,16 +14,26 @@ import { getMonthlyAttendance } from '@/controllers/monthlyAttendance.controller
 
 interface Attendance {
   id: number;
-  date: number;
-  day: string;
-  status: string;
+  date: string; // ISO string from backend
+  checkIn?: string;
+  checkOut?: string;
+  totalHours?: number;
+  overtime?: number;
+  status: string; // P, A, Late, WO etc.
   EmpStatus: string;
   user?: {
+    id: number;
+    name?: string;
+    email?: string;
+
     employee?: {
+      id: number;
       firstName: string;
       lastName: string;
-      isActive?: boolean;
+      isActive: boolean;
+
       department?: {
+        id: number;
         name: string;
       };
     };
@@ -31,50 +41,22 @@ interface Attendance {
 }
 function MonthlyAttendance() {
 
-  // const tableDate = [
-  //   { id: 1, Employee: "Amit", department: "admin", EmpStatus: "Acitve", date: "1", day: "Mon", status: "P" },
-  //   { id: 2, Employee: "Amit", department: "admin", EmpStatus: "Acitve", date: "2", day: "Tue", status: "A" },
-  //   { id: 3, Employee: "Amit", department: "admin", EmpStatus: "Acitve", date: "3", day: "Wed", status: "A" },
-  //   { id: 4, Employee: "Amit", department: "admin", EmpStatus: "Acitve", date: "4", day: "Thu", status: "P" },
-  //   { id: 5, Employee: "Amit", department: "admin", EmpStatus: "Acitve", date: "5", day: "Fri", status: "P" },
-  //   { id: 6, Employee: "Amit", department: "admin", EmpStatus: "Acitve", date: "6", day: "Sat", status: "P" },
-  //   { id: 7, Employee: "Amit", department: "admin", EmpStatus: "Acitve", date: "7", day: "Sun", status: "WO" },
-  //   { id: 8, Employee: "Amit", department: "admin", EmpStatus: "Acitve", date: "8", day: "Mon", status: "P" },
-  //   { id: 9, Employee: "Amit", department: "admin", EmpStatus: "Acitve", date: "9", day: "Tue", status: "A" },
-  //   { id: 10, Employee: "Amit", department: "admin", EmpStatus: "Acitve", date: "10", day: "Wed", status: "P" },
-  //   { id: 11, Employee: "Amit", department: "admin", EmpStatus: "Acitve", date: "11", day: "Thu", status: "A" },
-  //   { id: 12, Employee: "Amit", department: "admin", EmpStatus: "Acitve", date: "12", day: "Fri", status: "P" },
-  //   { id: 13, Employee: "Amit", department: "admin", EmpStatus: "Acitve", date: "13", day: "Sat", status: "P" },
-  //   { id: 14, Employee: "Amit", department: "admin", EmpStatus: "Acitve", date: "14", day: "Sun", status: "WO" },
-  //   { id: 15, Employee: "Amit", department: "admin", EmpStatus: "Acitve", date: "15", day: "Mon", status: "P" },
-  //   { id: 16, Employee: "Amit", department: "admin", EmpStatus: "Acitve", date: "16", day: "Tue", status: "P" },
-  //   { id: 17, Employee: "Amit", department: "admin", EmpStatus: "Acitve", date: "17", day: "Wed", status: "A" },
-  //   { id: 18, Employee: "Amit", department: "admin", EmpStatus: "Acitve", date: "18", day: "Thu", status: "A" },
-  //   { id: 19, Employee: "Amit", department: "admin", EmpStatus: "Acitve", date: "19", day: "Fri", status: "P" },
-  //   { id: 20, Employee: "Amit", department: "admin", EmpStatus: "Acitve", date: "20", day: "Sat", status: "P" },
-  //   { id: 21, Employee: "Amit", department: "admin", EmpStatus: "Acitve", date: "21", day: "Sun", status: "WO" },
-  //   { id: 22, Employee: "Amit", department: "admin", EmpStatus: "Acitve", date: "22", day: "Mon", status: "P" },
-  //   { id: 23, Employee: "Amit", department: "admin", EmpStatus: "Acitve", date: "23", day: "Tue", status: "A" },
-  //   { id: 24, Employee: "Amit", department: "admin", EmpStatus: "Acitve", date: "24", day: "Wed", status: "A" },
-  //   { id: 25, Employee: "Amit", department: "admin", EmpStatus: "Acitve", date: "25", day: "Thu", status: "A" },
-  //   { id: 26, Employee: "Amit", department: "admin", EmpStatus: "Acitve", date: "26", day: "Fri", status: "P" },
-  //   { id: 27, Employee: "Amit", department: "admin", EmpStatus: "Acitve", date: "27", day: "Sat", status: "P" },
-  //   { id: 28, Employee: "Amit", department: "admin", EmpStatus: "Acitve", date: "28", day: "Sun", status: "WO" },
-  //   { id: 29, Employee: "Amit", department: "admin", EmpStatus: "Acitve", date: "29", day: "Mon", status: "A" },
-  //   { id: 30, Employee: "Amit", department: "admin", EmpStatus: "Acitve", date: "30", day: "Tue", status: "P" },
-  //   { id: 31, Employee: "Amit", department: "admin", EmpStatus: "Acitve", date: "31", day: "Wed", status: "P" },
-  // ]
 
   const [currentPage, setCurrentPage] = React.useState(1);
   const [open, setOpen] = React.useState(false)
   const [monthlyData, setMonthlyData] = React.useState<Attendance[]>([])
 
+  // calendar month and year
+  const today = new Date();
+  const currentMonth = today.getMonth() + 1;
+  const currentYear = today.getFullYear();
+
   const fetchMonthlyAttendance = async () => {
     try {
-      const res = await getMonthlyAttendance(4, 2026);
-      const calendar = generateMonthDays(4, 2026);
-      const merged = margeAttendance(calendar, res.data.data);
-      setMonthlyData(merged);
+      const res = await getMonthlyAttendance(currentMonth, currentYear);
+      // const calendar = generateMonthDays(currentMonth, currentYear);
+      // const merged = margeAttendance(calendar, res.data.data);
+      setMonthlyData(res.data.data);
     } catch (error) {
       console.error(error);
     }
@@ -85,9 +67,71 @@ function MonthlyAttendance() {
   }, [])
 
   // monthly calculate A or p or WO
-  const generateMonthDays = (month: number, year: number) => {
+  // const generateMonthDays = (month: number, year: number) => {
+  //   const today = new Date();
+  //   const currentDate = today.getDate();
+
+  //   const daysInMonth = new Date(year, month, 0).getDate();
+
+  //   return Array.from({ length: daysInMonth }, (_, i) => {
+  //     const dayNumber = i + 1;
+  //     const date = new Date(year, month - 1, dayNumber);
+
+  //     const day = date.getDay(); // 0 = Sunday, 6 = Saturday
+
+  //     let status = "-";
+
+  //     // Only Sunday = Week Off
+  //     if (day === 0) {
+  //       status = "WO";
+  //     }
+  //     // past date = A
+  //     else if (dayNumber < currentDate) {
+  //       status = "A";
+  //     }
+
+  //     return {
+  //       date: i + 1,
+  //       status,
+  //     };
+  //   });
+  // };
+
+
+  // api data map kra
+  // const margeAttendance = (calendar: any[], apiData: any[]) => {
+  //   return calendar.map((day) => {
+  //     const found = apiData.find((item) => {
+  //       const itemDate = new Date(item.date);
+
+  //       return (
+  //         itemDate.getDate() === day.date &&
+  //         itemDate.getMonth() === currentMonth - 1 &&
+  //         itemDate.getFullYear() === currentYear
+  //       );
+  //     });
+
+  //     return {
+  //       id: found?.id || day.date,
+  //       date: day.date,
+  //       day: new Date(2026, 3, day.date).toLocaleDateString("en-US", {
+  //         weekday: "short",
+  //       }),
+  //       status: found ? "P" : day.status,
+  //       user: found?.user || null,
+
+  //       EmpStatus: found?.user?.employee?.isActive ? "Active" : "Inactive",
+  //     };
+  //   });
+  // };
+
+  // console.log("monthlyData", monthlyData)
+
+  const generateDays = (month: number, year: number) => {
     const today = new Date();
     const currentDate = today.getDate();
+    const currentMonth = today.getMonth() + 1;
+    const currentYear = today.getFullYear();
 
     const daysInMonth = new Date(year, month, 0).getDate();
 
@@ -95,52 +139,97 @@ function MonthlyAttendance() {
       const dayNumber = i + 1;
       const date = new Date(year, month - 1, dayNumber);
 
-      const day = date.getDay(); // 0 = Sunday, 6 = Saturday
+      const isSunday = date.getDay() === 0;
 
       let status = "-";
 
-      // Only Sunday = Week Off
-      if (day === 0) {
-        status = "WO";
-      }
-      // past date = A
-      else if (dayNumber < currentDate) {
-        status = "A";
+      //  ONLY past + today allowed
+      const isPastOrToday =
+        year < currentYear ||
+        (year === currentYear && month < currentMonth) ||
+        (year === currentYear && month === currentMonth && dayNumber <= currentDate);
+
+      if (isPastOrToday) {
+        if (isSunday) {
+          status = "WO";
+        } else if (dayNumber < currentDate) {
+          status = "A";
+        } else {
+          status = "P"; // today default (or Late if API says)
+        }
+      } else {
+        status = "-"; // FUTURE FIX HERE 
       }
 
       return {
-        date: i + 1,
+        day: dayNumber,
+        label: date.toLocaleDateString("en-US", { weekday: "short" }),
         status,
+        isSunday,
       };
     });
   };
 
+  const days = generateDays(currentMonth, currentYear);
 
-  // api data map kra
-  const margeAttendance = (calendar: any[], apiData: any[]) => {
-    return calendar.map((day) => {
-      const found = apiData.find((item) => {
-        const d = new Date(item.date).getDate();
-        return d === day.date;
-      });
+  const attendanceMap = monthlyData.reduce((acc: any, item) => {
+    const empId = item.user?.employee?.id;
+    if (!empId) return acc;
 
-      return {
-        id: found?.id || day.date,
-        date: day.date,
-        day: new Date(2026, 3, day.date).toLocaleDateString("en-US", {
-          weekday: "short",
-        }),
-        status: found ? "P" : day.status,
-        user: found?.user || null,
+    if (!acc[empId]) acc[empId] = {};
 
-        EmpStatus: found?.user?.employee?.isActive ? "Active" : "Inactive",
-      };
-    });
+    const day = new Date(item.date).getDate();
+    acc[empId][day] = item.status;
+
+    return acc;
+  }, {});
+
+  // employee list for filter
+  const employees = Array.from(
+    new Map(
+      monthlyData
+        .filter(i => i.user?.employee)
+        .map(i => [i.user!.employee!.id, i.user!.employee!])
+    ).values()
+  );
+
+  // color for status
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "P":
+        return "bg-green-100";
+      case "WO":
+        return "bg-gray-200";
+      case "Late":
+        return "bg-yellow-100";
+      case "A":
+        return "bg-red-100";
+      default:
+        return "bg-transparent"; // "-" future days
+    }
   };
 
-  console.log("monthlyData", monthlyData)
+  //  get final status
+  const getFinalStatus = (empId: number, day: any) => {
+    const today = new Date();
 
+    const currentDate = today.getDate();
+    const currentMonth = today.getMonth() + 1;
+    const currentYear = today.getFullYear();
 
+    const apiStatus = attendanceMap?.[empId]?.[day.day];
+
+    const isFuture =
+      currentYear === currentYear &&
+      currentMonth === currentMonth &&
+      day.day > currentDate;
+
+    if (isFuture) return "-";
+
+    if (day.label === "Sun") return "WO";
+
+    return apiStatus || "A";
+  };
 
   const rowperPage = 7
   const startIndex = (currentPage - 1) * rowperPage;
@@ -152,21 +241,38 @@ function MonthlyAttendance() {
   // const visiblePages = Math.max(totalPage, 5)
 
 
-// cards updates summery calculations
+  // cards updates summery calculations
 
-const totalPresent = monthlyData.filter((item) => item.status === "P").length;
-const totalAbsent = monthlyData.filter((item) => item.status === "A").length;
-const totalLateArrivals = monthlyData.filter((item) => item.user && item.status === "P").length;
-const totalWorkOff = monthlyData.filter((item) => item.status === "WO").length;
+  let totalPresent = 0;
+  let totalAbsent = 0;
+  let totalLateArrivals = 0;
+  let totalWorkOff = 0;
 
-// percentage
-const totalDays = monthlyData.length;
+  employees.forEach((emp) => {
+    days.forEach((day)=> {
+      const status = getFinalStatus(emp.id, day);
 
-const totalPresentPercentage = ((totalPresent / totalDays) * 100).toFixed(2);
-const totalAbsentPercentage = ((totalAbsent / totalDays) * 100).toFixed(2);
-const totalLateArrivalsPercentage = ((totalLateArrivals / totalDays) * 100).toFixed(2);
-const totalWorkOffPercentage = ((totalWorkOff / totalDays) * 100).toFixed(2);
+      if (status === "P") totalPresent++;
+      if (status === "A") totalAbsent++;
+      if (status === "Late") totalLateArrivals++;
+      if (status === "WO") totalWorkOff++;
+    })
+  })
 
+  const totalDays = employees.length * days.length
+
+  // const totalPresent = monthlyData.filter((item) => item.status === "P").length;
+  // const totalAbsent = monthlyData.filter((item) => item.status === "A").length;
+  // const totalLateArrivals = monthlyData.filter((item) => item.user && item.status === "P").length;
+  // const totalWorkOff = monthlyData.filter((item) => item.status === "WO").length;
+
+  // percentage
+  // const totalDays = monthlyData.length;
+
+  const totalPresentPercentage = ((totalPresent / totalDays) * 100).toFixed(2);
+  const totalAbsentPercentage = ((totalAbsent / totalDays) * 100).toFixed(2);
+  const totalLateArrivalsPercentage = ((totalLateArrivals / totalDays) * 100).toFixed(2);
+  const totalWorkOffPercentage = ((totalWorkOff / totalDays) * 100).toFixed(2);
 
 
   return (
@@ -325,51 +431,86 @@ const totalWorkOffPercentage = ((totalWorkOff / totalDays) * 100).toFixed(2);
                     <TableHead>Department</TableHead>
                     <TableHead>Emp Status</TableHead>
 
-                    {currentData.map((item) => (
-                      <TableHead key={item.id} className="text-xs">
-                        {item.date}
+                    {days.map((item, index) => (
+                      <TableHead key={index} className="text-xs">
+
                         <span className="flex text-xs flex-col">
-                          {item.day}
+                          {item.day} {item.label}
                         </span>
                       </TableHead>
                     ))}
                   </TableRow>
                 </TableHeader>
 
-                <TableBody>
-                  {monthlyData
-                    .filter((item) => item.user)
-                    .map((item, index) => (
-                      <TableRow key={item.id}>
-                        <TableCell>{index + 1}</TableCell>
+                {/* <TableBody>
+                  {monthlyData.filter((item) => item.user).map((item, index) => (
+                    <TableRow key={item.id}>
+                      <TableCell>{index + 1}</TableCell>
 
-                        <TableCell>
-                          {item.user?.employee?.firstName}{" "}
-                          {item.user?.employee?.lastName}
-                        </TableCell>
+                      <TableCell>
+                        {item.user?.employee?.firstName}{" "}
+                        {item.user?.employee?.lastName}
+                      </TableCell>
 
-                        <TableCell>
-                          {item.user?.employee?.department?.name}
-                        </TableCell>
+                      <TableCell>
+                        {item.user?.employee?.department?.name}
+                      </TableCell>
 
-                        <TableCell>{item.EmpStatus}</TableCell>
+                      <TableCell>  {item.user?.employee?.isActive ? "Active" : "Inactive"}</TableCell>
 
-                        {currentData.map((dayItem) => (
-                          <TableCell
-                            key={dayItem.date}
-                            className={`text-center rounded-xl ${dayItem.status === "P" ? "bg-green-100" : dayItem.status === "WO"
-                              ? "bg-gray-200"
-                              : "bg-red-100"
-                              }
+                      {currentData.map((dayItem) => (
+                        <TableCell
+                          key={dayItem.date}
+                          className={`text-center rounded-xl ${dayItem.status === "P" ? "bg-green-100" : dayItem.status === "WO"
+                            ? "bg-gray-200"
+                            : "bg-red-100"
+                            }
                            `}
-                          >
-                            {dayItem.status}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    ))}
-                </TableBody>
+                        >
+                          {dayItem.status}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody> */}
 
+                <TableBody>
+                  {employees.map((emp, index) => (
+                    <TableRow key={emp.id}>
+
+                      {/* row number */}
+                      <TableCell>{index + 1}</TableCell>
+
+                      {/* name */}
+                      <TableCell>
+                        {emp.firstName} {emp.lastName}
+                      </TableCell>
+
+                      {/* department */}
+                      <TableCell>{emp.department?.name}</TableCell>
+
+                      {/* status */}
+                      <TableCell>
+                        {emp.isActive ? "Active" : "Inactive"}
+                      </TableCell>
+
+                      {/* DAYS LOOP (IMPORTANT FIX) */}
+                      {days.map((day, i) => {
+                        const finalStatus = getFinalStatus(emp.id, day);
+
+                        return (
+                          <TableCell
+                            key={i}
+                            className={`text-center rounded-full text-xs py-0 px-2  ${getStatusColor(finalStatus)}`}
+                          >
+                            {finalStatus === "-" ? "" : finalStatus}
+                          </TableCell>
+                        );
+                      })}
+
+                    </TableRow>
+                  ))}
+                </TableBody>
               </Table>
 
               {/* pagination */}

@@ -43,7 +43,7 @@ export const createEmployee = async (req: Request, res: Response) => {
             //  Create User
             const user = await tx.user.create({
                 data: {
-                    name: `${firstName}${lastName}`,
+                    name: `${firstName} ${lastName}`,
                     email,
                     password: hashedPassword,
                     roles: {
@@ -295,7 +295,7 @@ export const deleteEmployee = async (req: Request, res: Response) => {
 // filter employee controller
 
 export const filterEmployee = async (req: Request, res: Response) => {
-    try{
+    try {
         const { search, role, departmentId } = req.query;
         const employees = await prisma.employee.findMany({
             where: {
@@ -305,14 +305,27 @@ export const filterEmployee = async (req: Request, res: Response) => {
                         { lastName: { contains: String(search), mode: 'insensitive' } },
                         { designation: { contains: String(search), mode: 'insensitive' } },
                         { employeeCode: { contains: String(search), mode: 'insensitive' } },
-                        {user: { email: { contains: String(search), mode: 'insensitive' } }},
+                        { user: { email: { contains: String(search), mode: 'insensitive' } } },
                     ]
                 }),
-                ...(role && { roleId: Number(role) }),
+                // ...(role && { roleId: Number(role) }),
+                ...(role && {
+                    user: {
+                        roles: {
+                            some: {
+                                id: Number(role),
+                            },
+                        },
+                    },
+                }),
                 ...(departmentId && { departmentId: Number(departmentId) }),
             },
             include: {
-                user: true,
+                user: {
+                    include: {
+                        roles: true,   //  ADD THIS
+                    },
+                },
                 department: true
             },
             orderBy: {

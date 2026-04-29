@@ -82,7 +82,7 @@ export const signin = async (req: any, res: any) => {
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(401).json({ message: 'Invalid credentials' });
+            return res.status(401).json({ message: 'Invalid Password' });
         }
 
         // update last login

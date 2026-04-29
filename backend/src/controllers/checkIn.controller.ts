@@ -57,9 +57,20 @@ export const checkIn = async (req: Request, res: Response) => {
 
         //  office time logic
         const officeTime = new Date();
-        officeTime.setHours(9, 30, 0, 0);
+        officeTime.setHours(10, 0, 0, 0);
 
-        const status = now > officeTime ? "Late" : "Early";
+        const graceTime = new Date();
+        graceTime.setHours(10, 15, 0, 0);
+
+        let status;
+
+        if (now <= officeTime) {
+            status = "P";
+        } else if (now <= graceTime) {
+            status = "P";
+        } else {
+            status = "Late";
+        }
 
         // create entry
         const attendance = await prisma.attendance.create({
@@ -244,3 +255,61 @@ export const getAttendance = async (req: Request, res: Response) => {
         return res.status(500).json({ message: "Server error" });
     }
 };
+
+// filter attendance
+
+export const filterAttendance = async (req: Request, res: Response) => {
+    try {
+        const { search, date, status } = req.query;
+
+       
+            const start = new Date(date as string);
+            start.setHours(0, 0, 0, 0);
+
+            const end = new Date(date as string);
+            end.setHours(23, 59, 59, 999);
+        
+        
+        const attendance = await prisma.attendance.findMany({
+            where: {
+                ...(search && {
+                    user: {
+                        name: {
+                            contains: String(search),
+                            mode: 'insensitive'
+                        },
+                    },
+                }),
+
+
+                ...(date && {
+                    date: {
+                        gte: start,
+                        lte: end,
+                    },
+                }),
+
+                ...(status && {
+                    status: String(status),
+                }),
+            },
+
+            include: {
+                user: true,
+            },
+        });
+
+
+        return res.status(200).json({
+            success: true,
+            message: "Attendance filtered successfully",
+            data: attendance,
+        })
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Filter error",
+        })
+    }
+}

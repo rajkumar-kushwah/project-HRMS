@@ -1,6 +1,6 @@
 import { protect } from "../middleware/auth.middleware.ts";
 import { checkPermissions } from "../middleware/role.middleware.ts";
-import { checkIn, checkOut, getAttendance } from "../controllers/checkIn.controller.ts";
+import { checkIn, checkOut, getAttendance, filterAttendance } from "../controllers/checkIn.controller.ts";
 import express from "express";
 
 const router = express.Router();
@@ -11,5 +11,7 @@ router.post('/', protect, checkPermissions("CHECKIN.CHECKIN"), checkIn);
 router.post('/checkout', protect, checkPermissions("CHECKIN.CHECKOUT"), checkOut);
 
 router.get('/', protect, checkPermissions("CHECKIN.VIEW"), getAttendance);
+
+router.get('/filter', protect, checkPermissions("CHECKIN.FILTER"), filterAttendance);
 
 export default router

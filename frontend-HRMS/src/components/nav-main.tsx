@@ -48,7 +48,7 @@ export function NavMain({
     }))
     .filter((item) => item.items?.length)
   },[items, user]);
-    console.log("USER:", user);
+    
 console.log("MENU:", items);
 
   return (

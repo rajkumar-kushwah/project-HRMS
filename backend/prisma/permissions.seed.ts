@@ -4,15 +4,7 @@
 // her ek page ka permission assign 
 
 export const permissionCategories = [
-    {
-        module: "ATTENDANCE",
-        permissions: [
-            "VIEW",
-            "CHECKIN",
-            "UPDATE",
-            "DELETE",
-        ],
-    },
+
     {
         module: "ROLE",
         permissions: [
@@ -29,7 +21,8 @@ export const permissionCategories = [
             "FILTER",
             "IMPORT",
             "EXPORT",
-        ],
+            "TEMPLATE"
+        ]
     },
     {
         module: "EMPLOYEE",
@@ -49,6 +42,7 @@ export const permissionCategories = [
             "CHECKOUT",
             "UPDATE",
             "DELETE",
+            "FILTER",
         ],
     }
 ];

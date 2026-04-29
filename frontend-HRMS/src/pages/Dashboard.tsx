@@ -139,6 +139,7 @@ const Dashboard = () => {
       if (searchItem) {
         const res = filterEmployee(searchItem);
         res.then(res => setEmployees(res.data.data || res.data || []));
+        console.log("EMP:", res);
       } else {
         const res = await getEmployees();
         setEmployees(res.data.data || res.data || []);
