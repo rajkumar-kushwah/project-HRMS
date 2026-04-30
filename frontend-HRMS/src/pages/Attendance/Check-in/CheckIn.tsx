@@ -2,11 +2,12 @@ import { AppSidebar } from '@/components/app-sidebar'
 import { Button } from '@/components/ui/button'
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { Clock, MapPin, LogIn, Award, Users, AlarmClockIcon, LineChart, CircleCheck, } from 'lucide-react'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { TableHead, TableHeader, TableRow, TableBody, TableCell, Table } from '@/components/ui/table'
 import { getAttendance, checkIn, checkOut } from '@/controllers/checkIn.controller'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '@/pages/context/AuthContext'
 
 
 
@@ -25,7 +26,7 @@ interface Attendance {
 }
 
 const CheckIn = () => {
-
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const [attendanceData, setAttendanceData] = React.useState<Attendance[]>([]);
@@ -53,7 +54,7 @@ const CheckIn = () => {
       setCheckedIn(false);
       setAttendanceData((prev) => {
         const updated = [...prev];
-        const lastEntry = updated[updated.length - 1];
+        const lastEntry = updated[0];
 
         if (lastEntry && !lastEntry.checkOut) {
           lastEntry.checkOut = now.toISOString();
@@ -76,21 +77,39 @@ const CheckIn = () => {
   }
 
 
+  // Page load pe backend se check kro 
+  useEffect(() => {
+    const fetchAttendance = async () => {
+      try {
+        const res = await getAttendance();
+
+        const data = res.data.data;
+
+        // table ke liye
+        setAttendanceData(data);
+
+        // button state ke liye
+        const lastEntry = data?.[0];
+
+        if (lastEntry && !lastEntry.checkOut) {
+          setCheckedIn(true);
+          setCheckInTime(new Date(lastEntry.checkIn));
+        } else {
+          setCheckedIn(false);
+          setCheckInTime(null);
+        }
+
+      } catch (err) {
+        console.error("Fetch error:", err);
+      }
+    };
+
+    fetchAttendance();
+  }, []);
 
   // sort of data teble renge minimum to maximum 1 to 5 
   // const visivleData = attendanceData.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-
-
-  const fetchAttendance = async () => {
-    try {
-      const res = await getAttendance();
-      setAttendanceData(res.data.data);
-
-    } catch (err) {
-      console.error("Fetch error:", err);
-    }
-  };
 
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString("en-IN", {
@@ -111,13 +130,11 @@ const CheckIn = () => {
     return attendanceData.slice(-5);
   }, [attendanceData]);
 
-  React.useEffect(() => {
-    fetchAttendance();
-  }, []);
+
 
 
   React.useEffect(() => {
-    let interval: any;
+    let interval: ReturnType<typeof setInterval>;
 
     if (checkedIn && checkInTime) {
       interval = setInterval(() => {
@@ -229,7 +246,7 @@ const CheckIn = () => {
             </CardHeader>
 
             {/* check in time and work duration */}
-            {checkedIn && (
+            {checkedIn && user?.role?.name || user?.roles?.[0] === "EMPLOYEE" && (
               <div className="animate-in fade-in duration-200 zoom-in-95">
                 <CardContent className='grid grid-cols-1 sm:grid-cols-2 gap-3 border p-4 rounded-lg justify-between w-[90%] mx-auto'>
                   <div>
@@ -248,19 +265,21 @@ const CheckIn = () => {
 
             {/* content goes here check in Button and check out */}
             <div >
-              <Button variant="outline"
-                onClick={handleCheckIn}
-                className={`grid text-ms cursor-pointer w-[90%] mx-auto  ${checkedIn ? "bg-red-400 hover:bg-red-500" : "bg-blue-500 hover:bg-blue-600 text-white"
-                  } `}>
+              {user?.role?.name || user?.roles?.[0] === "EMPLOYEE" && (
+                <Button variant="outline"
+                  onClick={handleCheckIn}
+                  className={`grid text-ms cursor-pointer w-[90%] mx-auto  ${checkedIn ? "bg-red-400 hover:bg-red-500" : "bg-blue-500 hover:bg-blue-600 text-white"
+                    } `}>
 
-                <div className='flex justify-center items-center gap-2'>
-                  <LogIn className="w-4 h-4 " />
+                  <div className='flex justify-center items-center gap-2'>
+                    <LogIn className="w-4 h-4 " />
 
-                  <span className="truncate">
-                    {checkedIn ? "Check Out" : "Check In Now"}
-                  </span>
-                </div>
-              </Button>
+                    <span className="truncate">
+                      {checkedIn ? "Check Out" : "Check In Now"}
+                    </span>
+                  </div>
+                </Button>
+              )}
             </div>
 
             {/* location */}
@@ -368,7 +387,7 @@ const CheckIn = () => {
               View All
             </Button> */}
 
-      
+
             <Button
               variant="outline"
               className="text-xs cursor-pointer"

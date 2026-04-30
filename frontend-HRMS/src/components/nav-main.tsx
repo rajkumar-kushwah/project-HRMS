@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/sidebar"
 import { hasRole } from "../utils/auth"
 import React from "react"
+import { Link } from "react-router-dom"
 
 
 export function NavMain({
@@ -49,7 +50,7 @@ export function NavMain({
     .filter((item) => item.items?.length)
   },[items, user]);
     
-console.log("MENU:", items);
+// console.log("MENU:", items);
 
   return (
     <SidebarGroup>
@@ -75,11 +76,11 @@ console.log("MENU:", items);
                   {item.items?.map((subItem) => (
                     <SidebarMenuSubItem key={subItem.title}>
                       <SidebarMenuSubButton asChild>
-                        <a href={subItem.url}>
+                        <Link to={subItem.url}>
                           {/* icon && <icon /> */}
                           {subItem.icon && <subItem.icon />}
                           <span>{subItem.title}</span>
-                        </a>
+                        </Link>
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
                   ))}

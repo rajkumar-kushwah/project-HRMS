@@ -263,10 +263,12 @@ export const filterAttendance = async (req: Request, res: Response) => {
         const { search, date, status } = req.query;
 
        
-            const start = new Date(date as string);
+        const searchDate = new Date(req.query.date as string);
+
+            const start = new Date(searchDate);
             start.setHours(0, 0, 0, 0);
 
-            const end = new Date(date as string);
+            const end = new Date(searchDate);   
             end.setHours(23, 59, 59, 999);
         
         

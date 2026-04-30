@@ -21,13 +21,18 @@ interface Attendance {
     status: string;
 }
 
+interface AttendanceFilterParams {
+    search?: string;
+    date?: string;
+    status?: string;
+}
 
 
 function AttendanceHistory() {
     const navigate = useNavigate();
 
     const [attendanceData, setAttendanceData] = React.useState<Attendance[]>([]);
-    const [seachItem, setSearchItem] = React.useState("");
+    const [seachItem, setSearchItem] = React.useState<AttendanceFilterParams>({});
 
     const fetchAttendance = async () => {
         try {
@@ -45,10 +50,10 @@ function AttendanceHistory() {
     // Filter handler apply
     const handleApplyFilter = async () => {
         try {
-            if (!seachItem.trim()) return;
+            if (!seachItem.search && !seachItem.date && !seachItem.status) return;
             if (seachItem) {
-                const res = await filterAttendance({ search: seachItem });  
-                setAttendanceData(res.data.data || res.data || []);              
+                const res = await filterAttendance({ ...seachItem });
+                setAttendanceData(res.data.data || res.data || []);
             } else {
                 const res = await getAttendance();
                 setAttendanceData(res.data.data || res.data || []);
@@ -62,7 +67,8 @@ function AttendanceHistory() {
     // clear filter
     const handleClearFilter = async () => {
         try {
-            setSearchItem("");
+            setSearchItem({ search: "", date: "", status: "" });
+
             const res = await getAttendance();
             setAttendanceData(res.data.data || res.data || []);
         } catch (error) {
@@ -106,9 +112,10 @@ function AttendanceHistory() {
                     {/* Filter section */}
 
                     <div className="flex gap-2 mb-4">
-                        <Input placeholder="Filter by name or date" type="text" value={seachItem} onChange={(e)=> setSearchItem(e.target.value)}/>
+                        <Input placeholder="Filter by name or date" type="text" value={seachItem.search} onChange={(e) => setSearchItem({ ...seachItem, search: e.target.value })} />
+                        <Input placeholder="Filter by name or date" type="date" value={seachItem.date} onChange={(e) => setSearchItem({ ...seachItem, date: e.target.value })} />
                         <Button variant="outline" className=" cursor-pointer"
-                        onClick={handleApplyFilter}
+                            onClick={handleApplyFilter}
                         >
                             Apply
                         </Button>
