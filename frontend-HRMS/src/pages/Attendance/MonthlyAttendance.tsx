@@ -351,7 +351,7 @@ function MonthlyAttendance() {
 
                   </div>
 
-                  {/* Actions */}
+                  {/* Actions buttons */}
                   <div className="">
                     <div className=' gap-1 flex flex-wrap '>
                       <Button variant="outline" className="text-xs cursor-pointer items-center justify-center  px-2 py-1   ">

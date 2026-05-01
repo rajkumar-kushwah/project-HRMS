@@ -110,10 +110,14 @@ function AttendanceHistory() {
                     </h1>
 
                     {/* Filter section */}
+                    <div>
+                        <h1 className="text-base font-medium">Filter Table</h1>
+                    </div>
 
                     <div className="flex gap-2 mb-4">
-                        <Input placeholder="Filter by name or date" type="text" value={seachItem.search} onChange={(e) => setSearchItem({ ...seachItem, search: e.target.value })} />
-                        <Input placeholder="Filter by name or date" type="date" value={seachItem.date} onChange={(e) => setSearchItem({ ...seachItem, date: e.target.value })} />
+
+                        <Input placeholder="Filter by name or date" type="text" value={seachItem.search || ""} onChange={(e) => setSearchItem({ ...seachItem, search: e.target.value })} />
+                        <Input placeholder="Filter by name or date" type="date" value={seachItem.date || ""} onChange={(e) => setSearchItem({ ...seachItem, date: e.target.value })} />
                         <Button variant="outline" className=" cursor-pointer"
                             onClick={handleApplyFilter}
                         >

@@ -258,60 +258,142 @@ export const getAttendance = async (req: Request, res: Response) => {
 
 // filter attendance
 
-export const filterAttendance = async (req: Request, res: Response) => {
-    try {
-        const { search, date, status } = req.query;
+// export const filterAttendance = async (req: Request, res: Response) => {
+//     try {
+//         const userId = (req as any).session?.userId;
+//         const { search, date, status } = req.query;
 
        
-        const searchDate = new Date(req.query.date as string);
+//         const searchDate = new Date(req.query.date as string);
 
-            const start = new Date(searchDate);
-            start.setHours(0, 0, 0, 0);
+//             const start = new Date(searchDate);
+//             start.setHours(0, 0, 0, 0);
 
-            const end = new Date(searchDate);   
-            end.setHours(23, 59, 59, 999);
+//             const end = new Date(searchDate);   
+//             end.setHours(23, 59, 59, 999);
         
+            
         
-        const attendance = await prisma.attendance.findMany({
-            where: {
-                ...(search && {
-                    user: {
-                        name: {
-                            contains: String(search),
-                            mode: 'insensitive'
-                        },
-                    },
-                }),
+//         const attendance = await prisma.attendance.findMany({
+//             where: {
+//                 userId,
+//                 ...(search && {
+//                     user: {
+//                         name: {
+//                             contains: String(search),
+//                             mode: 'insensitive'
+//                         },
+//                     },
+//                 }),
 
 
-                ...(date && {
-                    date: {
-                        gte: start,
-                        lte: end,
-                    },
-                }),
+//                 ...(date && {
+//                     date: {
+//                         gte: start,
+//                         lte: end,
+//                     },
+//                 }),
 
-                ...(status && {
-                    status: String(status),
-                }),
-            },
+//                 ...(status && {
+//                     status: String(status),
+//                 }),
+//             },
 
-            include: {
-                user: true,
-            },
-        });
+//             include: {
+//                 user: true,
+//             },
+//         });
 
 
-        return res.status(200).json({
-            success: true,
-            message: "Attendance filtered successfully",
-            data: attendance,
-        })
+//         return res.status(200).json({
+//             success: true,
+//             message: "Attendance filtered successfully",
+//             data: attendance,
+//         })
 
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: "Filter error",
-        })
+//     } catch (error) {
+//         return res.status(500).json({
+//             success: false,
+//             message: "Filter error",
+//         })
+//     }
+// }
+
+
+export const filterAttendance = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).session?.userId;
+    const { search, date, status } = req.query;
+
+    // get user + roles
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { roles: true },
+    });
+
+    const roles = user?.roles?.map((r) => r.name) || [];
+
+    // base where
+    let where: any = {};
+
+    //  NORMAL USER restriction
+    if (!roles.includes("SUPER_ADMIN")) {
+      where.userId = userId;
     }
-}
+
+    //  SEARCH filter
+    if (search) {
+      where.user = {
+        name: {
+          contains: String(search),
+          mode: "insensitive",
+        },
+      };
+    }
+
+    //  DATE filter
+    if (date) {
+      const searchDate = new Date(date as string);
+
+      const start = new Date(searchDate);
+      start.setHours(0, 0, 0, 0);
+
+      const end = new Date(searchDate);
+      end.setHours(23, 59, 59, 999);
+
+      where.date = {
+        gte: start,
+        lte: end,
+      };
+    }
+
+    //  STATUS filter
+    if (status) {
+      where.status = String(status);
+    }
+
+    // final query
+    const attendance = await prisma.attendance.findMany({
+      where,
+      include: {
+        user: true,
+      },
+      orderBy: {
+        date: "desc",
+      },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Attendance filtered successfully",
+      data: attendance,
+    });
+  } catch (error) {
+    console.error("FILTER ERROR:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Filter error",
+    });
+  }
+};
