@@ -90,10 +90,11 @@ const CheckIn = () => {
 
         // button state ke liye
         const lastEntry = data?.[0];
+        const active = lastEntry && !lastEntry.checkOut;
 
         if (lastEntry && !lastEntry.checkOut) {
-          setCheckedIn(true);
-          setCheckInTime(new Date(lastEntry.checkIn));
+          setCheckedIn(!!active);
+          setCheckInTime(active ? new Date(lastEntry.checkIn) : null);
         } else {
           setCheckedIn(false);
           setCheckInTime(null);

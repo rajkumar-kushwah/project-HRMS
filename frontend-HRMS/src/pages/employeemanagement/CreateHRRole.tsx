@@ -14,7 +14,7 @@ import { toast } from 'sonner'
 
 import { getRoles, createRole, updateRole, deleteRole } from '@/controllers/roleApi.controller'
 import { getPermissions } from '@/controllers/permissionApi.controller'
-// import { useAuth } from '@/pages/context/AuthContext'
+import { useAuth } from '@/pages/context/AuthContext'
 
 
 interface Role {
@@ -28,9 +28,15 @@ interface Role {
         action: string;
     }[];
 }
+type Permission = {
+  id: number;
+  name: string;
+  module: string;
+  action: string;
+};
 
 function CreateHRRole() {
-// const { user } = useAuth();
+    const { user } = useAuth();
     const [tablepemissions, setTablePermissions] = React.useState(false);
     const [open, setOpen] = React.useState(false)
     const [editOpen, setEditOpen] = React.useState(false)
@@ -39,7 +45,7 @@ function CreateHRRole() {
     const [roleDesc, setRoleDesc] = React.useState("");
     const [selectPermissions, setSelectPermissions] = React.useState<number[]>([]);
     const [roles, setRoles] = React.useState<Role[]>([]);
-    const [permissionsList, setPermissionsList] = React.useState<any[]>([]);
+    const [permissionsList, setPermissionsList] = React.useState<Permission[]>([]);
 
     React.useEffect(() => {
         fetchData();
@@ -146,6 +152,7 @@ function CreateHRRole() {
 
 
     const groupedPermissions = permissionsList.reduce((acc, perm) => {
+       if (!perm.module) return acc;
         const module = perm.module; // ATTENDANCE
 
         if (!acc[module]) {
@@ -155,13 +162,10 @@ function CreateHRRole() {
         acc[module].push(perm); // VIEW, EDIT, DELETE
 
         return acc;
-    }, {});
+    }, {} as Record<string, Permission[]>);
 
-    // console.log("permissionsList:", permissionsList);
-    // console.log("groupedPermissions:", groupedPermissions);
-    // console.log("selectPermissions:", selectPermissions);
-console.log(permissionsList);
-// console.log("USER:", user);
+    console.log(permissionsList);
+    // console.log("USER:", user);
 
     return (
         <SidebarProvider>
@@ -187,7 +191,7 @@ console.log(permissionsList);
                         <div>
                             <Dialog open={open} onOpenChange={setOpen}>
                                 <DialogTrigger asChild>
-                                 {permissionsList?.some(p => p.name === "CREATE_ROLE") && (   <Button variant="outline" className=' cursor-pointer'><UserCog className='w-2 h-2' /> Create Role</Button>)} 
+                                    {(user?.role?.name || user?.roles?.[0] === "SUPER_ADMIN" || permissionsList?.some(p => p.name === "CREATE_ROLE")) && (<Button variant="outline" className=' cursor-pointer'><UserCog className='w-2 h-2' /> Create Role</Button>)}
                                 </DialogTrigger>
                                 <DialogContent className=''>
                                     <DialogHeader>
@@ -349,7 +353,7 @@ console.log(permissionsList);
                                                                     }}
                                                                 >Edit</DropdownMenuItem>
                                                             </DialogTrigger>
-                                                            <DialogContent  className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                                                            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
                                                                 <DialogHeader>
 
                                                                     <DialogTitle>Edit HR Role</DialogTitle>
@@ -358,7 +362,7 @@ console.log(permissionsList);
                                                                     </DialogDescription>
 
                                                                 </DialogHeader>
-                                                                <form  onSubmit={handleUpdate} className='flex flex-col gap-4 '>
+                                                                <form onSubmit={handleUpdate} className='flex flex-col gap-4 '>
                                                                     <div className='grid grid-cols-1 gap-2 '>
                                                                         <div>
                                                                             {/* <Label>Role Name</Label> */}

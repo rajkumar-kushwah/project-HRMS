@@ -1,8 +1,25 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { getprofile } from "@/controllers/profile.controller";
 
+// type User = {
+//   id: number;
+//   email: string;
+//   role: string;
+//   roles: string[];
+//   permission: string[];
+// };
+
+// type AuthContextType = {
+//   user: User | null;
+//   setUser: React.Dispatch<React.SetStateAction<User | null>>;
+//   authenticated: boolean | null;
+//   setAuthenticated: React.Dispatch<React.SetStateAction<boolean | null>>;
+//   fetchUser: () => Promise<void>;
+// };
+
+
 const AuthContext = createContext<any>(null);
-type authSate  = boolean | null;
+type authSate = boolean | null;
 export const AuthProvider = ({ children }: any) => {
   const [user, setUser] = useState<any>(null);
   const [authenticated, setAuthenticated] = useState<authSate>(null);
@@ -13,7 +30,7 @@ export const AuthProvider = ({ children }: any) => {
       setUser(res.data);
       setAuthenticated(true);
     } catch (err) {
-      
+
       setUser(null);
       setAuthenticated(false);
     }

@@ -45,15 +45,28 @@ function MonthlyAttendance() {
   const [currentPage, setCurrentPage] = React.useState(1);
   const [open, setOpen] = React.useState(false)
   const [monthlyData, setMonthlyData] = React.useState<Attendance[]>([])
+  const [selectMonth, setSelectMonth] = React.useState(new Date().getMonth() + 1);
+  const [selectYear, setSelectYear] = React.useState(new Date().getFullYear());
 
   // calendar month and year
   const today = new Date();
   const currentMonth = today.getMonth() + 1;
   const currentYear = today.getFullYear();
 
+  // select month droup
+  const monthOptions = Array.from({ length: 12 }, (_, index) => ({
+    month: index + 1,
+    year: currentYear,
+    value: `${index + 1}-${currentYear}`,
+    label: new Date(currentYear, index).toLocaleString("en-US", {
+      month: "long",
+      year: "numeric",
+    })
+  }))
+
   const fetchMonthlyAttendance = async () => {
     try {
-      const res = await getMonthlyAttendance(currentMonth, currentYear);
+      const res = await getMonthlyAttendance(selectMonth, selectYear);
       // const calendar = generateMonthDays(currentMonth, currentYear);
       // const merged = margeAttendance(calendar, res.data.data);
       setMonthlyData(res.data.data);
@@ -64,68 +77,11 @@ function MonthlyAttendance() {
 
   React.useEffect(() => {
     fetchMonthlyAttendance();
-  }, [])
-
-  // monthly calculate A or p or WO
-  // const generateMonthDays = (month: number, year: number) => {
-  //   const today = new Date();
-  //   const currentDate = today.getDate();
-
-  //   const daysInMonth = new Date(year, month, 0).getDate();
-
-  //   return Array.from({ length: daysInMonth }, (_, i) => {
-  //     const dayNumber = i + 1;
-  //     const date = new Date(year, month - 1, dayNumber);
-
-  //     const day = date.getDay(); // 0 = Sunday, 6 = Saturday
-
-  //     let status = "-";
-
-  //     // Only Sunday = Week Off
-  //     if (day === 0) {
-  //       status = "WO";
-  //     }
-  //     // past date = A
-  //     else if (dayNumber < currentDate) {
-  //       status = "A";
-  //     }
-
-  //     return {
-  //       date: i + 1,
-  //       status,
-  //     };
-  //   });
-  // };
+  }, [selectMonth, selectYear]);
 
 
-  // api data map kra
-  // const margeAttendance = (calendar: any[], apiData: any[]) => {
-  //   return calendar.map((day) => {
-  //     const found = apiData.find((item) => {
-  //       const itemDate = new Date(item.date);
 
-  //       return (
-  //         itemDate.getDate() === day.date &&
-  //         itemDate.getMonth() === currentMonth - 1 &&
-  //         itemDate.getFullYear() === currentYear
-  //       );
-  //     });
 
-  //     return {
-  //       id: found?.id || day.date,
-  //       date: day.date,
-  //       day: new Date(2026, 3, day.date).toLocaleDateString("en-US", {
-  //         weekday: "short",
-  //       }),
-  //       status: found ? "P" : day.status,
-  //       user: found?.user || null,
-
-  //       EmpStatus: found?.user?.employee?.isActive ? "Active" : "Inactive",
-  //     };
-  //   });
-  // };
-
-  // console.log("monthlyData", monthlyData)
 
   const generateDays = (month: number, year: number) => {
     const today = new Date();
@@ -170,7 +126,7 @@ function MonthlyAttendance() {
     });
   };
 
-  const days = generateDays(currentMonth, currentYear);
+  const days = generateDays(selectMonth, selectYear);
 
   const attendanceMap = monthlyData.reduce((acc: any, item) => {
     const empId = item.user?.employee?.id;
@@ -220,9 +176,12 @@ function MonthlyAttendance() {
     const apiStatus = attendanceMap?.[empId]?.[day.day];
 
     const isFuture =
-      currentYear === currentYear &&
-      currentMonth === currentMonth &&
-      day.day > currentDate;
+      selectYear > currentYear ||
+      (selectYear === currentYear &&
+        selectMonth > currentMonth) ||
+      (selectYear === currentYear &&
+        selectMonth === currentMonth &&
+        day.day > currentDate);
 
     if (isFuture) return "-";
 
@@ -249,7 +208,7 @@ function MonthlyAttendance() {
   let totalWorkOff = 0;
 
   employees.forEach((emp) => {
-    days.forEach((day)=> {
+    days.forEach((day) => {
       const status = getFinalStatus(emp.id, day);
 
       if (status === "P") totalPresent++;
@@ -307,7 +266,11 @@ function MonthlyAttendance() {
                   {/* RIGHT SIDE - month and year filter */}
                   <div>
                     {/* <h1 className="text-sm font-medium mb-1">*</h1> */}
-                    <Select.Root open={open} onOpenChange={setOpen} >
+                    <Select.Root open={open} onOpenChange={setOpen} onValueChange={(value) => {
+                      const [month, year] = value.split("-");
+                      setSelectMonth(Number(month));
+                      setSelectYear(Number(year));
+                    }} >
                       <Select.Trigger className="w-full border  rounded px-2 py-1 text-xs flex justify-between items-center gap-2">
                         <Calendar className='w-4 h-4' />
                         <Select.Value placeholder="Select a month" />
@@ -316,20 +279,12 @@ function MonthlyAttendance() {
                       </Select.Trigger>
 
                       <Select.Content position='popper' sideOffset={4} className="w-(--radix-select-trigger-width) z-50 bg-white rounded shadow border data-[state=open]:animate-in data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 ">
-                        <Select.Item value="August" className="px-2 py-1 text-xs cursor-pointer hover:bg-gray-100 w-full">
-                          <Select.ItemText>August 2026</Select.ItemText>
-                        </Select.Item>
+                        {monthOptions.map((month) => (
+                          <Select.Item key={month.value} value={String(month.value)} className="px-2 py-1 text-xs cursor-pointer hover:bg-gray-100 w-full">
+                            <Select.ItemText>{month.label}</Select.ItemText>
+                          </Select.Item>
+                        ))}
 
-                        <Select.Item value="May" className="px-2 py-1 text-xs cursor-pointer hover:bg-gray-100 w-full">
-                          <Select.ItemText>May 2026</Select.ItemText>
-                        </Select.Item>
-
-                        <Select.Item value="June" className="px-2 py-1 text-xs  cursor-pointer hover:bg-gray-100 w-full">
-                          <Select.ItemText>June 2026</Select.ItemText>
-                        </Select.Item>
-                        <Select.Item value="July" className="px-2 py-1 text-xs  cursor-pointer hover:bg-gray-100 w-full">
-                          <Select.ItemText>July 2026</Select.ItemText>
-                        </Select.Item>
                       </Select.Content>
                     </Select.Root>
                   </div>
@@ -514,13 +469,14 @@ function MonthlyAttendance() {
               </Table>
 
               {/* pagination */}
-              <div className="flex items-center justify-between mt-4" >
+              <div className="flex  items-center justify-between mt-4 px-2 " >
                 <p className="text-xs text-gray-500">
                   Showing {startIndex + 1} - {startIndex + currentData.length} of {monthlyData.length} employees
                 </p>
+
+                <div className='ml-auto'>
                 <Pagination>
                   <PaginationContent >
-
 
                     {/* previous */}
                     <PaginationPrevious
@@ -553,6 +509,7 @@ function MonthlyAttendance() {
                     </PaginationItem>
                   </PaginationContent>
                 </Pagination>
+                </div>
               </div>
 
             </Tabs.Content>

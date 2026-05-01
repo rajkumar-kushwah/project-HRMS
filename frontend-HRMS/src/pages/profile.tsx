@@ -17,7 +17,7 @@ function Profile() {
         lastLogin: "",
         roles: "",
 
-        });
+    });
 
 
     useEffect(() => {
@@ -29,7 +29,7 @@ function Profile() {
 
                 setUser({
                     ...res.data,
-                    role: res.data.role?.name || user?.roles?.[0],
+                    role: res.data.role,
                 });
                 console.log(res.data);
             } catch (error) {
@@ -39,14 +39,14 @@ function Profile() {
         getProfile();
     }, [])
 
-   const getInitials = (name: string = "") => {
-    const names = name.trim().split(" ").filter(Boolean);
+    const getInitials = (name: string = "") => {
+        const names = name.trim().split(" ").filter(Boolean);
 
-    const first = names[0]?.[0] || "";
-    const last = names[1]?.[0] || "";
+        const first = names[0]?.[0] || "";
+        const last = names[1]?.[0] || "";
 
-    return first + last;
-};
+        return first + last;
+    };
 
     return (
         <SidebarProvider>

@@ -7,8 +7,9 @@ const RoleRoute = ({ roles }: any) => {
     if (!user) return <Navigate to="/" replace />;
 
 
-    const role = user?.role?.name ||
-        user?.roles?.[0];
+    // const role = user?.role?.name ||
+    //     user?.roles?.[0];
+    const role = user?.role || "";
 
     console.log("USER:", user);
     console.log("ROLE:", role);

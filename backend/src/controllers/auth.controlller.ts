@@ -118,12 +118,21 @@ export const signin = async (req: any, res: any) => {
             )
         ];
 
+        const primaryRole = user.roles[0];
+
+        if (!primaryRole) {
+            return res.status(400).json({
+                message: "Role not assigned to user"
+            });
+        }
+
         return res.status(200).json({
             message: 'Login successful',
             user: {
                 id: user.id,
                 email: user.email,
-                roles: user.roles.map((role: any) => role.name),
+                role: primaryRole.name,
+                roles: user.roles.map(role => role.name),
                 permission
             }
         });

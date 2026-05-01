@@ -131,6 +131,12 @@ export const checkOut = async (req: Request, res: Response) => {
             })
         }
 
+        const start = new Date();
+        start.setHours(0, 0, 0, 0);
+
+        const end = new Date();
+        end.setHours(23, 59, 59, 999);
+
         const now = new Date();
 
         //  find active check-in (no checkout yet)
@@ -138,6 +144,10 @@ export const checkOut = async (req: Request, res: Response) => {
             where: {
                 userId,
                 checkOut: null, //  important
+                checkIn: {
+                    gte: start,
+                    lte: end,
+                },
             },
             orderBy: {
                 checkIn: "desc",
@@ -263,7 +273,7 @@ export const getAttendance = async (req: Request, res: Response) => {
 //         const userId = (req as any).session?.userId;
 //         const { search, date, status } = req.query;
 
-       
+
 //         const searchDate = new Date(req.query.date as string);
 
 //             const start = new Date(searchDate);
@@ -271,9 +281,9 @@ export const getAttendance = async (req: Request, res: Response) => {
 
 //             const end = new Date(searchDate);   
 //             end.setHours(23, 59, 59, 999);
-        
-            
-        
+
+
+
 //         const attendance = await prisma.attendance.findMany({
 //             where: {
 //                 userId,
@@ -321,79 +331,79 @@ export const getAttendance = async (req: Request, res: Response) => {
 
 
 export const filterAttendance = async (req: Request, res: Response) => {
-  try {
-    const userId = (req as any).session?.userId;
-    const { search, date, status } = req.query;
+    try {
+        const userId = (req as any).session?.userId;
+        const { search, date, status } = req.query;
 
-    // get user + roles
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      include: { roles: true },
-    });
+        // get user + roles
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            include: { roles: true },
+        });
 
-    const roles = user?.roles?.map((r) => r.name) || [];
+        const roles = user?.roles?.map((r) => r.name) || [];
 
-    // base where
-    let where: any = {};
+        // base where
+        let where: any = {};
 
-    //  NORMAL USER restriction
-    if (!roles.includes("SUPER_ADMIN")) {
-      where.userId = userId;
+        //  NORMAL USER restriction
+        if (!roles.includes("SUPER_ADMIN")) {
+            where.userId = userId;
+        }
+
+        //  SEARCH filter
+        if (search) {
+            where.user = {
+                name: {
+                    contains: String(search),
+                    mode: "insensitive",
+                },
+            };
+        }
+
+        //  DATE filter
+        if (date) {
+            const searchDate = new Date(date as string);
+
+            const start = new Date(searchDate);
+            start.setHours(0, 0, 0, 0);
+
+            const end = new Date(searchDate);
+            end.setHours(23, 59, 59, 999);
+
+            where.date = {
+                gte: start,
+                lte: end,
+            };
+        }
+
+        //  STATUS filter
+        if (status) {
+            where.status = String(status);
+        }
+
+        // final query
+        const attendance = await prisma.attendance.findMany({
+            where,
+            include: {
+                user: true,
+            },
+            orderBy: {
+                date: "desc",
+            },
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Attendance filtered successfully",
+            data: attendance,
+        });
+    } catch (error) {
+        console.error("FILTER ERROR:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Filter error",
+        });
     }
-
-    //  SEARCH filter
-    if (search) {
-      where.user = {
-        name: {
-          contains: String(search),
-          mode: "insensitive",
-        },
-      };
-    }
-
-    //  DATE filter
-    if (date) {
-      const searchDate = new Date(date as string);
-
-      const start = new Date(searchDate);
-      start.setHours(0, 0, 0, 0);
-
-      const end = new Date(searchDate);
-      end.setHours(23, 59, 59, 999);
-
-      where.date = {
-        gte: start,
-        lte: end,
-      };
-    }
-
-    //  STATUS filter
-    if (status) {
-      where.status = String(status);
-    }
-
-    // final query
-    const attendance = await prisma.attendance.findMany({
-      where,
-      include: {
-        user: true,
-      },
-      orderBy: {
-        date: "desc",
-      },
-    });
-
-    return res.status(200).json({
-      success: true,
-      message: "Attendance filtered successfully",
-      data: attendance,
-    });
-  } catch (error) {
-    console.error("FILTER ERROR:", error);
-
-    return res.status(500).json({
-      success: false,
-      message: "Filter error",
-    });
-  }
 };

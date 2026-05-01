@@ -60,7 +60,13 @@ export const getprofile = async (req: any, res: any) => {
 
     // clean response
 
+    const primaryRole = user.roles[0];
 
+    if (!primaryRole) {
+      return res.status(400).json({
+        message: "Role not assigned to user",
+      });
+    }
 
     return res.json({
       id: user.id,
@@ -68,6 +74,7 @@ export const getprofile = async (req: any, res: any) => {
       email: user.email,
       createdAt: user.createdAt,
       lastLogin: user.lastLogin,
+      role: primaryRole.name,
       roles: user.roles.map((r) => r.name),
     });
   } catch (error) {

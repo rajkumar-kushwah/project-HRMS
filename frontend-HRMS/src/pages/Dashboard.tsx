@@ -171,7 +171,8 @@ const Dashboard = () => {
 
       try {
         const res = await getprofile();
-        setRole(res.data.role?.name || res.data.roles?.[0]);
+        // setRole(res.data.role?.name || res.data.roles?.[0]);
+        setRole(res.data.role)
 
         console.log("PROFILE FULL:", res.data);
       } catch (err) {
