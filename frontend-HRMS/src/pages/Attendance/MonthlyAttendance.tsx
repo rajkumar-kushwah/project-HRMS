@@ -50,7 +50,7 @@ function MonthlyAttendance() {
 
   // calendar month and year
   const today = new Date();
-  const currentMonth = today.getMonth() + 1;
+  // const currentMonth = today.getMonth() + 1;
   const currentYear = today.getFullYear();
 
   // select month droup

@@ -294,50 +294,126 @@ export const deleteEmployee = async (req: Request, res: Response) => {
 
 // filter employee controller
 
+// export const filterEmployee = async (req: Request, res: Response) => {
+//     try {
+//         const userId = (req as any).session?.userId;
+//         const { search, role, departmentId } = req.query;
+        
+//         const employees = await prisma.employee.findMany({
+//             where: {
+//                 userId,
+//                 ...(search && {
+//                     OR: [
+//                         { firstName: { contains: String(search), mode: 'insensitive' } },
+//                         { lastName: { contains: String(search), mode: 'insensitive' } },
+//                         { designation: { contains: String(search), mode: 'insensitive' } },
+//                         { employeeCode: { contains: String(search), mode: 'insensitive' } },
+//                         { user: { email: { contains: String(search), mode: 'insensitive' } } },
+//                     ]
+//                 }),
+//                 // ...(role && { roleId: Number(role) }),
+//                 ...(role && {
+//                     user: {
+//                         roles: {
+//                             some: {
+//                                 id: Number(role),
+//                             },
+//                         },
+//                     },
+//                 }),
+//                 ...(departmentId && { departmentId: Number(departmentId) }),
+//             },
+//             include: {
+//                 user: {
+//                     include: {
+//                         roles: true,   //  ADD THIS
+//                     },
+//                 },
+//                 department: true
+//             },
+//             orderBy: {
+//                 createdAt: 'desc'
+//             }
+//         })
+//         return res.status(200).json({
+//             message: "Employee filtered successfully",
+//             data: employees
+//         })
+//     } catch (error) {
+//         console.log(error);
+//         return res.status(500).json({ message: "Server error" });
+//     }
+// }
+
+
+
 export const filterEmployee = async (req: Request, res: Response) => {
-    try {
-        const { search, role, departmentId } = req.query;
-        const employees = await prisma.employee.findMany({
-            where: {
-                ...(search && {
-                    OR: [
-                        { firstName: { contains: String(search), mode: 'insensitive' } },
-                        { lastName: { contains: String(search), mode: 'insensitive' } },
-                        { designation: { contains: String(search), mode: 'insensitive' } },
-                        { employeeCode: { contains: String(search), mode: 'insensitive' } },
-                        { user: { email: { contains: String(search), mode: 'insensitive' } } },
-                    ]
-                }),
-                // ...(role && { roleId: Number(role) }),
-                ...(role && {
-                    user: {
-                        roles: {
-                            some: {
-                                id: Number(role),
-                            },
-                        },
-                    },
-                }),
-                ...(departmentId && { departmentId: Number(departmentId) }),
-            },
-            include: {
-                user: {
-                    include: {
-                        roles: true,   //  ADD THIS
-                    },
-                },
-                department: true
-            },
-            orderBy: {
-                createdAt: 'desc'
-            }
-        })
-        return res.status(200).json({
-            message: "Employee filtered successfully",
-            data: employees
-        })
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({ message: "Server error" });
+  try {
+    const userId = (req as any).session?.userId;
+    const { search, role, departmentId } = req.query;
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { roles: true },
+    });
+
+    const roles = user?.roles?.map((r) => r.name) || [];
+
+    let where: any = {};
+
+    //  Restrict only non-admin users
+    if (!roles.includes("SUPER_ADMIN")) {
+      where.userId = userId;
     }
-}
+
+    //  search filter
+    if (search) {
+      where.OR = [
+        { firstName: { contains: String(search), mode: "insensitive" } },
+        { lastName: { contains: String(search), mode: "insensitive" } },
+        { designation: { contains: String(search), mode: "insensitive" } },
+        { employeeCode: { contains: String(search), mode: "insensitive" } },
+        { user: { email: { contains: String(search), mode: "insensitive" } } },
+      ];
+    }
+
+    //  role filter
+    if (role) {
+      where.user = {
+        roles: {
+          some: {
+            id: Number(role),
+          },
+        },
+      };
+    }
+
+    //  department filter
+    if (departmentId) {
+      where.departmentId = Number(departmentId);
+    }
+
+    const employees = await prisma.employee.findMany({
+      where,
+      include: {
+        user: {
+          include: {
+            roles: true,
+          },
+        },
+        department: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return res.status(200).json({
+      message: "Employee filtered successfully",
+      data: employees,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
