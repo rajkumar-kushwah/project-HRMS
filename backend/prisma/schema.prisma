@@ -98,13 +98,13 @@ model Attendance {
   checkIn  DateTime?
   checkOut DateTime?
 
-  totalHours Float? // hours in decimal (8.5 etc)
-  overtime   Float? // >8 hrs
+  totalMinutes    Int?
+  overtimeMinutes Int? // >8 hrs
 
   status String // present /late /Early
 
   createAt  DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([userId, date])  // ek user ka ek din me ek record
+  @@unique([userId, date]) // ek user ka ek din me ek record
 }

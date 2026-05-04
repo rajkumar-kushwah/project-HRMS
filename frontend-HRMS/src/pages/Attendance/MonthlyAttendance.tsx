@@ -21,6 +21,7 @@ interface Attendance {
   overtime?: number;
   status: string; // P, A, Late, WO etc.
   EmpStatus: string;
+  userId: number;
   user?: {
     id: number;
     name?: string;
@@ -194,11 +195,17 @@ function MonthlyAttendance() {
   const startIndex = (currentPage - 1) * rowperPage;
   // const endIndex = startIndex + rowperPage;
 
-  const currentData = monthlyData.slice(startIndex, startIndex + rowperPage);
+  const uniqueEmployees = Array.from(
+    new Map(
+      monthlyData.map((item) => [item.userId, item])
+    ).values()
+  );
 
-  const totalPage = Math.ceil(monthlyData.length / rowperPage)
+  const currentData = uniqueEmployees.slice(startIndex, startIndex + rowperPage);
+
+  const totalPage = Math.ceil(uniqueEmployees.length / rowperPage)
   // const visiblePages = Math.max(totalPage, 5)
-
+  
 
   // cards updates summery calculations
 
@@ -314,7 +321,7 @@ function MonthlyAttendance() {
                         Filter
                       </Button>
 
-                      <Button variant="outline" className="text-xs cursor-pointer items-center justify-center  px-2 py-1 ">
+                      {/* <Button variant="outline" className="text-xs cursor-pointer items-center justify-center  px-2 py-1 ">
                         <LogIn className="w-4 h-4  rotate-90  " />
                         Attedance Export
                       </Button>
@@ -327,7 +334,7 @@ function MonthlyAttendance() {
                       <Button className="text-xs cursor-pointer items-center justify-center  px-2 py-1 " variant="outline">
                         <FileText className="w-4 h-4" />
                         Template
-                      </Button>
+                      </Button> */}
                     </div>
                   </div>
                 </div>
@@ -471,44 +478,44 @@ function MonthlyAttendance() {
               {/* pagination */}
               <div className="flex  items-center justify-between mt-4 px-2 " >
                 <p className="text-xs text-gray-500">
-                  Showing {startIndex + 1} - {startIndex + currentData.length} of {monthlyData.length} employees
+                  Showing {startIndex + 1} - {Math.min(startIndex + rowperPage, currentData.length)} of {uniqueEmployees.length} employees
                 </p>
 
                 <div className='ml-auto'>
-                <Pagination>
-                  <PaginationContent >
+                  <Pagination>
+                    <PaginationContent >
 
-                    {/* previous */}
-                    <PaginationPrevious
-                      href='#'
-                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                    />
-                    {/* pages number */}
-                    {Array.from({ length: totalPage }).map((_, index) => (
-                      <PaginationItem key={index}>
-                        <PaginationLink
-                          href='#'
-                          isActive={index + 1 === currentPage}
-                          onClick={() => setCurrentPage(index + 1)}
-                        >
-                          {index + 1}
-                        </PaginationLink>
-                      </PaginationItem>
-                    ))}
-
-                    {/* next */}
-                    <PaginationItem>
-                      <PaginationNext
+                      {/* previous */}
+                      <PaginationPrevious
                         href='#'
-                        onClick={(e) => {
-                          e.preventDefault()
-                          setCurrentPage(prev => Math.min(prev + 1, totalPage))
-                        }}
+                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                       />
+                      {/* pages number */}
+                      {Array.from({ length: totalPage }).map((_, index) => (
+                        <PaginationItem key={index}>
+                          <PaginationLink
+                            href='#'
+                            isActive={index + 1 === currentPage}
+                            onClick={() => setCurrentPage(index + 1)}
+                          >
+                            {index + 1}
+                          </PaginationLink>
+                        </PaginationItem>
+                      ))}
 
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
+                      {/* next */}
+                      <PaginationItem>
+                        <PaginationNext
+                          href='#'
+                          onClick={(e) => {
+                            e.preventDefault()
+                            setCurrentPage(prev => Math.min(prev + 1, totalPage))
+                          }}
+                        />
+
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
                 </div>
               </div>
 

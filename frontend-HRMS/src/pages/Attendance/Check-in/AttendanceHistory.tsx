@@ -16,8 +16,8 @@ interface Attendance {
     date: string;
     checkIn: string;
     checkOut: string;
-    totalHours: string;
-    overtime: number;
+    totalMinutes: number;
+    overtimeMinutes: number;
     status: string;
 }
 
@@ -91,6 +91,14 @@ function AttendanceHistory() {
         });
     };
 
+    const formatDuration = (minutes: number) => {
+        if (!minutes) return "-";
+
+        const hours = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+
+        return `${hours}h ${mins}m`;
+    };
 
 
     return (
@@ -149,8 +157,8 @@ function AttendanceHistory() {
                                             <TableCell>{formatDate(item.date)}</TableCell>
                                             <TableCell>{formatTime(item.checkIn)}</TableCell>
                                             <TableCell>{formatTime(item.checkOut)}</TableCell>
-                                            <TableCell>{item.totalHours}</TableCell>
-                                            <TableCell>{item.overtime}</TableCell>
+                                            <TableCell>{formatDuration(item.totalMinutes)}</TableCell>
+                                            <TableCell>{formatDuration(item.overtimeMinutes)}</TableCell>
                                             <TableCell>{item.status}</TableCell>
                                         </TableRow>
                                     ))}

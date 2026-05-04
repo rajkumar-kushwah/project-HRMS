@@ -8,7 +8,8 @@ import { TableHead, TableHeader, TableRow, TableBody, TableCell, Table } from '@
 import { getAttendance, checkIn, checkOut } from '@/controllers/checkIn.controller'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/pages/context/AuthContext'
-
+import { toast } from 'sonner'
+import { AxiosError } from 'axios'
 
 
 interface Attendance {
@@ -19,10 +20,14 @@ interface Attendance {
   date: string;
   checkIn: string;
   checkOut: string;
-  totalHours: string;
-  overtime: number;
+  totalMinutes: number;
+  overtimeMinutes: number;
   status: string;
   EmpStatus: string;
+}
+
+type ApiError = {
+  message: string;
 }
 
 const CheckIn = () => {
@@ -37,44 +42,62 @@ const CheckIn = () => {
 
 
   const handleCheckIn = async () => {
-    if (!checkedIn) {
-      const res = await checkIn();
-      console.log("API DATA:", res.data.data);
-      const now = new Date();
-      setCheckedIn(true);
-      setCheckInTime(now);
+    try {
+      if (!checkedIn) {
+        const res = await checkIn();
+        console.log("API DATA:", res.data.data);
+        toast.success(res.data.message || "Checked in successfully");
+
+        const now = new Date();
+        setCheckedIn(true);
+        setCheckInTime(now);
 
 
-      setAttendanceData(prev => [res.data.data, ...prev]);
+        setAttendanceData(prev => [res.data.data, ...prev]);
 
-    } else {
-      await checkOut();
-      const now = new Date();
+      } else {
+        await checkOut();
 
-      setCheckedIn(false);
-      setAttendanceData((prev) => {
-        const updated = [...prev];
-        const lastEntry = updated[0];
+        toast.success("Checked out successfully");
 
-        if (lastEntry && !lastEntry.checkOut) {
-          lastEntry.checkOut = now.toISOString();
+        const now = new Date();
 
-          const diff = (now.getTime() - checkInTime!.getTime()) / 1000;
+        setCheckedIn(false);
+        setAttendanceData((prev) => {
+          const updated = [...prev];
+          const lastEntry = updated[0];
 
-          const hours = Math.floor(diff / 3600);
-          const minutes = Math.floor((diff % 3600) / 60);
+          if (lastEntry && !lastEntry.checkOut) {
+            lastEntry.checkOut = now.toISOString();
 
-          lastEntry.totalHours = `${hours}h ${minutes}m`;
-        }
+            const diff = (now.getTime() - checkInTime!.getTime()) / 1000;
 
-        return updated;
-      });
+            // const hours = Math.floor(diff / 3600);
+            // const minutes = Math.floor((diff % 3600) / 60);
+            // total minutes
+            const totalMinutes = Math.floor(diff / 60);
 
-      setCheckInTime(null);
-      // setCheckedIn(false);
-      setDuration("0:00:00");
+            // lastEntry.totalHours = `${hours}h ${minutes}m`;
+            // save number only
+            lastEntry.totalMinutes = totalMinutes;
+          }
+
+          return updated;
+        });
+
+        setCheckInTime(null);
+        // setCheckedIn(false);
+        setDuration("0:00:00");
+      }
     }
-  }
+    catch (err: unknown) {
+      const error = err as AxiosError<ApiError>;
+
+      toast.error(error.response?.data?.message ?? "Something went wrong");
+
+      console.error("Attendance error:", err);
+    }
+  };
 
 
   // Page load pe backend se check kro 
@@ -90,11 +113,12 @@ const CheckIn = () => {
 
         // button state ke liye
         const lastEntry = data?.[0];
-        const active = lastEntry && !lastEntry.checkOut;
+        // const active = lastEntry && !lastEntry.checkOut;
 
         if (lastEntry && !lastEntry.checkOut) {
-          setCheckedIn(!!active);
-          setCheckInTime(active ? new Date(lastEntry.checkIn) : null);
+          setCheckedIn(true);
+          // setCheckInTime(active ? new Date(lastEntry.checkIn) : null);
+          setCheckInTime(new Date(lastEntry.checkIn));
         } else {
           setCheckedIn(false);
           setCheckInTime(null);
@@ -124,6 +148,15 @@ const CheckIn = () => {
       hour: "2-digit",
       minute: "2-digit",
     });
+  };
+
+  const formatDuration = (minutes: number) => {
+    if (!minutes) return "-";
+
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+
+    return `${hours}h ${mins}m`;
   };
 
 
@@ -162,9 +195,9 @@ const CheckIn = () => {
   const totalDays = attendanceData.length;
 
   const totalHours = attendanceData.reduce((acc, item) => {
-    if (!item?.totalHours) return acc;
+    if (!item?.totalMinutes) return acc;
 
-    const cleaned = String(item.totalHours)
+    const cleaned = String(item.totalMinutes)
       .replace("h", "")
       .replace("m", "")
       .trim();
@@ -436,8 +469,8 @@ const CheckIn = () => {
                       {formatTime(item.checkOut)}
                     </div>
                   </TableCell>
-                  <TableCell>{item.totalHours}</TableCell>
-                  <TableCell>{item.overtime}</TableCell>
+                  <TableCell>{formatDuration(item.totalMinutes)}</TableCell>
+                  <TableCell>{formatDuration(item.overtimeMinutes)}</TableCell>
                   <TableCell>
                     <span className="px-2 py-0 rounded-lg text-xs border ">{item.status}</span>
 

@@ -161,20 +161,28 @@ export const checkOut = async (req: Request, res: Response) => {
 
 
         // calculate duration
+        // const diffMs = now.getTime() - attendance.checkIn!.getTime();
+
+        // const hours = diffMs / (1000 * 60 * 60);
+
+        // const totalHours = +hours.toFixed(2);
+        // const overtime = totalHours > 8 ? +(totalHours - 8).toFixed(2) : 0;
+
         const diffMs = now.getTime() - attendance.checkIn!.getTime();
 
-        const hours = diffMs / (1000 * 60 * 60);
+        const totalMinutes = Math.floor(diffMs / (1000 * 60));
 
-        const totalHours = +hours.toFixed(2);
-        const overtime = totalHours > 8 ? +(totalHours - 8).toFixed(2) : 0;
+        const overtimeMinutes =
+            totalMinutes > 480 ? totalMinutes - 480 : 0;
 
+       
         //  update
         const updated = await prisma.attendance.update({
             where: { id: attendance.id },
             data: {
                 checkOut: now,
-                totalHours,
-                overtime,
+                totalMinutes,
+                overtimeMinutes,
             },
             include: {
                 user: {
