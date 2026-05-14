@@ -37,10 +37,14 @@ app.use('/checkin', checkInRouter)
 app.use('/monthly-attendance', monthlyRouter)
 
 async function start() {
+    try{
     await prisma.$connect();
     app.listen(port, () => {
         console.log(`Server running on port ${port}`);
     });
+} catch(error){
+    console.log("Error connecting to database")
+}
 }
 
 start();

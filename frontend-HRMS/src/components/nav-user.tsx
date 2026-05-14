@@ -29,10 +29,12 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import {deleteUser} from "../controllers/auth.controller"
+import { deleteUser } from "../controllers/auth.controller"
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 import { logout } from "@/controllers/auth.controller"
+import { Moon, Sun } from "lucide-react";
+import { useTheme } from "@/pages/context/ThemeContext";
 
 export function NavUser({
   user,
@@ -51,7 +53,7 @@ export function NavUser({
     try {
       // logout api call ke liye 
       const res = await logout();
-        console.log(res);
+      console.log(res);
       toast.success("Logout successful");
       navigate("/");
     } catch (error) {
@@ -60,14 +62,14 @@ export function NavUser({
     }
   };
 
- const getInitials = (name: string = "") => {
+  const getInitials = (name: string = "") => {
     const names = name.trim().split(" ").filter(Boolean);
 
     const first = names[0]?.[0] || "";
     const last = names[1]?.[0] || "";
 
     return first + last;
-};
+  };
 
   const handleDelete = async () => {
     // confirm delete krne ke user ko
@@ -86,6 +88,8 @@ export function NavUser({
       toast.error("Server error");
     }
   }
+
+  const { dark, setDark } = useTheme();
 
   return (
     <SidebarMenu>
@@ -127,6 +131,13 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
+              <DropdownMenuItem onClick={() => {
+                console.log("before:", dark); setDark(!dark); console.log("after click");
+              }}>
+
+                {dark ? <Sun /> : <Moon />}
+                {dark ? "Light Mode" : "Dark Mode"}
+              </DropdownMenuItem>
               <DropdownMenuItem>
                 <Sparkles />
                 Upgrade to Pro

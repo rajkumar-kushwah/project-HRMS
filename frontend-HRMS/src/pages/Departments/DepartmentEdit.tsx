@@ -14,33 +14,33 @@ function DepartmentEdit({ open, setOpen, selectedDept, onUpdate, loading }: any)
     }, [selectedDept]);
 
     return (
+        <div>
+            <Dialog open={open} onOpenChange={setOpen}  >
+                <DialogContent className='space-y-6 w-96'>
+                    <DialogHeader>
+                        <DialogTitle>Update Department</DialogTitle>
+                        <DialogDescription>
+                            Update the department name
+                        </DialogDescription>
+                    </DialogHeader>
 
-        <Dialog open={open} onOpenChange={setOpen}  >
-            <DialogContent className='space-y-6 w-96'>
-                <DialogHeader>
-                    <DialogTitle>Update Department</DialogTitle>
-                    <DialogDescription>
-                        Update the department name
-                    </DialogDescription>
-                </DialogHeader>
+                    <form
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            onUpdate(name);
+                        }}
+                    >
+                        <Input
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                        />
 
-                <form
-                    onSubmit={(e) => {
-                        e.preventDefault();
-                        onUpdate(name);
-                    }}
-                >
-                    <Input
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                    />
-
-                    <Button className="w-full mt-4" type="submit" >
-                        {loading && <Spinner />} Update</Button>
-                </form>
-            </DialogContent>
-        </Dialog>
-
+                        <Button className="w-full mt-4" type="submit" >
+                            {loading && <Spinner />} Update</Button>
+                    </form>
+                </DialogContent>
+            </Dialog>
+        </div>
     )
 }
 

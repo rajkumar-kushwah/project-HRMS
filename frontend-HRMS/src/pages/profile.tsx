@@ -49,13 +49,13 @@ function Profile() {
     };
 
     return (
-        <SidebarProvider>
-            <AppSidebar />
-
+        // <SidebarProvider>
+        //     <AppSidebar />
+        <div>
             <main className="flex-1 p-3">
-                <div className=' sticky top-0 z-50 bg-white flex items-center gap-2 mb-4'>
+                {/* <div className=' sticky top-0 z-50 bg-white flex items-center gap-2 mb-4'>
                     <SidebarTrigger />
-                </div>
+                </div> */}
                 <h1 className='text-2xl font-bold mb-6'>Profile</h1>
                 <div className='flex justify-center '>
                     <Card className='max-w-md w-full'>
@@ -87,7 +87,8 @@ function Profile() {
                 </div>
 
             </main>
-        </SidebarProvider>
+            {/* </SidebarProvider> */}
+        </div>
     )
 }
 

@@ -118,12 +118,13 @@ function Department() {
 
 
     return (
-        <SidebarProvider>
-            <AppSidebar />
+        // <SidebarProvider>
+        //     <AppSidebar />
+        <div>
             <main className=' space-y-2  flex-1 p-3'>
-                <div className=' sticky top-0 z-50 bg-white flex items-center gap-2 mb-4'>
+                {/* <div className=' sticky top-0 z-50 bg-white flex items-center gap-2 mb-4'>
                     <SidebarTrigger />
-                </div>
+                </div> */}
                 <div className='flex justify-between items-center'>
 
                     <h1 className="text-3xl  mb-6">Department</h1>
@@ -194,7 +195,8 @@ function Department() {
                     loading={loading}
                 />
             </main>
-        </SidebarProvider>
+        {/* </SidebarProvider> */}
+        </div>
     )
 }
 

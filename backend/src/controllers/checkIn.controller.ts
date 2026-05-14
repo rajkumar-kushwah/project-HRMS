@@ -230,6 +230,29 @@ export const getAttendance = async (req: Request, res: Response) => {
         // const role = user?.roles?.[0]?.name;
         const role = user?.roles?.map(r => r.name) || [];
 
+        // checkin / checkout data fetch and condition
+        const start = new Date();
+        start.setHours(0, 0, 0, 0);
+
+        const end = new Date();
+        end.setHours(23, 59, 59, 999);
+
+        const activeAttendance = await prisma.attendance.findFirst({
+            where: {
+                userId,
+                checkOut: null, //  important
+                checkIn: {
+                    gte: start,
+                    lte: end,
+                },
+            },
+            orderBy: {
+                checkIn: "desc",
+            },
+        });
+
+        const isCheckedIn = !!activeAttendance;
+
         let data;
 
         //  SUPER ADMIN → ALL DATA
@@ -266,6 +289,8 @@ export const getAttendance = async (req: Request, res: Response) => {
         return res.status(200).json({
             message: "Attendance fetched successfully",
             data,
+            isCheckedIn,
+            activeAttendance,
         });
 
     } catch (error) {

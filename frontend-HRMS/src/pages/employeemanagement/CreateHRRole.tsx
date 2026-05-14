@@ -29,10 +29,10 @@ interface Role {
     }[];
 }
 type Permission = {
-  id: number;
-  name: string;
-  module: string;
-  action: string;
+    id: number;
+    name: string;
+    module: string;
+    action: string;
 };
 
 function CreateHRRole() {
@@ -152,7 +152,7 @@ function CreateHRRole() {
 
 
     const groupedPermissions = permissionsList.reduce((acc, perm) => {
-       if (!perm.module) return acc;
+        if (!perm.module) return acc;
         const module = perm.module; // ATTENDANCE
 
         if (!acc[module]) {
@@ -168,12 +168,13 @@ function CreateHRRole() {
     // console.log("USER:", user);
 
     return (
-        <SidebarProvider>
-            <AppSidebar />
+        // <SidebarProvider>
+        //     <AppSidebar />
+        <div>
             <main className='flex-1 p-3  '>
-                <div className=' sticky top-0 z-50 bg-white flex items-center gap-2 mb-4'>
+                {/* <div className=' sticky top-0 z-50 bg-white flex items-center gap-2 mb-4'>
                     <SidebarTrigger />
-                </div>
+                </div> */}
                 <div className="mb-6">
                     <div className=' flex flex-wrap gap-2 shadow rounded-2xl justify-between  items-center  bg-white p-6'>
                         <div className='flex gap-2 items-center'>
@@ -445,7 +446,8 @@ function CreateHRRole() {
                 </div>
 
             </main>
-        </SidebarProvider>
+            {/* </SidebarProvider> */}
+        </div>
     )
 }
 

@@ -27,6 +27,7 @@ const Signin = () => {
             // const role = res.data.role?.name;
             if (!res.data || !res.data.user){
                 toast.error(res.data.message || "Signin first");
+                return
             }
             
             setUser(res.data.user);

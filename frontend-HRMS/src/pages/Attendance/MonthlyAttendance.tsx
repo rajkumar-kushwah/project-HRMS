@@ -9,6 +9,8 @@ import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/c
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination'
 import { getMonthlyAttendance } from '@/controllers/monthlyAttendance.controller'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
 
 
@@ -205,7 +207,7 @@ function MonthlyAttendance() {
 
   const totalPage = Math.ceil(uniqueEmployees.length / rowperPage)
   // const visiblePages = Math.max(totalPage, 5)
-  
+
 
   // cards updates summery calculations
 
@@ -242,12 +244,13 @@ function MonthlyAttendance() {
 
 
   return (
-    <SidebarProvider>
-      <AppSidebar />
+    // <SidebarProvider>
+    //   <AppSidebar />
+    <div>
       <main className='flex-1 p-3 '>
-        <div className=' sticky top-0 z-50 bg-white flex items-center gap-2 mb-4'>
+        {/* <div className=' sticky top-0 z-50 bg-white flex items-center gap-2 mb-4'>
           <SidebarTrigger />
-        </div>
+        </div> */}
         {/* <Tabs.Root defaultValue="tab1"> */}
         <Tabs.Root defaultValue="tab1">
           {/* Header */}
@@ -315,11 +318,84 @@ function MonthlyAttendance() {
 
                   {/* Actions buttons */}
                   <div className="">
-                    <div className=' gap-1 flex flex-wrap '>
-                      <Button variant="outline" className="text-xs cursor-pointer items-center justify-center  px-2 py-1   ">
+                    <div className=' '>
+                      {/* <Button variant="outline" className="text-xs cursor-pointer items-center justify-center  px-2 py-1   ">
                         <Filter className="w-4 h-4" />
                         Filter
-                      </Button>
+                      </Button> */}
+                      {/* filter droupdown content  */}
+                      <Select.Root>
+                        <Select.Trigger asChild >
+                          <Button
+                            variant="outline"
+                            className="text-xs cursor-pointer flex items-center justify-center gap-2 px-3 py-2"
+                          >
+                            <Filter className="w-4 h-4" />
+                            Filter
+                          </Button>
+                        </Select.Trigger>
+
+                        <Select.Content
+                          position="popper"
+                          sideOffset={4}
+                          className="bg-white border rounded-lg shadow-md p-4 w-64 z-50 data-open:animate-in data-[state=open]: animate-in data-[state=closed]: zoom-out-95 data-[state=open]: zoom-in-95 "
+                        >
+                          <div className="space-y-4">
+                            <Label className="text-sm font-medium">
+                              Filter By
+                            </Label>
+
+                            {/* Name Filter */}
+                            <div className="space-y-1">
+                              <Label className="text-xs">Employee Name</Label>
+                              <Input
+                                type="text"
+                                placeholder="Search by name"
+                                className="w-full border rounded-md px-2 py-1 text-sm outline-none"
+                              />
+                            </div>
+                            <Select.Root>
+                              <Select.Trigger asChild>
+                                <Button variant="outline" className="w-full text-xs">
+                                  Select Status
+                                </Button>
+                              </Select.Trigger>
+
+                              <Select.Content position='popper' sideOffset={4} className="bg-white border rounded shadow p-2 z-50 data-open:animate-in data-[state=open]: animate-in data-[state=closed]: zoom-out-95 data-[state=open]: zoom-in-95">
+                                <Select.Group>
+                                  <Select.Item value="all" className='px-2 py-1 text-xs cursor-pointer hover:bg-gray-100 '>All</Select.Item>
+                                  <Select.Item value="present" className='px-2 py-1 text-xs cursor-pointer hover:bg-gray-100 '>Present</Select.Item>
+                                  <Select.Item value="absent" className='px-2 py-1 text-xs cursor-pointer hover:bg-gray-100 '>Absent</Select.Item>
+                                  <Select.Item value="late" className='px-2 py-1 text-xs cursor-pointer hover:bg-gray-100 '>Late</Select.Item>
+                                </Select.Group>
+                              </Select.Content>
+                            </Select.Root>
+
+                            {/* Date Filter */}
+                            <div className="space-y-1">
+                              <Label className="text-xs">Date</Label>
+                              <input
+                                type="date"
+                                className="w-full border rounded-md px-2 py-1 text-sm outline-none"
+                              />
+                            </div>
+
+                            {/* Buttons */}
+                            <div className="flex gap-2 pt-2">
+                              <Button variant="default" className=" text-xs">
+                                Apply
+                              </Button>
+
+                              <Button
+                                variant="outline"
+                                className="text-xs"
+                              >
+                                Clear
+                              </Button>
+                            </div>
+                          </div>
+                        </Select.Content>
+                      </Select.Root>
 
                       {/* <Button variant="outline" className="text-xs cursor-pointer items-center justify-center  px-2 py-1 ">
                         <LogIn className="w-4 h-4  rotate-90  " />
@@ -522,9 +598,10 @@ function MonthlyAttendance() {
             </Tabs.Content>
           </div>
         </Tabs.Root>
-        <AppSidebar />
+        {/* <AppSidebar /> */}
       </main>
-    </SidebarProvider>
+      {/* </SidebarProvider> */}
+    </div>
   )
 }
 

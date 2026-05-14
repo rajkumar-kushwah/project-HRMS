@@ -102,13 +102,14 @@ function AttendanceHistory() {
 
 
     return (
-        <SidebarProvider>
+        // <SidebarProvider>
 
-            <AppSidebar />
+        //     <AppSidebar />
+            <div>
             <main className="flex-1 p-3">
-                <div className=' sticky top-0 z-50 bg-white flex items-center gap-2 mb-4'>
+                {/* <div className=' sticky top-0 z-50 bg-white flex items-center gap-2 mb-4'>
                     <SidebarTrigger />
-                </div>
+                </div> */}
                 <div>
                     <Button className="text-xs cursor-pointer" variant="outline" onClick={() => navigate(-1)}>Back</Button>
                 </div>
@@ -170,7 +171,8 @@ function AttendanceHistory() {
             </main>
 
 
-        </SidebarProvider>
+        {/* </SidebarProvider> */}
+        </div>
     );
 }
 

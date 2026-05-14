@@ -101,6 +101,37 @@ const CheckIn = () => {
 
 
   // Page load pe backend se check kro 
+  // useEffect(() => {
+  //   const fetchAttendance = async () => {
+  //     try {
+  //       const res = await getAttendance();
+
+  //       const data = res.data.data;
+
+  //       // table ke liye
+  //       setAttendanceData(data);
+
+  //       // button state ke liye
+  //       const lastEntry = data?.[0];
+  //       // const active = lastEntry && !lastEntry.checkOut;
+
+  //       if (lastEntry && !lastEntry.checkOut) {
+  //         setCheckedIn(true);
+  //         // setCheckInTime(active ? new Date(lastEntry.checkIn) : null);
+  //         setCheckInTime(new Date(lastEntry.checkIn));
+  //       } else {
+  //         setCheckedIn(false);
+  //         setCheckInTime(null);
+  //       }
+
+  //     } catch (err) {
+  //       console.error("Fetch error:", err);
+  //     }
+  //   };
+
+  //   fetchAttendance();
+  // }, []);
+
   useEffect(() => {
     const fetchAttendance = async () => {
       try {
@@ -111,16 +142,14 @@ const CheckIn = () => {
         // table ke liye
         setAttendanceData(data);
 
-        // button state ke liye
-        const lastEntry = data?.[0];
-        // const active = lastEntry && !lastEntry.checkOut;
+        // backend se direct active attendance check
+        setCheckedIn(res.data.isCheckedIn);
 
-        if (lastEntry && !lastEntry.checkOut) {
-          setCheckedIn(true);
-          // setCheckInTime(active ? new Date(lastEntry.checkIn) : null);
-          setCheckInTime(new Date(lastEntry.checkIn));
+        if (res.data.activeAttendance) {
+          setCheckInTime(
+            new Date(res.data.activeAttendance.checkIn)
+          );
         } else {
-          setCheckedIn(false);
           setCheckInTime(null);
         }
 
@@ -230,12 +259,13 @@ const CheckIn = () => {
     : 0;
 
   return (
-    <SidebarProvider>
-      <AppSidebar />
+    // <SidebarProvider>
+    //   <AppSidebar />
+    <div>
       <main className='flex-1 p-3 '>
-        <div className=' sticky top-0 z-50 bg-white flex items-center gap-2 mb-4'>
+        {/* <div className=' sticky top-0 z-50 bg-white flex items-center gap-2 mb-4'>
           <SidebarTrigger />
-        </div>
+        </div> */}
 
         {/* Header */}
         <div className="mb-6">
@@ -483,7 +513,8 @@ const CheckIn = () => {
 
         </div>
       </main>
-    </SidebarProvider>
+      {/* </SidebarProvider> */}
+    </div>
   )
 }
 

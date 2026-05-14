@@ -26,6 +26,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectItemText, SelectT
 import { getprofile } from "@/controllers/profile.controller"
 import MonthlyAttendance from "./Attendance/MonthlyAttendance"
 import { useAuth } from "@/pages/context/AuthContext";
+import { useTheme } from "@/pages/context/ThemeContext";
 
 interface Employee {
   dateOfBirth: string
@@ -80,6 +81,7 @@ const Dashboard = () => {
 
   const navigate = useNavigate();
   const { user } = useAuth();
+  const {dark } = useTheme();
 
   const [open, setOpen] = useState(false);
   const [viewOpen, setViewOpen] = useState(false);
@@ -278,13 +280,13 @@ const Dashboard = () => {
   filterEmployee(searchItem);
 
   return (
-    <SidebarProvider>
-      <AppSidebar />
-
+    // <SidebarProvider>
+    //   <AppSidebar />
+<div>
       <main className="flex-1 p-3 ">
-        <div className=' sticky top-0 z-50 bg-white flex items-center gap-2 mb-4'>
+        {/* <div className=' sticky top-0 z-50 bg-white flex items-center gap-2 mb-4'>
           <SidebarTrigger />
-        </div>
+        </div> */}
 
 
         <div className="mb-6">
@@ -744,7 +746,8 @@ const Dashboard = () => {
 
         </div>
       </main>
-    </SidebarProvider>
+    {/* </SidebarProvider> */}
+    </div>
   )
 }
 

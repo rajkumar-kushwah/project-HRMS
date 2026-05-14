@@ -20,7 +20,7 @@ import { getprofile } from "@/controllers/profile.controller";
 
 const AuthContext = createContext<any>(null);
 type authSate = boolean | null;
-export const AuthProvider = ({ children }: any) => {
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<any>(null);
   const [authenticated, setAuthenticated] = useState<authSate>(null);
 
@@ -47,4 +47,11 @@ export const AuthProvider = ({ children }: any) => {
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+    if(!context) {
+      throw new Error("useAuth must be used within a AuthProvider.")
+    }
+
+    return context
+}
