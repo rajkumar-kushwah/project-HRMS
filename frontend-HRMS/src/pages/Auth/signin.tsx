@@ -46,7 +46,7 @@ const Signin = () => {
     return (
         <div className=" bg-card min-h-screen flex items-center justify-center ">
 
-            <div className="bg-muted w-full max-w-md space-y-4 border rounded-xl shadow-lg p-6 ">
+            <div className="bg-card w-full max-w-md space-y-4 border rounded-xl shadow-lg p-6 ">
                 <h1 className="text-2xl text-center">Signin</h1>
                 <form onSubmit={handleSubmit} className="space-y-2">
                     <div>
@@ -64,7 +64,7 @@ const Signin = () => {
                             </a>
                         </div>
                     </Field>
-                    <Button type="submit" variant="outline" className=" bg-muted cursor-pointer w-full">
+                    <Button type="submit" className=" cursor-pointer w-full">
                         {loading && <Spinner />}
                         Signin</Button>
                     <Field>

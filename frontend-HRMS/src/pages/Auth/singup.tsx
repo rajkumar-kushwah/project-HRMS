@@ -45,7 +45,7 @@ const Signup = () => {
 
   return (
     <div className="bg-card flex justify-center items-center min-h-screen">
-      <div className="bg-muted space-y-6 w-96 border p-6 rounded-lg shadow-md">
+      <div className=" space-y-6 w-96 border p-6 rounded-lg shadow-md">
         <h1 className="text-2xl font-bold text-center">Signup</h1>
 
         <form onSubmit={handleSignup} className="space-y-4">
@@ -94,7 +94,7 @@ const Signup = () => {
               </a>
             </div>
           </Field>
-          <Button type="submit" variant="outline" className="bg-muted cursor-pointer w-full mt-4">
+          <Button type="submit"  className=" cursor-pointer w-full mt-4">
             {/* click krne pr true ho jaye  */}
             {loading && <Spinner />}
             Signup
