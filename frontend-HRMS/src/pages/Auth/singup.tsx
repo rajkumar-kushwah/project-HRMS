@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Field, FieldLabel } from "@/components/ui/field"
 import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
@@ -24,10 +24,12 @@ const Signup = () => {
     try {
       const res = await signUp({ name, email, password });
       toast.success(res.data.message || "Signup successful");
+
       setName("");
       setEmail("");
       setPassword("");
       navigate("/");
+
     } catch (error: any) {
       if (error.response) {
         toast.error(error.response.data.message);
@@ -42,8 +44,8 @@ const Signup = () => {
 
 
   return (
-    <div className="flex justify-center items-center min-h-screen">
-      <div className="space-y-6 w-96 border p-6 rounded-lg shadow-md">
+    <div className="bg-card flex justify-center items-center min-h-screen">
+      <div className="bg-muted space-y-6 w-96 border p-6 rounded-lg shadow-md">
         <h1 className="text-2xl font-bold text-center">Signup</h1>
 
         <form onSubmit={handleSignup} className="space-y-4">
@@ -84,7 +86,6 @@ const Signup = () => {
           </div>
           <Field>
             <div className="flex items-center">
-              <FieldLabel htmlFor="password">Password</FieldLabel>
               <a
                 href="#"
                 className="ml-auto text-sm underline-offset-4 hover:underline"
@@ -93,7 +94,7 @@ const Signup = () => {
               </a>
             </div>
           </Field>
-          <Button type="submit" className="w-full mt-4">
+          <Button type="submit" variant="outline" className="bg-muted cursor-pointer w-full mt-4">
             {/* click krne pr true ho jaye  */}
             {loading && <Spinner />}
             Signup
@@ -101,9 +102,9 @@ const Signup = () => {
 
           <p className="text-center text-sm">
             Already have an account?{" "}
-            <a href="/" className="text-blue-500 underline">
+            <Link to="/" className="text-blue-500 underline">
               Sign in
-            </a>
+            </Link>
           </p>
         </form>
       </div>

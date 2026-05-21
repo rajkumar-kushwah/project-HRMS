@@ -1,5 +1,5 @@
-import { SidebarProvider, SidebarTrigger } from "../components/ui/sidebar"
-import { AppSidebar } from "../components/app-sidebar"
+// import { SidebarProvider, SidebarTrigger } from "../components/ui/sidebar"
+// import { AppSidebar } from "../components/app-sidebar"
 import {
   Card,
 
@@ -22,11 +22,8 @@ import { Label } from "@/components/ui/label"
 import { getRoles } from "@/controllers/roleApi.controller"
 import { getDepartments } from "@/controllers/department.controller"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectItemText, SelectTrigger, SelectValue } from "@radix-ui/react-select"
-// import { useLocation } from "react-router-dom";
-import { getprofile } from "@/controllers/profile.controller"
 import MonthlyAttendance from "./Attendance/MonthlyAttendance"
 import { useAuth } from "@/pages/context/AuthContext";
-import { useTheme } from "@/pages/context/ThemeContext";
 
 interface Employee {
   dateOfBirth: string
@@ -81,7 +78,6 @@ const Dashboard = () => {
 
   const navigate = useNavigate();
   const { user } = useAuth();
-  const {dark } = useTheme();
 
   const [open, setOpen] = useState(false);
   const [viewOpen, setViewOpen] = useState(false);
@@ -107,7 +103,7 @@ const Dashboard = () => {
     pincode: "",
   })
 
-  const [role, setRole] = useState<string>('');
+  // const [role, setRole] = useState<string>('');
   const [searchItem, setSearchItem] = useState('');
 
 
@@ -128,7 +124,7 @@ const Dashboard = () => {
 
 
   const { title, desc } =
-    dashboardContent[role as keyof typeof dashboardContent] ?? {
+    dashboardContent[user?.role as keyof typeof dashboardContent] ?? {
       title: "Dashboard",
       desc: "Welcome to HRMS",
     }
@@ -138,20 +134,15 @@ const Dashboard = () => {
   const handleApplyFilter = async () => {
     try {
       if (!searchItem.trim()) return;
-      if (searchItem) {
-        const res = filterEmployee(searchItem);
-        res.then(res => setEmployees(res.data.data || res.data || []));
-        console.log("EMP:", res);
-      } else {
-        const res = await getEmployees();
-        setEmployees(res.data.data || res.data || []);
-        console.log("EMP:", res.data);
-      }
+
+      const res = await filterEmployee(searchItem);
+
+      setEmployees(res.data.data || res.data || []);
+
     } catch (error) {
       console.error(error);
     }
-  }
-
+  };
   // clear filter
 
   const handleClearFilter = async () => {
@@ -170,17 +161,6 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-
-      try {
-        const res = await getprofile();
-        // setRole(res.data.role?.name || res.data.roles?.[0]);
-        setRole(res.data.role)
-
-        console.log("PROFILE FULL:", res.data);
-      } catch (err) {
-        console.log("PROFILE ERROR:", err);
-      }
-
       try {
         const emp = await getEmployees();
         console.log("EMP RESPONSE:", emp.data);
@@ -268,7 +248,7 @@ const Dashboard = () => {
     window.confirm("Are you sure you want to delete this employee?");
     try {
       const res = await deleteEmployee(id);
-      console.log(res.data);
+      console.log(res.data.user);
       toast.success("Employee deleted successfully");
       setEmployees(employees.filter((emp) => emp.id !== id));
     } catch (error) {
@@ -277,20 +257,20 @@ const Dashboard = () => {
     }
   }
 
-  filterEmployee(searchItem);
+  // filterEmployee(searchItem);
 
   return (
     // <SidebarProvider>
     //   <AppSidebar />
-<div>
+    <div>
       <main className="flex-1 p-3 ">
         {/* <div className=' sticky top-0 z-50 bg-white flex items-center gap-2 mb-4'>
           <SidebarTrigger />
         </div> */}
 
 
-        <div className="mb-6">
-          <div className=" flex flex-col sm:flex-row sm:items-center sm:justify-between bg-white rounded-2xl shadow p-4 gap-3">
+        <div className="mb-6 ">
+          <div className="bg-card flex flex-col sm:flex-row sm:items-center sm:justify-between  rounded-2xl shadow p-4 gap-3">
 
             <div className=" flex items-center gap-3">
               <div
@@ -309,8 +289,10 @@ const Dashboard = () => {
             </div>
 
             <div className="flex justify-end" >
-              <Button variant="outline" onClick={() => navigate("/employees")}>
-                <UserPlus className="mr-2 h-4 w-4" /> Add Employee</Button>
+              {user?.permission?.includes("EMPLOYEE.CREATE") && (
+                <Button variant="outline" onClick={() => navigate("/employees")}>
+                  <UserPlus className="mr-2 h-4 w-4" /> Add Employee</Button>
+              )}
             </div>
           </div>
         </div>
@@ -452,7 +434,7 @@ const Dashboard = () => {
 
           <Table>
             <TableHeader>
-              <TableRow className="bg-gray-100 ">
+              <TableRow className="bg-muted ">
                 <TableHead>EmployeeCode</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Contact</TableHead>
@@ -746,7 +728,7 @@ const Dashboard = () => {
 
         </div>
       </main>
-    {/* </SidebarProvider> */}
+      {/* </SidebarProvider> */}
     </div>
   )
 }

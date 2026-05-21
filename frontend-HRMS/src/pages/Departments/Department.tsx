@@ -1,5 +1,5 @@
-import { AppSidebar } from '@/components/app-sidebar'
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
+// import { AppSidebar } from '@/components/app-sidebar'
+// import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -146,7 +146,7 @@ function Department() {
                                     <Input placeholder="DepartmentName..." value={name} onChange={(e) => setName(e.target.value)} />
 
 
-                                    <Button type="submit" className=' cursor-pointer' onClick={handleSubmit}>
+                                    <Button type="submit" variant="secondary" className='"bg-muted hover:bg-muted/80 text-foreground cursor-pointer' onClick={handleSubmit}>
                                         {loadingAdd && <Spinner />} Submit</Button>
                                 </div>
                             </form>
@@ -161,7 +161,7 @@ function Department() {
                 </div>
                 <div className="border rounded-lg overflow-hidden">
                     {/* Table Header */}
-                    <div className="grid grid-cols-2 bg-gray-100 p-3 font-semibold">
+                    <div className=" bg-muted grid grid-cols-2  p-3 font-semibold">
                         <span>Department Name</span>
                         <span className="text-right">Actions</span>
                     </div>

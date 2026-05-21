@@ -1,6 +1,6 @@
-import { AppSidebar } from '@/components/app-sidebar'
+// import { AppSidebar } from '@/components/app-sidebar'
+// import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { Calendar, ChevronDown, FileText, Filter, LogIn } from 'lucide-react'
 import { Select } from 'radix-ui'
 import React from 'react'
@@ -156,15 +156,15 @@ function MonthlyAttendance() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "P":
-        return "bg-green-100";
+        return "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300";
       case "WO":
-        return "bg-gray-200";
+        return "bg-muted text-muted-foreground";
       case "Late":
-        return "bg-yellow-100";
+        return "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300";
       case "A":
-        return "bg-red-100";
+        return "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300";
       default:
-        return "bg-transparent"; // "-" future days
+        return "bg-transparent text-foreground"; // "-" future days
     }
   };
 
@@ -255,7 +255,7 @@ function MonthlyAttendance() {
         <Tabs.Root defaultValue="tab1">
           {/* Header */}
           <div className="mb-6">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-white rounded-2xl shadow p-4 gap-3">
+            <div className="bg-card flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-2xl shadow p-4 gap-3">
 
               <div className='flex flex-col justify-between w-full '>
                 <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 w-full'>
@@ -288,9 +288,9 @@ function MonthlyAttendance() {
 
                       </Select.Trigger>
 
-                      <Select.Content position='popper' sideOffset={4} className="w-(--radix-select-trigger-width) z-50 bg-white rounded shadow border data-[state=open]:animate-in data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 ">
+                      <Select.Content position='popper' sideOffset={4} className="bg-card w-(--radix-select-trigger-width) z-5 rounded shadow border-border data-[state=open]:animate-in data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 ">
                         {monthOptions.map((month) => (
-                          <Select.Item key={month.value} value={String(month.value)} className="px-2 py-1 text-xs cursor-pointer hover:bg-gray-100 w-full">
+                          <Select.Item key={month.value} value={String(month.value)} className="hover:bg-muted focus:bg-muted text-foreground px-2 py-1 text-xs cursor-pointer w-full">
                             <Select.ItemText>{month.label}</Select.ItemText>
                           </Select.Item>
                         ))}
@@ -305,11 +305,11 @@ function MonthlyAttendance() {
                   {/* Tabs */}
                   <div className="flex  gap-2 justify-center items-center">
 
-                    <Tabs.List className="flex  gap-2 bg-gray-100 rounded-lg">
-                      <Tabs.Trigger value="tab2" className="px-3 py-1 text-sm cursor-pointer rounded-lg  data-[state=active]:bg-gray-200 ">
+                    <Tabs.List className="bg-card flex  gap-2 rounded-lg">
+                      <Tabs.Trigger value="tab2" className="bg-card px-3 py-1 text-sm cursor-pointer rounded-lg data-[state=active]:bg-muted ">
                         Summary
                       </Tabs.Trigger>
-                      <Tabs.Trigger value="tab1" className="px-3 py-1 text-sm cursor-pointer rounded-lg data-[state=active]:bg-gray-200 ">
+                      <Tabs.Trigger value="tab1" className="bg-card px-3 py-1 text-sm cursor-pointer rounded-lg data-[state=active]:bg-muted ">
                         Detail
                       </Tabs.Trigger>
                     </Tabs.List>
@@ -338,7 +338,7 @@ function MonthlyAttendance() {
                         <Select.Content
                           position="popper"
                           sideOffset={4}
-                          className="bg-white border rounded-lg shadow-md p-4 w-64 z-50 data-open:animate-in data-[state=open]: animate-in data-[state=closed]: zoom-out-95 data-[state=open]: zoom-in-95 "
+                          className="bg-card border rounded-lg shadow-md p-4 w-64 z-50 data-open:animate-in data-[state=open]: animate-in data-[state=closed]: zoom-out-95 data-[state=open]: zoom-in-95 "
                         >
                           <div className="space-y-4">
                             <Label className="text-sm font-medium">
@@ -361,12 +361,12 @@ function MonthlyAttendance() {
                                 </Button>
                               </Select.Trigger>
 
-                              <Select.Content position='popper' sideOffset={4} className="bg-white border rounded shadow p-2 z-50 data-open:animate-in data-[state=open]: animate-in data-[state=closed]: zoom-out-95 data-[state=open]: zoom-in-95">
+                              <Select.Content position='popper' sideOffset={4} className="bg-card border rounded shadow p-2 z-50 data-open:animate-in data-[state=open]: animate-in data-[state=closed]: zoom-out-95 data-[state=open]: zoom-in-95">
                                 <Select.Group>
-                                  <Select.Item value="all" className='px-2 py-1 text-xs cursor-pointer hover:bg-gray-100 '>All</Select.Item>
-                                  <Select.Item value="present" className='px-2 py-1 text-xs cursor-pointer hover:bg-gray-100 '>Present</Select.Item>
-                                  <Select.Item value="absent" className='px-2 py-1 text-xs cursor-pointer hover:bg-gray-100 '>Absent</Select.Item>
-                                  <Select.Item value="late" className='px-2 py-1 text-xs cursor-pointer hover:bg-gray-100 '>Late</Select.Item>
+                                  <Select.Item value="all" className='px-2 py-1 text-xs cursor-pointer hover:bg-muted focus:bg-muted text-foreground '>All</Select.Item>
+                                  <Select.Item value="present" className='px-2 py-1 text-xs cursor-pointer hover:bg-muted focus:bg-muted text-foreground '>Present</Select.Item>
+                                  <Select.Item value="absent" className='px-2 py-1 text-xs cursor-pointer hover:bg-muted focus:bg-muted text-foreground '>Absent</Select.Item>
+                                  <Select.Item value="late" className='px-2 py-1 text-xs cursor-pointer hover:bg-muted focus:bg-muted text-foreground '>Late</Select.Item>
                                 </Select.Group>
                               </Select.Content>
                             </Select.Root>
@@ -382,13 +382,13 @@ function MonthlyAttendance() {
 
                             {/* Buttons */}
                             <div className="flex gap-2 pt-2">
-                              <Button variant="default" className=" text-xs">
+                              <Button variant="secondary" className="cursor-pointer text-xs">
                                 Apply
                               </Button>
 
                               <Button
-                                variant="outline"
-                                className="text-xs"
+                                variant="secondary"
+                                className="cursor-pointer text-xs"
                               >
                                 Clear
                               </Button>
@@ -427,28 +427,28 @@ function MonthlyAttendance() {
                   {/* cards total present  */}
                   <div className="flex flex-col border rounded-lg p-3 gap-1 hover:shadow-md transition ">
                     <CardTitle className="text-sm font-medium">Total Present</CardTitle>
-                    <CardDescription className="text-lg font-semibold text-black">{totalPresent}</CardDescription>
-                    <CardDescription className="text-xs text-gray-500">{totalPresentPercentage}% of total days</CardDescription>
+                    <CardDescription className="text-sm text-foreground ">{totalPresent}</CardDescription>
+                    <CardDescription>{totalPresentPercentage}% of total days</CardDescription>
                   </div>
 
                   {/* cards total absent */}
                   <div className="flex flex-col gap-1 border rounded-lg p-2hover:shadow-md transition p-2 hover:shadow-md ">
                     <CardTitle className="text-sm font-medium">Total Absent</CardTitle>
-                    <CardDescription className="text-xs text-gray-500">{totalAbsent}</CardDescription>
+                    <CardDescription className="text-xs text-foreground ">{totalAbsent}</CardDescription>
                     <CardDescription>{totalAbsentPercentage}% of total days</CardDescription>
                   </div>
 
                   {/* cards late arrival */}
                   <div className="flex flex-col gap-1 border rounded-lg p-2 hover:shadow-md transition ">
                     <CardTitle className="text-sm font-medium">Late Arrivals </CardTitle>
-                    <CardDescription className="text-xs text-gray-500">{totalLateArrivals}</CardDescription>
+                    <CardDescription className="text-xs text-foreground ">{totalLateArrivals}</CardDescription>
                     <CardDescription>{totalLateArrivalsPercentage}% of total days</CardDescription>
                   </div>
 
                   {/* cards holidays */}
                   <div className='flex flex-col gap-1 border rounded-lg p-2 hover:shadow-md transition'>
                     <CardTitle className="text-sm font-medium">WeekOff</CardTitle>
-                    <CardDescription className="text-xs text-gray-500">{totalWorkOff}</CardDescription>
+                    <CardDescription className="text-xs text-foreground ">{totalWorkOff}</CardDescription>
                     <CardDescription>{totalWorkOffPercentage}% of total days</CardDescription>
                   </div>
                 </div>
@@ -463,7 +463,7 @@ function MonthlyAttendance() {
               {/* monthly attendance table  */}
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-gray-100 text-xs">
+                  <TableRow className="bg-muted text-xs">
                     <TableHead>#</TableHead>
                     <TableHead>Employee</TableHead>
                     <TableHead>Department</TableHead>
@@ -512,7 +512,7 @@ function MonthlyAttendance() {
                   ))}
                 </TableBody> */}
 
-                <TableBody>
+                <TableBody className='bg-card'>
                   {employees.map((emp, index) => (
                     <TableRow key={emp.id}>
 
@@ -539,7 +539,7 @@ function MonthlyAttendance() {
                         return (
                           <TableCell
                             key={i}
-                            className={`text-center rounded-full text-xs py-0 px-2  ${getStatusColor(finalStatus)}`}
+                            className={` text-center rounded-full text-xs py-0 px-2  ${getStatusColor(finalStatus)}`}
                           >
                             {finalStatus === "-" ? "" : finalStatus}
                           </TableCell>
@@ -553,7 +553,7 @@ function MonthlyAttendance() {
 
               {/* pagination */}
               <div className="flex  items-center justify-between mt-4 px-2 " >
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   Showing {startIndex + 1} - {Math.min(startIndex + rowperPage, currentData.length)} of {uniqueEmployees.length} employees
                 </p>
 

@@ -35,9 +35,10 @@ import { toast } from "sonner"
 import { logout } from "@/controllers/auth.controller"
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "@/pages/context/ThemeContext";
+import { useAuth } from "@/pages/context/AuthContext";
 
 export function NavUser({
-  user,
+
 }: {
   user: {
     name: string
@@ -48,6 +49,7 @@ export function NavUser({
   const { isMobile } = useSidebar()
 
   const navigate = useNavigate()
+  const { user } = useAuth();
 
   const handleLogout = async () => {
     try {
@@ -65,8 +67,8 @@ export function NavUser({
   const getInitials = (name: string = "") => {
     const names = name.trim().split(" ").filter(Boolean);
 
-    const first = names[0]?.[0] || "";
-    const last = names[1]?.[0] || "";
+    const first = names[0]?.[0]?.toUpperCase() || "";
+    const last = names[1]?.[0]?.toUpperCase() || "";
 
     return first + last;
   };
@@ -79,7 +81,7 @@ export function NavUser({
 
     try {
       // user delete api call krne ke liye 
-      const res = await deleteUser((user as any).id);
+      const res = await deleteUser(user?.id);
       console.log(res.data.response);
       toast.success("User deleted successfully");
       navigate("/");

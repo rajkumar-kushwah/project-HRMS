@@ -7,8 +7,7 @@ const RoleRoute = ({ roles }: any) => {
     if (!user) return <Navigate to="/" replace />;
 
 
-    // const role = user?.role?.name ||
-    //     user?.roles?.[0];
+
     const role = user?.role || "";
 
     console.log("USER:", user);
@@ -18,7 +17,6 @@ const RoleRoute = ({ roles }: any) => {
     if (!role) {
         return <div>Role not found</div>;
     }
-    // console.log("userRole:", userRole, "allowed:", roles);
 
     if (!roles.includes(role)) {
         return <Navigate to="/unauthorized" replace />;

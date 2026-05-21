@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const fetchUser = async () => {
     try {
       const res = await getprofile();
-      setUser(res.data);
+      setUser(res.data.user);
       setAuthenticated(true);
     } catch (err) {
 

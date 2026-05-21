@@ -1,6 +1,6 @@
 import { api } from "@/services/api.service";
 
- interface AttendanceFilterParams {
+interface AttendanceFilterParams {
   search?: string;
   date?: string;
   status?: string;
@@ -14,4 +14,7 @@ export const checkIn = () => api.post("/checkin");
 export const checkOut = () => api.post("/checkin/checkout");
 
 // filter api
-export const filterAttendance = (params: AttendanceFilterParams) => api.get("/checkin/filter", {params});
+export const filterAttendance = (params: AttendanceFilterParams) => api.get("/checkin/filter", { params });
+
+// delete api
+export const deleteAttendance = (ids: number[]) => api.delete("/checkin/bulk-delete", { data: { ids } });

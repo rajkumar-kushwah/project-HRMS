@@ -1,11 +1,9 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
-import { useTheme } from "@/pages/context/ThemeContext";
 import { Outlet, useLocation } from "react-router-dom";
 
 // { children }: { children: React.ReactNode }
 export default function layout() {
-    const { dark } = useTheme();
     const location = useLocation();
 
     const getPageTitle = () => {
@@ -24,6 +22,8 @@ export default function layout() {
                 return "Role";
             case "/profile":
                 return "Profile";
+            case "/attendance-history":
+                return "Attendance History";
             default:
                 return "Dashboard";
         }
@@ -31,16 +31,15 @@ export default function layout() {
 
     return (
         <SidebarProvider>
-            <div className="flex min-h-screen w-full p-2">
+            <div className="flex min-h-screen w-full p-2 ">
                 <AppSidebar />
 
-                <main className={`flex-1 min-h-screen ${dark ? "bg-black text-white" : "bg-white text-black"
-                    }`}>
+                <main className="flex-1 p-3">
                     <SidebarTrigger className="-ml-1" />
                     <h1 className="text-base font-medium">
                         {getPageTitle()}
                     </h1>
-                    {/* {children} */} 
+                    {/* {children} */}
                     <Outlet />
                 </main>
             </div>

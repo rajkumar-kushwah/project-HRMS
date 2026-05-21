@@ -35,7 +35,7 @@ function DepartmentEdit({ open, setOpen, selectedDept, onUpdate, loading }: any)
                             onChange={(e) => setName(e.target.value)}
                         />
 
-                        <Button className="w-full mt-4" type="submit" >
+                        <Button variant="secondary" className="bg-muted hover:bg-muted/80 text-foreground cursor-pointer w-full mt-4" type="submit" >
                             {loading && <Spinner />} Update</Button>
                     </form>
                 </DialogContent>

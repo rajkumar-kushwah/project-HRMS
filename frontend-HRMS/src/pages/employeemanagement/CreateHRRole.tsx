@@ -1,5 +1,5 @@
-import { AppSidebar } from '@/components/app-sidebar'
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
+// import { AppSidebar } from '@/components/app-sidebar'
+// import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { MoreVertical, Shield, UserCog } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import React from 'react'
@@ -176,7 +176,7 @@ function CreateHRRole() {
                     <SidebarTrigger />
                 </div> */}
                 <div className="mb-6">
-                    <div className=' flex flex-wrap gap-2 shadow rounded-2xl justify-between  items-center  bg-white p-6'>
+                    <div className='bg-card flex flex-wrap gap-2 shadow rounded-2xl justify-between  items-center   p-6'>
                         <div className='flex gap-2 items-center'>
                             <div className='shadow w-10 h-10 flex items-center justify-center rounded-lg'>
                                 <Shield className='' />
@@ -264,7 +264,7 @@ function CreateHRRole() {
                         <h2 className="text-lg font-semibold mb-2">Roles List</h2>
                         <Table>
                             <TableHeader>
-                                <TableRow className='bg-gray-100'>
+                                <TableRow className='bg-muted'>
                                     <TableHead className="w-25">Role Name</TableHead>
                                     <TableHead className="w-25">Description</TableHead>
                                     <TableHead className="w-25">Permissions</TableHead>

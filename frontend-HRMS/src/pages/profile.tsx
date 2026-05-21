@@ -1,43 +1,13 @@
-import React, { useEffect } from 'react'
-import { getprofile } from '@/controllers/profile.controller';
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import { AppSidebar } from '@/components/app-sidebar';
+
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { AvatarImage, Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
+import { useAuth } from './context/AuthContext';
 
 
 function Profile() {
+    const { user } = useAuth();
 
-    const [user, setUser] = React.useState({
-        name: "",
-        email: "",
-        avatar: "",
-        createdAt: "",
-        lastLogin: "",
-        roles: "",
-
-    });
-
-
-    useEffect(() => {
-
-        const getProfile = async () => {
-            try {
-                const res = await getprofile();
-                // setUser(res.data);
-
-                setUser({
-                    ...res.data,
-                    role: res.data.role,
-                });
-                console.log(res.data);
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        getProfile();
-    }, [])
 
     const getInitials = (name: string = "") => {
         const names = name.trim().split(" ").filter(Boolean);
@@ -56,9 +26,9 @@ function Profile() {
                 {/* <div className=' sticky top-0 z-50 bg-white flex items-center gap-2 mb-4'>
                     <SidebarTrigger />
                 </div> */}
-                <h1 className='text-2xl font-bold mb-6'>Profile</h1>
+
                 <div className='flex justify-center '>
-                    <Card className='max-w-md w-full'>
+                    <Card className='bg-card text-card-foreground border-border max-w-md w-full'>
                         <CardHeader>
                             <CardTitle>Profile</CardTitle>
                         </CardHeader>

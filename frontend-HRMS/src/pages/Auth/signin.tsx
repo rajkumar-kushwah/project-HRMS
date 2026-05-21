@@ -3,11 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { signIn } from "../../controllers/auth.controller";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
 import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from "@/pages/context/AuthContext";
+import axios from "axios";
 
 
 const Signin = () => {
@@ -15,7 +16,7 @@ const Signin = () => {
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const navigator = useNavigate();
-    const { setUser, setAuthenticated } = useAuth();
+    const { fetchUser } = useAuth();
 
 
 
@@ -24,23 +25,15 @@ const Signin = () => {
         setLoading(true);
         try {
             const res = await signIn({ email, password });
-            // const role = res.data.role?.name;
-            if (!res.data || !res.data.user){
-                toast.error(res.data.message || "Signin first");
-                return
-            }
-            
-            setUser(res.data.user);
-            setAuthenticated(true);
+
             toast.success(res.data.message || "Signin successful");
 
-            setEmail("");
-            setPassword("");
-            navigator("/dashboard");  //{state: {role: role}}
-        } catch (error: any) {
-            console.log(error.response);
-            if (error.response) {
-                toast.error(error.response?.data?.message || "Signup first");
+            await fetchUser();
+
+            navigator("/dashboard");
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                toast.error(error.response?.data?.message || "Error");
             } else {
                 console.error(error);
                 toast.error("Something went wrong");
@@ -51,9 +44,9 @@ const Signin = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 ">
+        <div className=" bg-card min-h-screen flex items-center justify-center ">
 
-            <div className="w-full max-w-md space-y-4 border rounded-xl shadow-lg p-6 bg-white ">
+            <div className="bg-muted w-full max-w-md space-y-4 border rounded-xl shadow-lg p-6 ">
                 <h1 className="text-2xl text-center">Signin</h1>
                 <form onSubmit={handleSubmit} className="space-y-2">
                     <div>
@@ -66,19 +59,18 @@ const Signin = () => {
                     </div>
                     <Field>
                         <div className="flex items-center">
-                            <FieldLabel htmlFor="password">Password</FieldLabel>
                             <a href="#" className="ml-auto text-sm underline-offset-4 hover:underline" >
                                 Forgot your password?
                             </a>
                         </div>
                     </Field>
-                    <Button type="submit" className="w-full">
+                    <Button type="submit" variant="outline" className=" bg-muted cursor-pointer w-full">
                         {loading && <Spinner />}
                         Signin</Button>
                     <Field>
                         {/* <Button type="submit">Login</Button> */}
                         <FieldDescription className="text-center">
-                            Don&apos;t have an account? <a href="/signup">Sign up</a>
+                            Don&apos;t have an account? <Link to="/signup">Sign up</Link>
                         </FieldDescription>
                     </Field>
                 </form>

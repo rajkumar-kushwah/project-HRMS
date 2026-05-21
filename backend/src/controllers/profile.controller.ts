@@ -47,7 +47,11 @@ export const getprofile = async (req: any, res: any) => {
         id: userId,
       },
       include: {
-        roles: true, //  IMPORTANT
+        roles: {
+          include: {
+            permissions: true,
+          },
+        },
       },
     });
 
@@ -58,6 +62,13 @@ export const getprofile = async (req: any, res: any) => {
       });
     }
 
+    const permission = [
+      ...new Set(
+        user.roles.flatMap((role) =>
+          role.permissions.map((p) => p.name)
+        )
+      )
+    ];
     // clean response
 
     const primaryRole = user.roles[0];
@@ -69,13 +80,16 @@ export const getprofile = async (req: any, res: any) => {
     }
 
     return res.json({
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      createdAt: user.createdAt,
-      lastLogin: user.lastLogin,
-      role: primaryRole.name,
-      roles: user.roles.map((r) => r.name),
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        createdAt: user.createdAt,
+        lastLogin: user.lastLogin,
+        role: primaryRole.name,
+        roles: user.roles.map((r) => r.name),
+        permission,
+      },
     });
   } catch (error) {
     console.error("GET PROFILE ERROR:", error);

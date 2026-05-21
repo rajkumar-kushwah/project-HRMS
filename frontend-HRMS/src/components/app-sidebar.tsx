@@ -32,9 +32,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import { useEffect, useState } from "react"
-import { getprofile } from "@/controllers/profile.controller"
-
+import { useAuth } from "@/pages/context/AuthContext"
 
 
 // This is sample data.
@@ -179,24 +177,8 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const [user, setUser] = useState({
-    name: "",
-    email: "",
-    avatar: "",
-  })
+  const { user } = useAuth();
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const res = await getprofile()
-        setUser(res.data)
-      } catch (error) {
-        console.log(error)
-      }
-    }
-
-    fetchProfile()
-  }, [])
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>

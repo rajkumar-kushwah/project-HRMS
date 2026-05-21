@@ -1,5 +1,5 @@
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
-import { AppSidebar } from '@/components/app-sidebar'
+// import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
+// import { AppSidebar } from '@/components/app-sidebar'
 import { Tabs, } from 'radix-ui'
 import * as React from "react";
 import * as Select from "@radix-ui/react-select";
@@ -136,7 +136,7 @@ function EmployeeRegister() {
           </div> */}
           {/* Header */}
           <div className="mb-6">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-white rounded-2xl shadow p-4 gap-3">
+            <div className="bg-card flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-2xl shadow p-4 gap-3">
 
               {/* LEFT SIDE */}
               <div className="flex items-center gap-3">
@@ -162,15 +162,15 @@ function EmployeeRegister() {
           </div>
 
           {/* Tabs Container */}
-          <div className="bg-white rounded shadow p-3 ">
+          <div className="bg-card  rounded shadow p-3 ">
             {/* Tabs */}
             <form onSubmit={handleSubmit}>
               <Tabs.Root defaultValue="tab1" className="" value={ActiveTab} onValueChange={setActiveTab}>
                 {/* Tab List */}
-                <Tabs.List className="flex w-fit max-w-full mx-auto  overflow-x-auto no-scrollbar bg-gray-100 rounded-xl p-1 gap-2 " aria-label='manage your account'>
-                  <Tabs.Trigger value="tab1" className=' cursor-pointer px-4 py-1 rounded-lg text-xs transition  data-[state=active]:bg-gray-200 '>Personal Details</Tabs.Trigger>
-                  <Tabs.Trigger value="tab2" className=' cursor-pointer px-4 py-1 rounded-lg text-xs transition  data-[state=active]:bg-gray-200 '>Professional Details</Tabs.Trigger>
-                  <Tabs.Trigger value="tab3" className=' cursor-pointer px-4 py-1 rounded-lg text-xs transition  data-[state=active]:bg-gray-200 '>Contect & Address</Tabs.Trigger>
+                <Tabs.List className="bg-muted  flex w-fit max-w-full mx-auto  overflow-x-auto no-scrollbar rounded-xl p-1 gap-2 " aria-label='manage your account'>
+                  <Tabs.Trigger value="tab1" className=' cursor-pointer px-4 py-1 rounded-lg text-xs transition  data-[state=active]:bg-card hover:bg-muted/80 text-foreground '>Personal Details</Tabs.Trigger>
+                  <Tabs.Trigger value="tab2" className=' cursor-pointer px-4 py-1 rounded-lg text-xs transition  data-[state=active]:bg-card hover:bg-muted/80 text-foreground '>Professional Details</Tabs.Trigger>
+                  <Tabs.Trigger value="tab3" className=' cursor-pointer px-4 py-1 rounded-lg text-xs transition  data-[state=active]:bg-card hover:bg-muted/80 text-foreground '>Contect & Address</Tabs.Trigger>
                 </Tabs.List>
 
                 {/* Tab 1 content */}

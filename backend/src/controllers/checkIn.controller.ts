@@ -175,7 +175,7 @@ export const checkOut = async (req: Request, res: Response) => {
         const overtimeMinutes =
             totalMinutes > 480 ? totalMinutes - 480 : 0;
 
-       
+
         //  update
         const updated = await prisma.attendance.update({
             where: { id: attendance.id },
@@ -440,3 +440,31 @@ export const filterAttendance = async (req: Request, res: Response) => {
         });
     }
 };
+
+// delete attendance 
+
+export const deleteAttendance = async (req: Request, res: Response) => {
+    try {
+        const { ids } = req.body;
+
+        if (!ids || ids.length === 0) {
+            return res.status(400).json({ message: "Invalid ID" });
+        }
+
+        // delete attendance find
+        await prisma.attendance.deleteMany({
+            where: { 
+                id:{
+                    in: ids
+                }
+
+            },
+        })
+
+        res.status(200).json({ message: "Attendance deleted successfully" });
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: "Server error" });
+    }
+}

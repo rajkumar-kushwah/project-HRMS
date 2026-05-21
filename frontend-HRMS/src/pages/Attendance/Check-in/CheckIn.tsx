@@ -1,6 +1,6 @@
-import { AppSidebar } from '@/components/app-sidebar'
+// import { AppSidebar } from '@/components/app-sidebar'
+// import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { Clock, MapPin, LogIn, Award, Users, AlarmClockIcon, LineChart, CircleCheck, } from 'lucide-react'
 import React, { useEffect } from 'react'
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
@@ -14,6 +14,7 @@ import { AxiosError } from 'axios'
 
 interface Attendance {
   user: {
+    id: number;
     name: string;
   }
   id: number;
@@ -221,25 +222,49 @@ const CheckIn = () => {
 
   // data ko usable formate me convert krne ke liye attedanaceData ko map krne ke liye card ko map krne ke liye
 
-  const totalDays = attendanceData.length;
+  const filteredAttendance =
+  user?.role === "EMPLOYEE"
+    ? attendanceData.filter(
+        item => item.user?.id === user?.id
+      )
+    : attendanceData;
 
-  const totalHours = attendanceData.reduce((acc, item) => {
+  const totalDays = filteredAttendance.filter(
+    item => item.totalMinutes > 0
+  ).length;
+
+  const totalHours = filteredAttendance.reduce((acc, item) => {
     if (!item?.totalMinutes) return acc;
 
-    const cleaned = String(item.totalMinutes)
-      .replace("h", "")
-      .replace("m", "")
-      .trim();
-
-    const [h = 0, m = 0] = cleaned.split(" ").map(Number);
-
-    return acc + h + m / 60;
+    return acc + item.totalMinutes / 60;
   }, 0);
 
+  const AvgHours =
+    totalDays > 0
+      ? (totalHours / totalDays).toFixed(1)
+      : 0;
 
-  const AvgHours = totalDays < 0
-    ? (totalHours / totalHours).toFixed(1)
-    : 0;
+
+  // const totalDays = attendanceData.length;
+
+  // const totalHours = attendanceData.reduce((acc, item) => {
+  //   if (!item?.totalMinutes) return acc;
+
+  //   const cleaned = String(item.totalMinutes)
+  //     .replace("h", "")
+  //     .replace("m", "")
+  //     .trim();
+
+  //   const [h = 0, m = 0] = cleaned.split(" ").map(Number);
+
+  //   return acc + h + m / 60;
+  // }, 0);
+
+
+  // const AvgHours = totalDays > 0
+  //   ? (totalHours / totalHours).toFixed(1)
+  //   : 0;
+
 
 
   const onTimeDays = attendanceData.filter(item => {
@@ -269,7 +294,7 @@ const CheckIn = () => {
 
         {/* Header */}
         <div className="mb-6">
-          <div className="flex items-center justify-between  rounded-2xl shadow p-4 w-full">
+          <div className="bg-card flex items-center justify-between  rounded-2xl shadow p-4 w-full">
 
             {/* LEFT SIDE */}
             <div className="flex items-center gap-3">
@@ -310,7 +335,7 @@ const CheckIn = () => {
             </CardHeader>
 
             {/* check in time and work duration */}
-            {checkedIn && user?.role?.name || user?.roles?.[0] === "EMPLOYEE" && (
+            {checkedIn && user?.permission?.includes("CHECKIN.VIEW") && (
               <div className="animate-in fade-in duration-200 zoom-in-95">
                 <CardContent className='grid grid-cols-1 sm:grid-cols-2 gap-3 border p-4 rounded-lg justify-between w-[90%] mx-auto'>
                   <div>
@@ -329,7 +354,7 @@ const CheckIn = () => {
 
             {/* content goes here check in Button and check out */}
             <div >
-              {user?.role?.name || user?.roles?.[0] === "EMPLOYEE" && (
+              {user?.role === "EMPLOYEE" && user?.permission?.includes("CHECKIN.CHECKIN") && (
                 <Button variant="outline"
                   onClick={handleCheckIn}
                   className={`grid text-ms cursor-pointer w-[90%] mx-auto  ${checkedIn ? "bg-red-400 hover:bg-red-500" : "bg-blue-500 hover:bg-blue-600 text-white"
@@ -359,8 +384,8 @@ const CheckIn = () => {
           <Card className='flex flex-col mt-4 py-3 px-2 hover:shadow-md transition p-2'>
             <CardHeader className='border-b'>
               <Award className='w-8 h-8' />
-              <CardTitle>Attendance Rate</CardTitle>
               <CardDescription>{attendanceRate}%</CardDescription>
+              <CardTitle>Attendance Rate</CardTitle>
               <CardAction className='text-xs border rounded-lg px-2 py-0'>This month</CardAction>
 
             </CardHeader>
@@ -443,7 +468,7 @@ const CheckIn = () => {
         </div>
 
         {/* recent attendance history header teble */}
-        <div className=' flex bg-gray-100 gap-2 items-center justify-between mt-5 transparent border  rounded p-6'>
+        <div className='bg-muted flex gap-2 items-center justify-between mt-5 transparent border  rounded p-6'>
 
           <h1>Recent Attendance History</h1>
           <div>
@@ -467,7 +492,7 @@ const CheckIn = () => {
         </div>
 
         {/* teble goes here */}
-        <div className='bg-white p-6 grid grid-cols-1 rounded border w-full overflow-x-auto'>
+        <div className='bg-card p-6 grid grid-cols-1 rounded border w-full overflow-x-auto'>
           {/* table goes here */}
 
           <Table >

@@ -7,6 +7,7 @@ export const permissionCategories = [
 
     {
         module: "ROLE",
+        menu: true,
         permissions: [
             "VIEW",
             "CREATE",
@@ -16,6 +17,7 @@ export const permissionCategories = [
     },
     {
         module: "MONTHLY_ATTENDANCE",
+        menu: true,
         permissions: [
             "VIEW",
             "FILTER",
@@ -26,6 +28,7 @@ export const permissionCategories = [
     },
     {
         module: "EMPLOYEE",
+        menu: true,
         permissions: [
             "VIEW",
             "CREATE",
@@ -36,6 +39,7 @@ export const permissionCategories = [
     },
     {
         module: "CHECKIN",
+        menu: true,
         permissions: [
             "VIEW",
             "CHECKIN",
