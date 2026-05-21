@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
-import { Field, FieldLabel } from "@/components/ui/field"
+import { Field } from "@/components/ui/field"
 import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
 import { signUp } from "@/controllers/auth.controller";
