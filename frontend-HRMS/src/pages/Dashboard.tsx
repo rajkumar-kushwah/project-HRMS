@@ -354,31 +354,36 @@ const Dashboard = () => {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mt-5 ">
 
           {/* Employee register card */}
-          <Card onClick={() => navigate("/employees")} className="cursor-pointer hover:shadow-md transition p-2">
-            <CardHeader className="flex items-center p-2">
-              <div className="border shadow rounded-md w-10 h-10 flex items-center justify-center">
-                <UserPlus className="h-4 w-4" />
-              </div>
+          {user?.permission?.includes("EMPLOYEE.CREATE") && (
+            <Card onClick={() => navigate("/employees")} className="cursor-pointer hover:shadow-md transition p-2">
+              <CardHeader className="flex items-center p-2">
+                <div className="border shadow rounded-md w-10 h-10 flex items-center justify-center">
+                  <UserPlus className="h-4 w-4" />
+                </div>
 
-              <div>
-                <CardTitle>Employees Register</CardTitle>
-                <CardDescription className="text-xs">Add new team member</CardDescription>
-              </div>
-            </CardHeader>
-          </Card>
+                <div>
+                  <CardTitle>Employees Register</CardTitle>
+                  <CardDescription className="text-xs">Add new team member</CardDescription>
+                </div>
+              </CardHeader>
+            </Card>
+          )}
 
           {/* Role Assign card */}
-          <Card onClick={() => navigate("/role")} className="cursor-pointer hover:shadow-md transition p-2">
-            <CardHeader className="flex items-center p-2"  >
-              <div className="border shadow rounded-md w-10 h-10 flex items-center justify-center">
-                <Shield className="h-4 w-4" />
-              </div>
-              <div>
-                <CardTitle>Create HR Role </CardTitle>
-                <CardDescription className="text-xs">Assign HR privileges</CardDescription>
-              </div>
-            </CardHeader>
-          </Card>
+          {user?.permission?.includes("ROLE.CREATE") && (
+            <Card onClick={() => navigate("/role")} className="cursor-pointer hover:shadow-md transition p-2">
+              <CardHeader className="flex items-center p-2"  >
+                <div className="border shadow rounded-md w-10 h-10 flex items-center justify-center">
+                  <Shield className="h-4 w-4" />
+                </div>
+                <div>
+                  <CardTitle>Create HR Role </CardTitle>
+                  <CardDescription className="text-xs">Assign HR privileges</CardDescription>
+                </div>
+              </CardHeader>
+            </Card>
+          )}
+
           {/* View Attendance card and monthly report */}
           <Card onClick={() => navigate("/monthly-attendance")} className="cursor-pointer hover:shadow-md transition p-2">
             <CardHeader className="flex items-center p-2"  >

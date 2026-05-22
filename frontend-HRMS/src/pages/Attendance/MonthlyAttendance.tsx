@@ -1,14 +1,14 @@
 // import { AppSidebar } from '@/components/app-sidebar'
 // import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
-import { Calendar, ChevronDown, FileText, Filter, LogIn } from 'lucide-react'
+import { Calendar, ChevronDown, FileText, Filter, Key, LogIn } from 'lucide-react'
 import { Select } from 'radix-ui'
 import React from 'react'
 import { Tabs } from 'radix-ui'
 import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination'
-import { getMonthlyAttendance } from '@/controllers/monthlyAttendance.controller'
+import { getMonthlyAttendance, filterMonthlyAttendance } from '@/controllers/monthlyAttendance.controller'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
@@ -50,6 +50,15 @@ function MonthlyAttendance() {
   const [monthlyData, setMonthlyData] = React.useState<Attendance[]>([])
   const [selectMonth, setSelectMonth] = React.useState(new Date().getMonth() + 1);
   const [selectYear, setSelectYear] = React.useState(new Date().getFullYear());
+  const [filter, setFilter] = React.useState(false);
+  const currentDate = new Date();
+  const [filters, setFilters] = React.useState({
+    month: currentDate.getMonth() + 1,
+    year: currentDate.getFullYear(),
+    name: '',
+    status: '',
+    date: '',
+  })
 
   // calendar month and year
   const today = new Date();
@@ -84,7 +93,58 @@ function MonthlyAttendance() {
 
 
 
+  // Onchange filter function
 
+  const handleFilterChange = (Key: string, value: string) => {
+    setFilters((prev) => ({
+      ...prev,
+      [Key]: value
+    }))
+  }
+
+  // handle filter function
+
+  const handleApplyFilter = async () => {
+    try {
+      const res = await filterMonthlyAttendance({
+        month: selectMonth,
+        year: selectYear,
+        status: filters.status,
+      });
+
+      let filteredData = res.data.data;
+
+      // name filter frontend
+      if (filters.name) {
+        filteredData = filteredData.filter((item: Attendance) => {
+          const fullName =
+            `${item.user?.employee?.firstName} ${item.user?.employee?.lastName}`
+              .toLowerCase();
+
+          return fullName.includes(
+            filters.name.toLowerCase()
+          );
+        });
+      }
+
+      setMonthlyData(filteredData);
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // clear filter
+  const handleClearFilter = async () => {
+    setFilters({
+      month: new Date().getMonth() + 1,
+      year: new Date().getFullYear(),
+      name: "",
+      status: "",
+      date: "",
+    });
+    await fetchMonthlyAttendance();
+  };
 
   const generateDays = (month: number, year: number) => {
     const today = new Date();
@@ -324,7 +384,7 @@ function MonthlyAttendance() {
                         Filter
                       </Button> */}
                       {/* filter droupdown content  */}
-                      <Select.Root>
+                      <Select.Root >
                         <Select.Trigger asChild >
                           <Button
                             variant="outline"
@@ -350,23 +410,31 @@ function MonthlyAttendance() {
                               <Label className="text-xs">Employee Name</Label>
                               <Input
                                 type="text"
+                                value={filters.name}
+                                onChange={(e) => handleFilterChange("name", e.target.value)}
                                 placeholder="Search by name"
                                 className="w-full border rounded-md px-2 py-1 text-sm outline-none"
                               />
                             </div>
-                            <Select.Root>
+                            <Select.Root open={filter} onOpenChange={setFilter} value={filters.status} onValueChange={(value) => handleFilterChange("status", value)} >
                               <Select.Trigger asChild>
                                 <Button variant="outline" className="w-full text-xs">
-                                  Select Status
+                                  <span>
+                                    {filters.status || "Select Status"}
+                                  </span>
+
+                                  <ChevronDown className={`w-4 h-4 opacity-50 ${filter && "rotate-180"}`} />
                                 </Button>
+
                               </Select.Trigger>
 
                               <Select.Content position='popper' sideOffset={4} className="bg-card border rounded shadow p-2 z-50 data-open:animate-in data-[state=open]: animate-in data-[state=closed]: zoom-out-95 data-[state=open]: zoom-in-95">
                                 <Select.Group>
                                   <Select.Item value="all" className='px-2 py-1 text-xs cursor-pointer hover:bg-muted focus:bg-muted text-foreground '>All</Select.Item>
-                                  <Select.Item value="present" className='px-2 py-1 text-xs cursor-pointer hover:bg-muted focus:bg-muted text-foreground '>Present</Select.Item>
-                                  <Select.Item value="absent" className='px-2 py-1 text-xs cursor-pointer hover:bg-muted focus:bg-muted text-foreground '>Absent</Select.Item>
-                                  <Select.Item value="late" className='px-2 py-1 text-xs cursor-pointer hover:bg-muted focus:bg-muted text-foreground '>Late</Select.Item>
+                                  <Select.Item value="P" className='px-2 py-1 text-xs cursor-pointer hover:bg-muted focus:bg-muted text-foreground '>Present</Select.Item>
+                                  <Select.Item value="A" className='px-2 py-1 text-xs cursor-pointer hover:bg-muted focus:bg-muted text-foreground '>Absent</Select.Item>
+                                  <Select.Item value="Late" className='px-2 py-1 text-xs cursor-pointer hover:bg-muted focus:bg-muted text-foreground '>Late</Select.Item>
+                                  <Select.Item value="WO" className='px-2 py-1 text-xs cursor-pointer hover:bg-muted focus:bg-muted text-foreground '>Week Off</Select.Item>
                                 </Select.Group>
                               </Select.Content>
                             </Select.Root>
@@ -376,19 +444,24 @@ function MonthlyAttendance() {
                               <Label className="text-xs">Date</Label>
                               <input
                                 type="date"
+                                value={filters.date}
+                                onChange={(e) => handleFilterChange("date", e.target.value)}
                                 className="w-full border rounded-md px-2 py-1 text-sm outline-none"
                               />
                             </div>
 
                             {/* Buttons */}
                             <div className="flex gap-2 pt-2">
-                              <Button variant="secondary" className="cursor-pointer text-xs">
+                              <Button variant="secondary" className="cursor-pointer text-xs"
+                                onClick={handleApplyFilter}
+                              >
                                 Apply
                               </Button>
 
                               <Button
                                 variant="secondary"
                                 className="cursor-pointer text-xs"
+                                onClick={handleClearFilter}
                               >
                                 Clear
                               </Button>
