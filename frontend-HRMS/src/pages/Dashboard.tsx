@@ -649,7 +649,7 @@ const Dashboard = () => {
                 {ViewEmployee && (
                   <div className="">
                     <div className="flex items-center gap-3 mb-3">
-                      <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                      <div className=" bg-muted w-10 h-10 rounded-full flex items-center justify-center">
                         {ViewEmployee.firstName[0]}
                       </div>
                       <div>

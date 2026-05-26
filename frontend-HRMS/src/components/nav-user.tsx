@@ -93,6 +93,54 @@ export function NavUser({
 
   const { dark, setDark } = useTheme();
 
+  const handleThemeToggle = (
+    e: React.MouseEvent<HTMLDivElement>
+  ) => {
+
+    const x = e.clientX;
+    const y = e.clientY;
+
+    const circle = document.createElement("div");
+
+    circle.style.position = "fixed";
+    circle.style.left = `${x}px`;
+    circle.style.top = `${y}px`;
+
+    circle.style.width = "20px";
+    circle.style.height = "20px";
+
+    circle.style.borderRadius = "9999px";
+
+    circle.style.background = "transparent";
+    circle.style.border = dark ? "1px solid rgba(255,255,255,0.15)" : "1px solid rgba(0,0,0,0.15)";
+
+    circle.style.opacity = "1";
+    circle.style.transform = "translate(-50%, -50%) scale(0)";
+
+    circle.style.transition = "transform 1200ms cubic-bezier(0.22, 1, 0.36, 1), opacity 1200ms ease";
+
+    circle.style.zIndex = "9999";
+    circle.style.pointerEvents = "none";
+
+    document.body.appendChild(circle);
+
+    // requestAnimationFrame is used to ensure that the animation is smooth
+    requestAnimationFrame(() => {
+      circle.style.transform =
+        "translate(-50%, -50%) scale(80)";
+
+      circle.style.opacity = "0";
+    });
+
+    setTimeout(() => {
+      setDark(!dark);
+    }, 350);
+
+    setTimeout(() => {
+      circle.remove();
+    }, 1200);
+  };
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -133,9 +181,12 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => {
-                console.log("before:", dark); setDark(!dark); console.log("after click");
-              }}>
+              <DropdownMenuItem
+                onClick={handleThemeToggle}
+              // onClick={() => {
+              //   console.log("before:", dark); setDark(!dark); console.log("after click");
+              // }}
+              >
 
                 {dark ? <Sun /> : <Moon />}
                 {dark ? "Light Mode" : "Dark Mode"}
