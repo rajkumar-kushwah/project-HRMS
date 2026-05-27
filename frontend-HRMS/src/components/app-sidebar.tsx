@@ -33,7 +33,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { useAuth } from "@/pages/context/AuthContext"
-
+import logo from "@/assets/nabu.png"
 
 // This is sample data.
 const data = {
@@ -45,7 +45,7 @@ const data = {
   teams: [
     {
       name: "Acme Inc",
-      logo: GalleryVerticalEnd,
+      logo: logo,
       plan: "Enterprise",
     },
     {
@@ -182,7 +182,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <TeamSwitcher teams={data.teams}/>
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} user={user} />

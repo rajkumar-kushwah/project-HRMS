@@ -111,7 +111,7 @@ export function NavUser({
 
     circle.style.borderRadius = "9999px";
 
-    circle.style.background = "transparent";
+    circle.style.background =  dark ? "#fff" : "#000";
     circle.style.border = dark ? "1px solid rgba(255,255,255,0.15)" : "1px solid rgba(0,0,0,0.15)";
 
     circle.style.opacity = "1";
@@ -127,7 +127,7 @@ export function NavUser({
     // requestAnimationFrame is used to ensure that the animation is smooth
     requestAnimationFrame(() => {
       circle.style.transform =
-        "translate(-50%, -50%) scale(80)";
+        "translate(-50%, -50%) scale(90)";
 
       circle.style.opacity = "0";
     });
