@@ -17,6 +17,7 @@ import ErrorPage from "./pages/ErrorPage"
 import RoleRoute from "./pages/context/Role-basedRoute"
 import AttendanceHistory from "./pages/Attendance/Check-in/AttendanceHistory"
 import Layout from "./components/layout"
+import Regularization from "./pages/Attendance/AttRagularization"
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
               <Route path="/check-in" element={<CheckIn />} />
               <Route path="/monthly-attendance" element={<MonthlyAttendance />} />
               <Route path="/attendance-history" element={<AttendanceHistory />} />
+              <Route path="/att-regularization" element={<Regularization />} />
             </Route>
           </Route>
         </Route>

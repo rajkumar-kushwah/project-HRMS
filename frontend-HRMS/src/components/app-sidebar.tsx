@@ -123,10 +123,12 @@ const data = {
           icon: Calendar,
           roles: ["SUPER_ADMIN", "HR", "EMPLOYEE"],
         },
-        // {
-        //   title: "Tutorials",
-        //   url: "#",
-        // },
+        {
+          title: "Att.Regularization",
+          url: "/att-regularization",
+          icon: Calendar,
+          roles: ["SUPER_ADMIN", "HR", "EMPLOYEE"],
+        },
         // {
         //   title: "Changelog",
         //   url: "#",

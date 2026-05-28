@@ -24,6 +24,8 @@ export default function layout() {
                 return "Profile";
             case "/attendance-history":
                 return "Attendance History";
+            case "/att-regularization":
+                return "Regularization";
             default:
                 return "Dashboard";
         }
