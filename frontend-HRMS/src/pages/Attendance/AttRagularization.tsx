@@ -9,10 +9,30 @@ import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "sonner"
+import { Spinner } from "@/components/ui/spinner"
 
 
 function AttRagularization() {
   const [open, setOpen] = React.useState(false)
+  const [loading, setLoading] = React.useState(false)
+  const [loading2, setLoading2] = React.useState(false)
+
+  const handleApprove = () => {
+    setLoading(true)
+
+    setTimeout(() => {
+      toast.success("Request Approved")
+      setLoading(false)
+    }, 2000)
+  }
+  const handleReject = () => {
+    setLoading2(true)
+
+    setTimeout(() => {
+      toast.error("Request Rejected")
+      setLoading2(false)
+    }, 2000)
+  }
 
   const requests = [
     {
@@ -57,6 +77,8 @@ function AttRagularization() {
       processedOn: "2026-05-24 10:15",
     }
   ];
+
+
 
   return (
     <div>
@@ -156,7 +178,7 @@ function AttRagularization() {
                 <Card key={item.id} className="rounded-xl shadow">
 
                   {/* Header */}
-                  <CardHeader className="flex flex-row items-start justify-between space-y-0">
+                  <CardHeader className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
 
                     <div>
                       <div className="flex items-center gap-2">
@@ -198,21 +220,27 @@ function AttRagularization() {
 
                     {/* buttons */}
                     {item.status === "Pending" && (
-                      <div className="flex gap-2">
-                        <Button size="sm" variant="outline" className="cursor-pointer bg-green-500 hover:bg-green-600 "
-                          onClick={() => toast.success("Request Approved")}
+                      <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="cursor-pointer text-xs bg-green-500 hover:bg-green-600 "
+                          // onClick={() => toast.success("Request Approved")}
+                          onClick={handleApprove}
                         >
-                          <CircleCheckBig className="w-3 h-3" />
+                          {loading ? (<Spinner />) : (<CircleCheckBig className="w-3 h-3" />)}
                           Approve
                         </Button>
 
                         <Button
                           size="sm"
                           variant="outline"
-                          className="cursor-pointer border-red-500 hover:text-red-600 text-red-500 "
-                          onClick={() => toast.error("Request Rejected")}
+                          className="cursor-pointer text-xs border-red-500 hover:text-red-600 text-red-500 "
+                          // onClick={() => toast.error("Request Rejected")}
+                          onClick={handleReject}
                         >
-                          <CircleX className="w-3 h-3" />
+                          {/* <CircleX className="w-3 h-3" /> */}
+                          {loading2 ? (<Spinner />) : (<CircleX className="w-3 h-3" />)}
                           Reject
                         </Button>
                       </div>
@@ -223,7 +251,7 @@ function AttRagularization() {
                   <CardContent className="space-y-4">
 
                     {/* details */}
-                    <div className="grid grid-cols-3 gap-4 text-sm">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
 
                       <div className="flex gap-2 items-center">
                         <CardTitle className="font-medium">Date: </CardTitle>
@@ -243,7 +271,7 @@ function AttRagularization() {
                     </div>
 
                     {/* type */}
-                    <div className="bg-muted flex flex-col gap-2 p-4 rounded-lg">
+                    <div className="bg-muted overflow-auto flex flex-col gap-2 p-4 rounded-lg">
                       <div>
                         <CardTitle className="flex gap-2 font-medium text-sm">Type: <CardDescription>
                           {item.type}
@@ -257,7 +285,7 @@ function AttRagularization() {
                           </CardDescription>
                         </CardTitle>
                       </div>
-                      <div className="flex flex-row items-center gap-2">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
                         <CardTitle className="font-medium">
                           Requested On:
                         </CardTitle><CardDescription>
@@ -266,7 +294,7 @@ function AttRagularization() {
                       </div>
 
                       {item.processedBy && (
-                        <div className="flex flex-row items-center gap-2">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
                           <CardTitle className="font-medium">
                             Processed By:
                           </CardTitle>
@@ -276,7 +304,7 @@ function AttRagularization() {
                       )}
 
                       {item.processedOn && (
-                        <div className="flex flex-row items-center gap-2">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
                           <CardTitle className="font-medium">
                             Processed On:
                           </CardTitle>
@@ -305,7 +333,7 @@ function AttRagularization() {
                   <Card key={item.id} className="rounded-xl shadow">
 
                     {/* Header */}
-                    <CardHeader className="flex flex-row items-start justify-between space-y-0">
+                    <CardHeader className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
 
                       <div>
                         <div className="flex items-center gap-2">
@@ -328,25 +356,29 @@ function AttRagularization() {
                       </div>
 
                       {/* buttons */}
-                      <div className="flex gap-2">
+                      <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
 
                         <Button
                           size="sm"
                           variant="outline"
-                          className="cursor-pointer bg-green-500 hover:bg-green-600"
-                          onClick={() => toast.success("Request Approved")}
+                          className="cursor-pointer text-xs bg-green-500 hover:bg-green-600"
+                          // onClick={() => toast.success("Request Approved")}
+                          onClick={handleApprove}
                         >
-                          <CircleCheckBig className="w-3 h-3" />
+                          {/* <CircleCheckBig className="w-3 h-3" /> */}
+                          {loading ? (<Spinner />) : (<CircleCheckBig className="w-3 h-3" />)}
                           Approve
                         </Button>
 
                         <Button
                           size="sm"
                           variant="outline"
-                          className="cursor-pointer border-red-500 hover:text-red-600 text-red-500"
-                          onClick={() => toast.error("Request Rejected")}
+                          className="cursor-pointer text-xs border-red-500 hover:text-red-600 text-red-500"
+                          // onClick={() => toast.error("Request Rejected")}
+                          onClick={handleReject}
                         >
-                          <CircleX className="w-3 h-3" />
+                          {/* <CircleX className="w-3 h-3" /> */}
+                          {loading2 ? (<Spinner />) : (<CircleX className="w-3 h-3" />)}
                           Reject
                         </Button>
 
@@ -358,7 +390,7 @@ function AttRagularization() {
                     <CardContent className="space-y-4">
 
                       {/* details */}
-                      <div className="grid grid-cols-3 gap-4 text-sm">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
 
                         <div className="flex gap-2 items-center">
                           <CardTitle className="font-medium">
@@ -415,7 +447,7 @@ function AttRagularization() {
                           </CardTitle>
                         </div>
 
-                        <div className="flex flex-row items-center gap-2">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
                           <CardTitle className="font-medium">
                             Requested On:
                           </CardTitle>
@@ -440,7 +472,7 @@ function AttRagularization() {
             <div className="grid gap-4">
               {requests.filter((item) => item.status === "Approved").map((item) => (
                 <Card key={item.id}>
-                  <CardHeader className="flex flex-row items-center gap-2">
+                  <CardHeader className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                     <div>
                       <div className="flex items-center gap-2">
                         <CardTitle>{item.employee}</CardTitle>
@@ -469,7 +501,7 @@ function AttRagularization() {
 
                   {/* Body */}
                   <CardContent className="space-y-4">
-                    <div className="grid grid-cols-3 gap-4 text-sm">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
                       <div className="flex items-center gap-2">
                         <CardTitle className="text-sm">Date :</CardTitle>
                         <CardDescription>
@@ -501,9 +533,10 @@ function AttRagularization() {
                         </CardDescription>
                       </div>
 
-                      <div className="flex items-center gap-2">
-                        <CardTitle className="text-sm">Reason:</CardTitle>
-                        <CardDescription>
+                      <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-2">
+                        <CardTitle className="text-sm shrink-0"> Reason: </CardTitle>
+
+                        <CardDescription className="wrap-break-word">
                           {item.reason}
                         </CardDescription>
                       </div>
@@ -570,7 +603,7 @@ function AttRagularization() {
 
                   {/* Body */}
                   <CardContent className="space-y-4">
-                    <div className="grid grid-cols-3 gap-4 text-sm">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
                       <div className="flex items-center gap-2">
                         <CardTitle className="text-sm">Date :</CardTitle>
                         <CardDescription>

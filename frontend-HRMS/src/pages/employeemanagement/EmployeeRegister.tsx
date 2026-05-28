@@ -106,6 +106,12 @@ function EmployeeRegister() {
     }
   }
 
+  const handleReset = () => {
+    setFormData({ ...initialFormData });
+    setActiveTab("tab1");
+  }
+
+  
 
   const handleNextTab1 = () => {
     if (!formData.firstName || !formData.lastName) {
@@ -213,7 +219,7 @@ function EmployeeRegister() {
 
                     {/* Buttons */}
                     <div className="flex justify-end gap-3 pt-4">
-                      <Button type="reset" variant="outline" className=' cursor-pointer'>
+                      <Button type="reset" variant="outline" className=' cursor-pointer' onClick={handleReset}>
                         <LucideX className="w-4 h-4" />
                         Cancel
                       </Button>
@@ -273,10 +279,10 @@ function EmployeeRegister() {
                             {/*  Ye dropdown icon hai */}
 
                           </Select.Trigger>
-                          <Select.Content position='popper' className=" w-(--radix-select-trigger-width) bg-white rounded-lg shadow border  data-[state=open]: animate-in   data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
+                          <Select.Content position='popper' className=" w-(--radix-select-trigger-width) bg-muted rounded-lg shadow border  data-[state=open]: animate-in   data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
                             <Select.Group>
                               {departments.map((dept: any) => (
-                                <Select.Item className="px-2 py-1 text-xs cursor-pointer hover:bg-gray-100  "
+                                <Select.Item className="px-2 py-1 text-xs cursor-pointer hover:bg-card  "
 
                                   key={dept.id} value={String(dept.id)}>
                                   <Select.ItemText>{dept.name}</Select.ItemText>
@@ -312,10 +318,10 @@ function EmployeeRegister() {
                             <Select.Value placeholder="Select Role" />
 
                           </Select.Trigger>
-                          <Select.Content position='popper' className=" w-(--radix-select-trigger-width) bg-white rounded-lg shadow border  data-[state=open]: animate-in   data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
+                          <Select.Content position='popper' className=" w-(--radix-select-trigger-width) bg-muted rounded-lg shadow border  data-[state=open]: animate-in   data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
                             <Select.Group>
                               {roles.map((role: any) => (
-                                <Select.Item className="px-2 py-1 text-xs cursor-pointer hover:bg-gray-100  "
+                                <Select.Item className="px-2 py-1 text-xs cursor-pointer hover:bg-card "
 
                                   key={role.id} value={String(role.id)}>
                                   <Select.ItemText>{role.name}</Select.ItemText>
