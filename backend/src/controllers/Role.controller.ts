@@ -13,10 +13,13 @@ export const createRole = async (req: Request, res: Response) => {
             return res.status(400).json({ message: 'Role name and permissions is required' });
         }
 
+        const companyId = (req.session as any).companyId;
+
         const role = await prisma.role.create({
             data: {
                 name: name.trim().toUpperCase(),
                 description,
+                companyId,
                 permissions: {
                     connect: permissions.map((id: number) => ({
                         id: Number(id)
@@ -52,21 +55,27 @@ export const getRole = async (req: Request, res: Response) => {
         const isEmployee = user.roles?.some(
             (r: any) => r.name.trim().toUpperCase() === "EMPLOYEE"
         );
-        console.log("USER:", user);
-        console.log("Session User ID:", user.id);
+
+        const companyId = (req.session as any).companyId;
+
         const roles = await prisma.role.findMany({
-            where: isEmployee
-                ? {
-                    users: {
-                        some: {
-                            id: user.id
+            where: {
+                companyId,
+
+                ...(isEmployee
+                    ? {
+                        users: {
+                            some: {
+                                id: user.id
+                            }
                         }
                     }
-                }
-                : {},
+                    : {}),
+            },
             include: {
                 permissions: true
             }
+
         });
 
         res.status(200).json({ message: 'Roles fetched successfully', data: roles });
@@ -85,6 +94,19 @@ export const updateRole = async (req: Request, res: Response) => {
 
         if (!name || !description || !permissions) {
             return res.status(400).json({ message: 'Role name and permissions is required' });
+        }
+
+        const companyId = (req.session as any).companyId;
+
+        const exiteRole = await prisma.role.findFirst({
+            where: {
+                id,
+                companyId,
+            },
+        })
+
+        if (!exiteRole) {
+            return res.status(404).json({ message: "Role not found" });
         }
 
         const role = await prisma.role.update({
@@ -128,8 +150,9 @@ export const deleteRole = async (req: Request, res: Response) => {
         if (!id) {
             return res.status(400).json({ message: 'Role id is required' });
         }
-        const role = await prisma.role.findUnique({
-            where: { id },
+        const companyId = (req.session as any).companyId;
+        const role = await prisma.role.findFirst({
+            where: { id, companyId },
             include: {
                 permissions: true
             }

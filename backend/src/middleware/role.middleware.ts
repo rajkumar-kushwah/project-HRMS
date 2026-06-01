@@ -49,6 +49,7 @@ export const checkPermissions = (permissionName: string) => {
     const user = await prisma.user.findUnique({
       where: { id: userId },
       include: {
+        company: true,
         roles: {
           include: {
             permissions: true
@@ -74,6 +75,9 @@ export const checkPermissions = (permissionName: string) => {
     if (!permissions.includes(permissionName)) {
       return res.status(403).json({ message: "Forbidden" });
     }
+    
+    req.user = user;
+    req.company = user.company;
 
     next();
   };

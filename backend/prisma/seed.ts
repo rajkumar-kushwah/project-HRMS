@@ -6,7 +6,7 @@ import bcrypt from "bcrypt";
 
 // super_admin  create function call 
 
-async function createSuperAdmin() {
+async function createSuperAdmin(companyId: number) {
   console.log("Checking Super Admin user...");
 
   const superAdmincheck = await prisma.user.findFirst({
@@ -40,6 +40,11 @@ async function createSuperAdmin() {
       name: "Super Admin",
       email: "superadmin1@gmail.com",
       password: hashedPassword,
+      company: {
+        connect: {
+          id: companyId
+        }
+      },
       roles: {
         connect: {
           id: superAdminRole.id
@@ -75,12 +80,26 @@ async function main() {
   // create roles
   console.log("Seeding roles...");
 
+  // create company 
+  const company = await prisma.company.upsert({
+    where: {
+      email: "admin@codewithhrms.com"
+    },
+    update: {},
+    create: {
+      name: "Code With HRMS",
+      email: "admin@codewithhrms.com",
+      phone: "1234567890",
+      address: "725, 7th Floor, SRS Tower Sector-31, Faridabad, Haryana - 121003",
+      logo: "/nabu.png",
+    }
+  });
 
   await prisma.role.createMany({
     data: [
-      { name: "SUPER_ADMIN", description: "System Owner with full access" },
-      { name: "HR", description: "HR Manager role" },
-      { name: "EMPLOYEE", description: "Basic employee role" }
+      { name: "SUPER_ADMIN", description: "System Owner with full access", companyId: company.id },
+      { name: "HR", description: "HR Manager role", companyId: company.id },
+      { name: "EMPLOYEE", description: "Basic employee role", companyId: company.id },
     ],
     skipDuplicates: true
   });
@@ -106,7 +125,7 @@ async function main() {
   }
 
   // create super admin
-  await createSuperAdmin();
+  await createSuperAdmin(company.id);
 
   console.log("Seeding completed ");
 }

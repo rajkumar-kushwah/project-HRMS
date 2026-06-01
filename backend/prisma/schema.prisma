@@ -13,6 +13,24 @@ datasource db {
   provider = "postgresql"
 }
 
+model Company {
+  id      Int     @id @default(autoincrement())
+  name    String
+  email   String  @unique
+  phone   String?
+  address String?
+  logo    String?
+
+  createAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+
+  users       User[]
+  employee    Employee[]
+  Department  Department[]
+  attendances Attendance[]
+  roles       Role[]
+}
+
 model User {
   id        Int       @id @default(autoincrement())
   name      String?
@@ -25,6 +43,9 @@ model User {
 
   employee   Employee?
   attendance Attendance[]
+
+  companyId Int
+  company   Company @relation(fields: [companyId], references: [id])
 }
 
 model Role {
@@ -34,6 +55,9 @@ model Role {
   users       User[]
   permissions Permission[]
   updatedAt   DateTime     @default(now()) @updatedAt
+
+  companyId Int
+  company   Company @relation(fields: [companyId], references: [id])
 }
 
 model Permission {
@@ -54,6 +78,8 @@ model Department {
   updatedAt DateTime @updatedAt
 
   employees Employee[]
+  companyId Int
+  company   Company    @relation(fields: [companyId], references: [id])
 }
 
 model Employee {
@@ -87,6 +113,9 @@ model Employee {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  companyId Int
+  company   Company? @relation(fields: [companyId], references: [id])
 }
 
 model Attendance {
@@ -94,14 +123,18 @@ model Attendance {
   userId Int
   user   User @relation(fields: [userId], references: [id])
 
+  companyId Int
+  company   Company? @relation(fields: [companyId], references: [id])
+
   date     DateTime // ek din ka record
   checkIn  DateTime?
   checkOut DateTime?
 
   totalMinutes    Int?
   overtimeMinutes Int? // >8 hrs
-
-  status String // present /late /Early
+  workingHours    Float?
+  lateMinutes     Int?
+  status          String // present /late /Early
 
   createAt  DateTime @default(now())
   updatedAt DateTime @updatedAt

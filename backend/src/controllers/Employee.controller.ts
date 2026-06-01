@@ -39,13 +39,14 @@ export const createEmployee = async (req: Request, res: Response) => {
         //  transaction start
         const result = await prisma.$transaction(async (tx) => {
 
-
+            const companyId = (req.session as any).companyId;
             //  Create User
             const user = await tx.user.create({
                 data: {
                     name: `${firstName} ${lastName}`,
                     email,
                     password: hashedPassword,
+                    companyId,
                     roles: {
                         connect: [{ id: Number(roleId) }]
                     }
@@ -84,7 +85,8 @@ export const createEmployee = async (req: Request, res: Response) => {
                     state,
                     pincode,
                     departmentId: Number(departmentId),
-                    userId: user.id
+                    userId: user.id,
+                    companyId,
                 }
             });
 
@@ -114,15 +116,16 @@ export const createEmployee = async (req: Request, res: Response) => {
 
 export const getEmployees = async (req: Request, res: Response) => {
     try {
-
+        const companyId = (req as any).session.companyId;
         const user = (req as any).user;
 
         const isEmployee = user.roles?.some((r: any) => r.name === "EMPLOYEE");
 
         const employees = await prisma.employee.findMany({
-            where: isEmployee
-                ? { userId: user.id }
-                : {},
+            where: {
+                companyId,
+                ...(isEmployee ? { userId: user.id } : {}),
+            },
             include: {
                 user: {
                     include: {
@@ -131,6 +134,7 @@ export const getEmployees = async (req: Request, res: Response) => {
                 },
                 department: true,
             },
+
         });
 
         return res.status(200).json(employees);
@@ -170,8 +174,8 @@ export const updateEmployee = async (req: Request, res: Response) => {
         const result = await prisma.$transaction(async (tx) => {
 
             // check if employee exite kta h ya nhi 
-            const emp = await tx.employee.findUnique({
-                where: { id },
+            const emp = await tx.employee.findFirst({
+                where: { id, companyId: (req.session as any).companyId },
                 include: {
                     user: true
                 }
@@ -200,7 +204,7 @@ export const updateEmployee = async (req: Request, res: Response) => {
 
             // update employee 
             const updateEmployee = await tx.employee.update({
-                where: { id },
+                where: { id: emp.id },
                 data: {
                     ...(firstName && { firstName }),
                     ...(lastName && { lastName }),
@@ -214,6 +218,7 @@ export const updateEmployee = async (req: Request, res: Response) => {
                     ...(state && { state }),
                     ...(pincode && { pincode }),
                     ...(departmentId && { departmentId: Number(departmentId) }),
+
                 }
 
             })
@@ -260,8 +265,8 @@ export const deleteEmployee = async (req: Request, res: Response) => {
         await prisma.$transaction(async (tx) => {
 
             // check if employee exite krta h ya nhi 
-            const employee = await tx.employee.findUnique({
-                where: { id },
+            const employee = await tx.employee.findFirst({
+                where: { id, companyId: (req.session as any).companyId },
                 include: {
                     user: true
                 }
@@ -275,7 +280,7 @@ export const deleteEmployee = async (req: Request, res: Response) => {
 
             // delete employee first (fk safe) 
             await tx.employee.delete({
-                where: { id }
+                where: { id: employee.id }
             })
 
             // delete user 
@@ -298,7 +303,7 @@ export const deleteEmployee = async (req: Request, res: Response) => {
 //     try {
 //         const userId = (req as any).session?.userId;
 //         const { search, role, departmentId } = req.query;
-        
+
 //         const employees = await prisma.employee.findMany({
 //             where: {
 //                 userId,
@@ -348,72 +353,75 @@ export const deleteEmployee = async (req: Request, res: Response) => {
 
 
 export const filterEmployee = async (req: Request, res: Response) => {
-  try {
-    const userId = (req as any).session?.userId;
-    const { search, role, departmentId } = req.query;
+    try {
+        const userId = (req as any).session?.userId;
+        const { search, role, departmentId } = req.query;
 
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      include: { roles: true },
-    });
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            include: { roles: true },
+        });
 
-    const roles = user?.roles?.map((r) => r.name) || [];
+        const roles = user?.roles?.map((r) => r.name) || [];
 
-    let where: any = {};
+        let where: any = { companyId: (req.session as any).companyId };
 
-    //  Restrict only non-admin users
-    if (!roles.includes("SUPER_ADMIN")) {
-      where.userId = userId;
+        //  Restrict only non-admin users
+        if (!roles.includes("SUPER_ADMIN")) {
+            where.userId = userId;
+        }
+
+        //  search filter
+        if (search) {
+            where.OR = [
+                { firstName: { contains: String(search), mode: "insensitive" } },
+                { lastName: { contains: String(search), mode: "insensitive" } },
+                { designation: { contains: String(search), mode: "insensitive" } },
+                { employeeCode: { contains: String(search), mode: "insensitive" } },
+                {
+                    user: {
+                        email: { contains: String(search), mode: "insensitive" }
+                    }
+                }
+            ];
+        }
+        //  role filter
+        if (role) {
+            where.user = {
+                roles: {
+                    some: {
+                        id: Number(role),
+                    },
+                },
+            };
+        }
+
+        //  department filter
+        if (departmentId) {
+            where.departmentId = Number(departmentId);
+        }
+
+        const employees = await prisma.employee.findMany({
+            where,
+            include: {
+                user: {
+                    include: {
+                        roles: true,
+                    },
+                },
+                department: true,
+            },
+            orderBy: {
+                createdAt: "desc",
+            },
+        });
+
+        return res.status(200).json({
+            message: "Employee filtered successfully",
+            data: employees,
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Server error" });
     }
-
-    //  search filter
-    if (search) {
-      where.OR = [
-        { firstName: { contains: String(search), mode: "insensitive" } },
-        { lastName: { contains: String(search), mode: "insensitive" } },
-        { designation: { contains: String(search), mode: "insensitive" } },
-        { employeeCode: { contains: String(search), mode: "insensitive" } },
-        { user: { email: { contains: String(search), mode: "insensitive" } } },
-      ];
-    }
-
-    //  role filter
-    if (role) {
-      where.user = {
-        roles: {
-          some: {
-            id: Number(role),
-          },
-        },
-      };
-    }
-
-    //  department filter
-    if (departmentId) {
-      where.departmentId = Number(departmentId);
-    }
-
-    const employees = await prisma.employee.findMany({
-      where,
-      include: {
-        user: {
-          include: {
-            roles: true,
-          },
-        },
-        department: true,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
-
-    return res.status(200).json({
-      message: "Employee filtered successfully",
-      data: employees,
-    });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: "Server error" });
-  }
 };

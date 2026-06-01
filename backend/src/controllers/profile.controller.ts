@@ -47,6 +47,7 @@ export const getprofile = async (req: any, res: any) => {
         id: userId,
       },
       include: {
+        company: true,
         roles: {
           include: {
             permissions: true,
@@ -64,14 +65,14 @@ export const getprofile = async (req: any, res: any) => {
 
     const permission = [
       ...new Set(
-        user.roles.flatMap((role) =>
-          role.permissions.map((p) => p.name)
-        )
+        user.roles?.flatMap((role) =>
+          role.permissions?.map((p) => p.name) || []
+        ) || []
       )
     ];
     // clean response
 
-    const primaryRole = user.roles[0];
+    const primaryRole = user.roles?.[0] || null;
 
     if (!primaryRole) {
       return res.status(400).json({
@@ -86,6 +87,7 @@ export const getprofile = async (req: any, res: any) => {
         email: user.email,
         createdAt: user.createdAt,
         lastLogin: user.lastLogin,
+        company: user.company,
         role: primaryRole.name,
         roles: user.roles.map((r) => r.name),
         permission,

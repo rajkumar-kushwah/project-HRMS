@@ -42,6 +42,7 @@ export const signup = async (req: any, res: any) => {
                 name,
                 email,
                 password: hashedPassword,
+                companyId: req.company.id,
                 roles: {
                     connect: { id: role.id }
                 }
@@ -65,6 +66,7 @@ export const signin = async (req: any, res: any) => {
         const user = await prisma.user.findUnique({
             where: { email },
             include: {
+                company: true,
                 roles: {
                     include: {
                         permissions: true
@@ -107,18 +109,19 @@ export const signin = async (req: any, res: any) => {
         console.log("LOGIN END");
 
         (req.session as any).userId = user.id;
+        (req.session as any).companyId = user.companyId;
 
         console.log("SESSION:", req.session);
         console.log("USERID:", (req as any).session?.userId);
         const permission = [
             ...new Set(
-                user.roles.flatMap((role: any) =>
-                    role.permissions.map((p: any) => p.name)
-                )
+                user.roles?.flatMap((role: any) =>
+                    role.permissions.map((p: any) => p.name) ?? []
+                ) ?? []
             )
         ];
 
-        const primaryRole = user.roles[0];
+        const primaryRole = user.roles?.[0] || null;
 
         if (!primaryRole) {
             return res.status(400).json({
@@ -168,9 +171,12 @@ export const logout = async (req: any, res: any) => {
 // delete user
 export const deleteUser = async (req: any, res: any) => {
     try {
-        const userId = req.session.userId;
-        const user = await prisma.user.delete({
-            where: { id: userId },
+        // const userId = req.session.userId;
+        const id = Number(req.params.id);
+        const user = await prisma.user.deleteMany({
+            where: { id,
+                companyId: req.session.companyId
+             },
         })
         res.status(200).json({ message: 'User deleted successfully', user: user });
     } catch (error) {
@@ -184,9 +190,21 @@ export const UpdateUser = async (req: any, res: any) => {
     try {
         const id = Number(req.params.id);
         const { name, email, password } = req.body;
-        const UpdateUser = await prisma.user.update({
-            where: { id },
-            data: { name, email, password },
+
+        type UserUpdateInput = Parameters<typeof prisma.user.updateMany>[0]['data'];
+
+        const data: UserUpdateInput = { name, email };
+        // password script
+       if(password){
+        data.password = await bcrypt.hash(password, 10);
+       }
+
+        const UpdateUser = await prisma.user.updateMany({
+            where: { 
+                id,
+                companyId: req.session.companyId,
+             },
+            data,
         })
         res.status(200).json({ message: 'User updated successfully', user: UpdateUser });
     } catch (error) {

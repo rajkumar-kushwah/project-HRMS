@@ -62,23 +62,34 @@ export const checkIn = async (req: Request, res: Response) => {
         const graceTime = new Date();
         graceTime.setHours(10, 15, 0, 0);
 
+        const halfDayTime = new Date();
+        halfDayTime.setHours(14, 0, 0, 0);
+
         let status;
 
         if (now <= officeTime) {
             status = "P";
         } else if (now <= graceTime) {
             status = "P";
-        } else {
+        } else if (now <= halfDayTime) {
             status = "Late";
+        } else {
+            status = "Half Day";
         }
 
+        const lateMinutes = Math.floor(
+            (now.getTime() - officeTime.getTime()) / (1000 * 60)
+        );
+        const companyId = (req.session as any).companyId;
         // create entry
         const attendance = await prisma.attendance.create({
             data: {
                 userId,
+                companyId,
                 date: now,       //  fix (no mismatch)
                 checkIn: now,
                 status,
+                lateMinutes,
             },
             include: {
                 user: {
@@ -139,10 +150,12 @@ export const checkOut = async (req: Request, res: Response) => {
 
         const now = new Date();
 
+        const companyId = (req.session as any).companyId;
         //  find active check-in (no checkout yet)
         const attendance = await prisma.attendance.findFirst({
             where: {
                 userId,
+                companyId,
                 checkOut: null, //  important
                 checkIn: {
                     gte: start,
@@ -159,22 +172,22 @@ export const checkOut = async (req: Request, res: Response) => {
         }
 
 
-
-        // calculate duration
-        // const diffMs = now.getTime() - attendance.checkIn!.getTime();
-
-        // const hours = diffMs / (1000 * 60 * 60);
-
-        // const totalHours = +hours.toFixed(2);
-        // const overtime = totalHours > 8 ? +(totalHours - 8).toFixed(2) : 0;
-
         const diffMs = now.getTime() - attendance.checkIn!.getTime();
 
         const totalMinutes = Math.floor(diffMs / (1000 * 60));
+        const totalHours = totalMinutes / 60;
+        const workingHours = +totalHours.toFixed(2);
 
         const overtimeMinutes =
             totalMinutes > 480 ? totalMinutes - 480 : 0;
 
+            let finalStatus = attendance.status;
+
+            if(workingHours < 4){
+                finalStatus = "Absent";
+            } else if(workingHours < 8) {
+                finalStatus = "Half Day";
+            }
 
         //  update
         const updated = await prisma.attendance.update({
@@ -183,6 +196,7 @@ export const checkOut = async (req: Request, res: Response) => {
                 checkOut: now,
                 totalMinutes,
                 overtimeMinutes,
+                status: finalStatus
             },
             include: {
                 user: {
@@ -207,7 +221,6 @@ export const checkOut = async (req: Request, res: Response) => {
 };
 
 // get attendance
-
 export const getAttendance = async (req: Request, res: Response) => {
     try {
         const session: any = req.session;
@@ -255,9 +268,11 @@ export const getAttendance = async (req: Request, res: Response) => {
 
         let data;
 
+        const companyId = (req.session as any).companyId;
         //  SUPER ADMIN → ALL DATA
         if (role.includes("SUPER_ADMIN")) {
             data = await prisma.attendance.findMany({
+                where: { companyId },
                 include: {
                     user: {
                         select: {
@@ -273,7 +288,7 @@ export const getAttendance = async (req: Request, res: Response) => {
         //  NORMAL USER → OWN DATA
         else {
             data = await prisma.attendance.findMany({
-                where: { userId },
+                where: { userId, companyId },
                 include: {
                     user: {
                         select: {
@@ -377,7 +392,7 @@ export const filterAttendance = async (req: Request, res: Response) => {
         const roles = user?.roles?.map((r) => r.name) || [];
 
         // base where
-        let where: any = {};
+        let where: any = { companyId: (req.session as any).companyId };
 
         //  NORMAL USER restriction
         if (!roles.includes("SUPER_ADMIN")) {
@@ -453,11 +468,11 @@ export const deleteAttendance = async (req: Request, res: Response) => {
 
         // delete attendance find
         await prisma.attendance.deleteMany({
-            where: { 
-                id:{
+            where: {
+                id: {
                     in: ids
-                }
-
+                },
+                companyId: (req.session as any).companyId
             },
         })
 

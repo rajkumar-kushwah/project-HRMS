@@ -52,6 +52,7 @@ export const protect = async (req: any, res: Response, next: NextFunction) => {
     const user = await prisma.user.findUnique({
       where: { id: userId },
       include: {
+        company: true,
         roles: {
           include: {
             permissions: true
@@ -65,6 +66,7 @@ export const protect = async (req: any, res: Response, next: NextFunction) => {
     }
 
     req.user = user;
+    req.company = user.company;
 
     next();
   } catch (error) {

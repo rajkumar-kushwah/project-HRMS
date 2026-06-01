@@ -245,27 +245,6 @@ const CheckIn = () => {
       : 0;
 
 
-  // const totalDays = attendanceData.length;
-
-  // const totalHours = attendanceData.reduce((acc, item) => {
-  //   if (!item?.totalMinutes) return acc;
-
-  //   const cleaned = String(item.totalMinutes)
-  //     .replace("h", "")
-  //     .replace("m", "")
-  //     .trim();
-
-  //   const [h = 0, m = 0] = cleaned.split(" ").map(Number);
-
-  //   return acc + h + m / 60;
-  // }, 0);
-
-
-  // const AvgHours = totalDays > 0
-  //   ? (totalHours / totalHours).toFixed(1)
-  //   : 0;
-
-
 
   const onTimeDays = attendanceData.filter(item => {
     if (!item.checkIn) return false;
